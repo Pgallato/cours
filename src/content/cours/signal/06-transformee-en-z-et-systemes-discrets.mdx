@@ -1,0 +1,445 @@
+---
+titre: Transformée en Z et systèmes linéaires discrets
+resume: Transformée en Z, région de convergence, table et propriétés ; systèmes LTI à temps discret, convolution discrète, équation aux différences, fonction de transfert H(z), pôles, zéros, gain statique et stabilité.
+tags: [transformée en Z, région de convergence, convolution, fonction de transfert, pôles, stabilité]
+duree: 11
+sources: ["cours3.pdf p. 20–32"]
+---
+
+## Transformée en Z
+
+<Definition titre="Transformée en Z">
+    Soit un signal à temps discret $x[n]$. La transformée en Z de $x[n]$ est définie par :
+
+    $$
+    TZ\{x[n]\} = X(z) = \sum_{n=-\infty}^{+\infty} x[n] z^{-n}
+    $$
+
+    - $z$ est la variable de la transformée en Z ;
+    - $z$ est complexe : $z = re^{j\omega} = \operatorname{Re}\{z\} + j\operatorname{Im}\{z\}$ ;
+    - $X(z)$ est une fonction complexe de la variable $z$.
+</Definition>
+
+<Definition titre="Transformée en Z monolatérale">
+    Pour un signal **causal**, c'est-à-dire $x[n] = 0$ pour tout $n < 0$, on définit la transformée en Z monolatérale :
+
+    $$
+    TZ\{x[n]\} = X(z) = \sum_{n=0}^{+\infty} x[n] z^{-n}
+    $$
+</Definition>
+
+Applications principales de la TZ :
+
+- représentation des systèmes numériques à l'aide d'une **fonction de transfert** $H(z)$ ;
+- conception de **filtres numériques**.
+
+## Région de convergence
+
+<Definition titre="Région de convergence (RDC)">
+    L'ensemble des valeurs de $z$ pour lesquelles la série de la transformée en Z converge est appelé la « région de convergence » ou le « domaine de convergence » de la transformée en Z.
+
+    La RDC est située dans un anneau du plan complexe des $z$ compris entre deux rayons $R_{X-}$ et $R_{X+}$ :
+
+    $$
+    R_{X-} < |z| < R_{X+}
+    $$
+</Definition>
+
+- $R_{X-} = 0$, $0 < R_{X+} < D$ : la RDC est l'intérieur d'un disque de rayon $D$.
+- $0 < R_{X-} < D_1$, $0 < R_{X+} < D_2$ : la RDC est l'intérieur d'un anneau.
+- $0 < R_{X-} < D_1$, $0 < R_{X+} < +\infty$ : la RDC est l'extérieur d'un disque de rayon $D_1$.
+- $R_{X-} = 0$, $0 < R_{X+} < +\infty$ : la série converge pour tout $z$.
+
+<Figure legende="La région de convergence est une couronne" page="cours3.pdf p. 21">
+    <svg viewBox="0 0 200 170" role="img" aria-label="Région de convergence : couronne du plan complexe comprise entre les cercles de rayon RX− et RX+">
+    <defs>
+    <marker id="fl-rdc" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <circle cx="100" cy="90" r="62" fill="var(--accent)" fill-opacity="0.2" stroke="currentColor" stroke-width="1" />
+    <circle cx="100" cy="90" r="34" fill="var(--paper)" stroke="currentColor" stroke-width="1" />
+    <line x1="20" y1="90" x2="185" y2="90" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-rdc)" />
+    <line x1="100" y1="165" x2="100" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-rdc)" />
+    <text x="183" y="104" font-size="10" font-style="italic" text-anchor="end" fill="currentColor">Re(z)</text>
+    <text x="105" y="14" font-size="10" font-style="italic" fill="currentColor">Im(z)</text>
+    <line x1="100" y1="90" x2="124" y2="66" stroke="var(--accent)" stroke-width="2" />
+    <line x1="100" y1="90" x2="144" y2="46" stroke="var(--accent)" stroke-width="2" />
+    <text x="107.5" y="60" font-size="10" font-style="italic" fill="var(--accent)">R</text>
+    <text x="113" y="63" font-size="7.199999999999999" font-style="italic" fill="var(--accent)">X−</text>
+    <text x="148" y="46" font-size="10" font-style="italic" fill="var(--accent)">R</text>
+    <text x="153.5" y="49" font-size="7.199999999999999" font-style="italic" fill="var(--accent)">X+</text>
+    </svg>
+</Figure>
+
+<Example titre="TZ de aⁿu[n]">
+    Rappel (série géométrique) : $\displaystyle\sum_{n=0}^{\infty} r^n = \frac{1}{1 - r}$, convergence si $|r| < 1$.
+
+    Soit $x[n] = a^n u[n] = \begin{cases} a^n & \text{si } n \ge 0 \\ 0 & \text{si } n < 0 \end{cases}$ : signal causal, TZ monolatérale.
+
+    $$
+    X(z) = \sum_{n=0}^{+\infty} a^n z^{-n} = \sum_{n=0}^{+\infty} (az^{-1})^n
+    $$
+
+    $$
+    \text{(série géométrique de raison } az^{-1})
+    $$
+
+    $$
+    X(z) = \frac{1}{1 - az^{-1}} \quad \text{si } |az^{-1}| < 1
+    $$
+
+    $$
+    |az^{-1}| < 1 \Rightarrow \frac{|a|}{|z|} < 1 \Rightarrow |z| > |a| \ \text{: RDC à l'extérieur d'un disque de rayon } a
+    $$
+
+    $$
+    X(z) = \frac{1}{1 - az^{-1}} \times \frac{z}{z} = \frac{z}{z - a}
+    $$
+
+    $$
+    |z| > |a|
+    $$
+
+    - Pôle : $z = a$ (racine du dénominateur).
+    - Zéro : $z = 0$ (racine du numérateur).
+</Example>
+
+<Figure legende="RDC de aⁿu[n] : extérieur du disque de rayon |a|" page="cours3.pdf p. 22">
+    <svg viewBox="0 0 200 170" role="img" aria-label="Pour x[n] = aⁿu[n] : la région de convergence est l’extérieur du disque de rayon |a| ; zéro en 0, pôle en a">
+    <defs>
+    <marker id="fl-rdc-exemple" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <rect x="5" y="5" width="190" height="160" fill="var(--accent)" fill-opacity="0.18" />
+    <circle cx="100" cy="90" r="45" fill="var(--paper)" stroke="currentColor" stroke-width="1.4" />
+    <line x1="10" y1="90" x2="190" y2="90" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-rdc-exemple)" />
+    <line x1="100" y1="160" x2="100" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-rdc-exemple)" />
+    <text x="188" y="104" font-size="10" font-style="italic" text-anchor="end" fill="currentColor">Re(z)</text>
+    <text x="105" y="22" font-size="10" font-style="italic" fill="currentColor">Im(z)</text>
+    <circle cx="100" cy="90" r="4" fill="none" stroke="var(--accent)" stroke-width="1.6" />
+    <line x1="141" y1="86" x2="149" y2="94" stroke="var(--accent)" stroke-width="2.2" />
+    <line x1="141" y1="94" x2="149" y2="86" stroke="var(--accent)" stroke-width="2.2" />
+    <text x="148" y="82" font-size="10" font-style="italic" fill="currentColor">a</text>
+    <text x="150" y="40" font-size="10" text-anchor="middle" fill="var(--accent)">RDC</text>
+    </svg>
+</Figure>
+
+## Table de transformées en Z
+
+{/* FOND ? cours3.pdf p. 23 : pour u[−n − 1], la TZ attendue est −1/(1 − z⁻¹) = −z/(z − 1) (comme −aⁿu[−n − 1] avec a = 1), le signe moins manque. Signalé, non corrigé. */}
+
+| $x[n]$ | $X(z)$ | RDC |
+|---|---|---|
+| $\delta[n]$ | $1$ | tout $z$ |
+| $\delta[n - n_0]$ | $z^{-n_0}$ | tout $z$ sauf zéro si $n_0 > 0$ |
+| $u[n]$ | $\frac{1}{1 - z^{-1}} = \frac{z}{z - 1}$ | $\lvert z \rvert > 1$ |
+| $u[-n - 1]$ | $\frac{1}{1 - z^{-1}} = \frac{z}{z - 1}$ | $\lvert z \rvert < 1$ |
+| $a^n u[n]$ | $\frac{1}{1 - az^{-1}} = \frac{z}{z - a}$ | $\lvert z \rvert > \lvert a \rvert$ |
+| $-a^n u[-n - 1]$ | $\frac{1}{1 - az^{-1}} = \frac{z}{z - a}$ | $\lvert z \rvert < \lvert a \rvert$ |
+| $r^n \cos[\Omega_0 n] u[n]$ | $\frac{1 - r\cos\Omega_0 z^{-1}}{1 - 2r\cos\Omega_0 z^{-1} + r^2 z^{-2}}$ | $\lvert z \rvert > r$ |
+| $r^n \sin[\Omega_0 n] u[n]$ | $\frac{r\sin\Omega_0 z^{-1}}{1 - 2r\cos\Omega_0 z^{-1} + r^2 z^{-2}}$ | $\lvert z \rvert > r$ |
+
+## Propriétés de la TZ
+
+<Property titre="Propriétés">
+    | Propriété | $x[n]$ | $X(z)$ |
+    |---|---|---|
+    | Linéarité | $a \cdot x[n] + b \cdot y[n]$ | $a \cdot X(z) + b \cdot Y(z)$ |
+    | Translation temporelle | $x[n - n_0]$ | $X(z) z^{-n_0}$ |
+    | Changement d'échelle fréquentiel | $x[n] z_0^n$ | $X\left(\frac{z}{z_0}\right)$ |
+    | Inversion temporelle | $x[-n]$ | $X(z^{-1})$ |
+    | Dérivée fréquentielle | $n x[n]$ | $-z \frac{d}{dz} X(z)$ |
+    | Convolution | $x[n] * y[n]$ | $X(z) \cdot Y(z)$ |
+</Property>
+
+<Remark titre="Le retard unitaire">
+    La translation temporelle se représente par un bloc $z^{-n_0}$ : $x(n) \to \boxed{z^{-n_0}} \to x(n - n_0)$. Par exemple, avec $n_0 = 1$ : $x(n) \to \boxed{z^{-1}} \to x(n - 1)$.
+</Remark>
+
+## Système LTI à temps discret
+
+<Definition titre="Système LTI à temps discret">
+    Un système de réponse impulsionnelle $h[n]$ reçoit l'entrée $x[n]$ et délivre la sortie
+
+    $$
+    y[n] = x[n] * h[n] = \sum_{k=-\infty}^{+\infty} x[k] \cdot h[n - k]
+    $$
+
+    $$
+    y[n] = h[n] * x[n] = \sum_{k=-\infty}^{+\infty} h[k] \cdot x[n - k]
+    $$
+
+    $h[n]$ : réponse impulsionnelle.
+</Definition>
+
+La **convolution en temps discret** a les mêmes propriétés qu'en temps continu. Convolution par une impulsion de Dirac : $x(n) * \delta(n - m) = x(n - m)$.
+
+On écrit $h[n]$ sous forme d'une combinaison d'impulsions de Dirac, $h[n] = \sum_{k=-\infty}^{+\infty} h_k \delta[n - k]$. Alors :
+
+$$
+y[n] = x[n] * \sum_{k=-\infty}^{+\infty} h_k \delta[n - k] = \sum_{k=-\infty}^{+\infty} h_k\, x[n] * \delta[n - k]
+$$
+
+<Theorem type="À retenir" titre="Sortie d'un système LTI discret">
+    $$
+    y[n] = \sum_{k=-\infty}^{+\infty} h_k\, x[n - k]
+    $$
+</Theorem>
+
+<Example titre="Calculer la sortie pour n = 0, 1, …, 4">
+    $h[n] = \{0{,}1 ;\ 0{,}2 ;\ 0{,}1\}$ et $x[n] = \{1, 1\}$. Avec $N = 3$ :
+
+    $$
+    y[n] = \sum_{k=0}^{N-1} h_k\, x[n - k] = h_0 x[n - 0] + h_1 x[n - 1] + h_2 x[n - 2]
+    $$
+
+    $$
+    \text{soit} \ y_n = h_0 x_n + h_1 x_{n-1} + h_2 x_{n-2}
+    $$
+
+    avec $h_0 = 0{,}1$, $h_1 = 0{,}2$, $h_2 = 0{,}1$, $x_0 = 1$, $x_1 = 1$ :
+
+    $$
+    \begin{aligned}
+    y_0 &= h_0 x_0 + h_1 x_{-1} + h_2 x_{-2} = 1 \times 0{,}1 + 0 + 0 = 0{,}1 \\
+    y_1 &= h_0 x_1 + h_1 x_0 + h_2 x_{-1} = 0{,}1 \times 1 + 0{,}2 \times 1 + 0{,}1 \times 0 = 0{,}3 \\
+    y_2 &= h_0 x_2 + h_1 x_1 + h_2 x_0 = 0{,}1 \times 0 + 0{,}2 \times 1 + 0{,}1 \times 1 = 0{,}3 \\
+    y_3 &= h_0 x_3 + h_1 x_2 + h_2 x_1 = 0{,}1 \times 0 + 0{,}2 \times 0 + 0{,}1 \times 1 = 0{,}1 \\
+    y_4 &= h_0 x_4 + h_1 x_3 + h_2 x_2 = 0{,}1 \times 0 + 0{,}2 \times 0 + 0{,}1 \times 0 = 0
+    \end{aligned}
+    $$
+
+    $y_n = 0$ pour $n \ge 4$.
+
+    $$
+    \text{Taille de } y = \text{taille de } h + \text{taille de } x - 1 = 3 + 2 - 1 = 4
+    $$
+</Example>
+
+<Figure legende="Sortie y[n] du système" page="cours3.pdf p. 27">
+    <svg viewBox="0 0 280 120" role="img" aria-label="Sortie y[n] : 0,1 ; 0,3 ; 0,3 ; 0,1 puis 0 pour n ≥ 4">
+    <defs>
+    <marker id="fl-convolution" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="21" y1="100" x2="265" y2="100" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-convolution)" />
+    <line x1="46.7" y1="104" x2="46.7" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-convolution)" />
+    <text x="51.7" y="19" font-size="11" font-style="italic" fill="currentColor">y[n]</text>
+    <text x="265" y="114" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">n</text>
+    <line x1="46.7" y1="100" x2="46.7" y2="77.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="46.7" cy="77.8" r="3" fill="var(--accent)" />
+    <line x1="90.1" y1="100" x2="90.1" y2="33.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="90.1" cy="33.3" r="3" fill="var(--accent)" />
+    <line x1="133.5" y1="100" x2="133.5" y2="33.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="133.5" cy="33.3" r="3" fill="var(--accent)" />
+    <line x1="176.9" y1="100" x2="176.9" y2="77.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="176.9" cy="77.8" r="3" fill="var(--accent)" />
+    <circle cx="220.3" cy="100" r="3" fill="var(--accent)" />
+    <line x1="90.1" y1="97" x2="90.1" y2="103" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="90.1" y="114" font-size="9.5" text-anchor="middle" fill="currentColor">1</text>
+    <line x1="133.5" y1="97" x2="133.5" y2="103" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="133.5" y="114" font-size="9.5" text-anchor="middle" fill="currentColor">2</text>
+    <line x1="176.9" y1="97" x2="176.9" y2="103" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="176.9" y="114" font-size="9.5" text-anchor="middle" fill="currentColor">3</text>
+    <line x1="220.3" y1="97" x2="220.3" y2="103" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="220.3" y="114" font-size="9.5" text-anchor="middle" fill="currentColor">4</text>
+    <text x="54.7" y="70.8" font-size="9.5" fill="var(--accent)">0,1</text>
+    <text x="90.1" y="26.3" font-size="9.5" text-anchor="middle" fill="var(--accent)">0,3</text>
+    <text x="133.5" y="26.3" font-size="9.5" text-anchor="middle" fill="var(--accent)">0,3</text>
+    <text x="176.9" y="70.8" font-size="9.5" text-anchor="middle" fill="var(--accent)">0,1</text>
+    </svg>
+</Figure>
+
+## Fonction de transfert
+
+{/* FOND ? cours3.pdf p. 28 : « H(z) = TZ{x[n]} » ; la fonction de transfert est la TZ de la réponse impulsionnelle, H(z) = TZ{h[n]} (c'est ce qu'écrit la p. 34). Signalé, non corrigé. */}
+
+<Definition titre="Fonction de transfert du système discret">
+    $$
+    y[n] = x[n] * h[n]
+    $$
+
+    $$
+    \Rightarrow  Y(z) = X(z) \cdot H(z) \Rightarrow H(z) = \frac{Y(z)}{X(z)}
+    $$
+
+    $$
+    H(z) = TZ\{x[n]\}
+    $$
+</Definition>
+
+Le système linéaire à temps discret est modélisé à l'aide d'une **équation aux différences à coefficients constants** :
+
+$$
+y[n] = b_0 x[n] + b_1 x[n-1] + \cdots + b_M x[n-M] - a_1 y[n-1] - a_2 y[n-2] - \cdots - a_N y[n-N]
+$$
+
+$$
+y[n] + \sum_{k=1}^{N} a_k y[n - k] = \sum_{k=0}^{M} b_k x[n - k]
+$$
+
+$$
+N \text{ : ordre du système}
+$$
+
+<Todo page="cours3.pdf p. 29">Schéma fonctionnel du système linéaire à temps discret : chaîne de retards z⁻¹ sur l'entrée (x[n], x[n−1], …, x[n−M]) pondérés par b₀ … b_M, chaîne de retards z⁻¹ sur la sortie (y[n−1], …, y[n−N]) pondérés par −a₁ … −a_N, le tout sommé en y[n].</Todo>
+
+En appliquant la TZ (avec $TZ\{x[n - n_0]\} = X(z) z^{-n_0}$) :
+
+$$
+Y(z) + \sum_{k=1}^{N} a_k z^{-k} Y(z) = \sum_{k=0}^{M} b_k z^{-k} X(z)
+$$
+
+{/* FOND ? cours3.pdf p. 30 : dans la factorisation, la somme du dénominateur doit commencer à k = 1 (le terme k = 0 est déjà le « 1 ») ; la diapo écrit k = 0. Signalé, non corrigé. */}
+
+$$
+Y(z)\left\{1 + \sum_{k=0}^{N} a_k z^{-k}\right\} = X(z) \sum_{k=0}^{M} b_k z^{-k}
+$$
+
+<Theorem type="À retenir" titre="Fonction de transfert">
+    $$
+    H(z) = \frac{Y(z)}{X(z)} = \frac{\sum_{k=0}^{M} b_k z^{-k}}{1 + \sum_{k=1}^{N} a_k z^{-k}} = \frac{b_0 + b_1 z^{-1} + \cdots + b_M z^{-M}}{1 + a_1 z^{-1} + \cdots + a_N z^{-N}}
+    $$
+</Theorem>
+
+## Pôles, zéros et gain statique
+
+$$
+H(z) = \frac{Y(z)}{X(z)} = A \frac{\prod_{j=1}^{M} (z - z_j)}{\prod_{i=1}^{N} (z - p_i)}
+$$
+
+<Definition titre="Pôles, zéros, gain statique">
+    - Les **zéros** sont les racines du numérateur de $H(z)$ : $z = z_j$, $j = 1, \ldots, M$.
+    - Les **pôles** sont les racines du dénominateur de $H(z)$ : $z = p_i$, $i = 1, \ldots, N$.
+    - Le **gain statique** est la valeur de $H(z)$ lorsque $z = 1$ : $K = \lim_{z \to 1} H(z)$.
+</Definition>
+
+<Example titre="Système du premier ordre">
+    $$
+    y[n] - 0{,}8\, y[n - 1] = 0{,}2\, x[n] \quad\xrightarrow{TZ}\quad Y(z) - 0{,}8\, Y(z) \cdot z^{-1} = 0{,}2\, X(z)
+    $$
+
+    $$
+    H(z) = \frac{Y(z)}{X(z)} = \frac{0{,}2}{1 - 0{,}8 z^{-1}} \times \frac{z}{z} = \frac{0{,}2 z}{z - 0{,}8}
+    $$
+
+    Zéro : $z = z_1 = 0$ ; pôle : $z = p_1 = 0{,}8$.
+
+    $$
+    K = \lim_{z \to 1} H(z) = \frac{0{,}2}{1 - 0{,}8} = 1
+    $$
+</Example>
+
+<Figure legende="Diagramme des pôles et zéros" page="cours3.pdf p. 31">
+    <svg viewBox="0 0 220 140" role="img" aria-label="Diagramme des pôles et zéros : zéro (cercle) en z = 0, pôle (croix) en z = 0,8">
+    <defs>
+    <marker id="fl-poles-zeros" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="15" y1="75" x2="210" y2="75" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-poles-zeros)" />
+    <line x1="80" y1="135" x2="80" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-poles-zeros)" />
+    <text x="208" y="89" font-size="10" font-style="italic" text-anchor="end" fill="currentColor">Re(z)</text>
+    <text x="85" y="16" font-size="10" font-style="italic" fill="currentColor">Im(z)</text>
+    <circle cx="80" cy="75" r="4.5" fill="none" stroke="var(--accent)" stroke-width="1.8" />
+    <line x1="147" y1="70" x2="157" y2="80" stroke="var(--accent)" stroke-width="2.2" />
+    <line x1="147" y1="80" x2="157" y2="70" stroke="var(--accent)" stroke-width="2.2" />
+    <text x="152" y="93" font-size="10" text-anchor="middle" fill="currentColor">0,8</text>
+    <text x="72" y="90" font-size="10" text-anchor="middle" fill="currentColor">0</text>
+    </svg>
+</Figure>
+
+## Stabilité
+
+<Theorem type="À retenir" titre="Stabilité d'un système à temps discret">
+    Le système à temps discret est **stable** si tous les pôles sont **à l'intérieur du disque unité**, soit $|p_n| < 1$.
+</Theorem>
+
+<Example titre="Stabilité">
+    $$
+    h[n] = (0{,}8)^n u[n] \Rightarrow H(z) = \frac{z}{z - 0{,}8}
+    $$
+
+    $$
+    p_1 = 0{,}8 \Rightarrow |p_1| < 1
+    $$
+
+    Le pôle $p_1$ est situé à l'intérieur du disque unité : le système est stable.
+</Example>
+
+<Figure legende="Le pôle est dans le disque unité (rayon 1)" page="cours3.pdf p. 32">
+    <svg viewBox="0 0 220 180" role="img" aria-label="Disque unité (rayon 1) : le pôle p1 = 0,8 est à l’intérieur, le système est stable">
+    <defs>
+    <marker id="fl-stabilite" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <circle cx="100" cy="92" r="65" fill="var(--accent)" fill-opacity="0.18" stroke="currentColor" stroke-width="1.6" />
+    <line x1="15" y1="92" x2="205" y2="92" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-stabilite)" />
+    <line x1="100" y1="172" x2="100" y2="10" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-stabilite)" />
+    <text x="203" y="106" font-size="10" font-style="italic" text-anchor="end" fill="currentColor">Re(z)</text>
+    <text x="105" y="14" font-size="10" font-style="italic" fill="currentColor">Im(z)</text>
+    <line x1="147" y1="87" x2="157" y2="97" stroke="var(--accent)" stroke-width="2.2" />
+    <line x1="147" y1="97" x2="157" y2="87" stroke="var(--accent)" stroke-width="2.2" />
+    <text x="169" y="87" font-size="10" fill="currentColor">1</text>
+    <text x="31" y="87" font-size="10" text-anchor="end" fill="currentColor">−1</text>
+    <text x="70" y="70" font-size="10" text-anchor="middle" fill="currentColor" fill-opacity="0.8">STABLE</text>
+    <text x="152" y="110" font-size="10" font-style="italic" text-anchor="middle" fill="currentColor">p1</text>
+    </svg>
+</Figure>
+
+<Animation
+type="poles-stabilite"
+titre="Déplacer le pôle d'un système du premier ordre"
+params={{p: 0.8}}
+/>
+
+## Fiche récapitulative
+
+<Formulas titre="Transformée en Z et systèmes discrets">
+    <Formula label="Transformée en Z">
+        $$
+        X(z) = \sum_{n=-\infty}^{+\infty} x[n] z^{-n}
+        $$
+
+        $$
+        \text{(causal : } n \ge 0)
+        $$
+    </Formula>
+    <Formula label="Région de convergence">
+        $$
+        R_{X-} < |z| < R_{X+}
+        $$
+    </Formula>
+    <Formula label="TZ usuelles">
+        $$
+        \delta[n] \to 1, \quad \delta[n - n_0] \to z^{-n_0}, \quad a^n u[n] \to \frac{z}{z - a} \ (|z| > |a|)
+        $$
+    </Formula>
+    <Formula label="Retard et convolution">
+        $$
+        x[n - n_0] \to X(z) z^{-n_0}
+        $$
+
+        $$
+        x[n] * y[n] \to X(z) Y(z)
+        $$
+    </Formula>
+    <Formula label="Sortie d'un système LTI">
+        $$
+        y[n] = \sum_{k=-\infty}^{+\infty} h_k\, x[n - k]
+        $$
+
+        $$
+        \text{taille}(y) = \text{taille}(h) + \text{taille}(x) - 1
+        $$
+    </Formula>
+    <Formula label="Fonction de transfert">
+        $$
+        H(z) = \frac{Y(z)}{X(z)} = \frac{b_0 + b_1 z^{-1} + \cdots + b_M z^{-M}}{1 + a_1 z^{-1} + \cdots + a_N z^{-N}}
+        $$
+    </Formula>
+    <Formula label="Gain statique">
+        $$
+        K = \lim_{z \to 1} H(z)
+        $$
+    </Formula>
+    <Formula label="Stabilité">
+        $$
+        \text{stable} \iff |p_i| < 1 \ \text{pour tous les pôles}
+        $$
+    </Formula>
+</Formulas>

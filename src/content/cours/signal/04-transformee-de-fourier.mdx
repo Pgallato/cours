@@ -1,0 +1,221 @@
+---
+titre: Transformée de Fourier
+resume: Transformée de Fourier des signaux non périodiques, module et phase, transformée inverse, propriétés (linéarité, translations, échelle, dérivation, convolution, Dirac), densité spectrale d'énergie et théorème de Parseval-Plancherel.
+tags: [transformée de Fourier, spectre continu, convolution, densité spectrale, Parseval]
+duree: 4
+sources: ["cours2.pdf p. 20–26"]
+---
+
+## Définition
+
+<Definition titre="Transformée de Fourier">
+    Pour un signal non périodique $x(t)$ :
+
+    $$
+    F\{x(t)\} = X(\omega) = \int_{-\infty}^{+\infty} x(t) e^{-j\omega t}\, dt
+    $$
+
+    $$
+    (\omega = 2\pi f)
+    $$
+
+    $$
+    F\{x(t)\} = X(f) = \int_{-\infty}^{+\infty} x(t) e^{-j2\pi f t}\, dt
+    $$
+</Definition>
+
+- La transformation de Fourier concerne **principalement** les signaux **non périodiques**.
+- Elle conduit à un **spectre continu** pour le signal non périodique (contrairement aux signaux périodiques, qui possèdent un spectre discontinu).
+- La T.F. représente le comportement fréquentiel du signal. C'est une fonction de la fréquence $f$.
+
+<Theorem type="À retenir" titre="Existence">
+    La transformée de Fourier existe si $x(t)$ est bornée et absolument intégrable :
+
+    $$
+    \int_{-\infty}^{+\infty} |x(t)|\, dt < \infty
+    $$
+</Theorem>
+
+## Module et phase
+
+<Remark>
+    La T.F. est une fonction complexe :
+
+    $$
+    X(f) = |X(f)| \exp(j\Phi(f)) = \operatorname{Re}\{X(f)\} + j\operatorname{Im}\{X(f)\}
+    $$
+
+    avec le module (amplitude) et la phase (argument) :
+
+    $$
+    |X(f)| = \sqrt{[\operatorname{Re}\{X(f)\}]^2 + [\operatorname{Im}\{X(f)\}]^2}
+    $$
+
+    $$
+    \Phi(f) = \operatorname{Arctan}\left(\frac{\operatorname{Im}\{X(f)\}}{\operatorname{Re}\{X(f)\}}\right)
+    $$
+
+    Le module de $X(f)$ est appelé le **spectre** de $x(t)$.
+</Remark>
+
+## Transformée de Fourier inverse
+
+<Definition titre="Transformée de Fourier inverse">
+    La transformée de Fourier inverse ($TF^{-1}$) permet de retrouver $x(t)$ à partir de sa transformée de Fourier :
+
+    $$
+    x(t) = TF^{-1}(X(f)) = \int_{-\infty}^{+\infty} X(f) \exp(j2\pi f t)\, df
+    $$
+
+    Avec $\omega = 2\pi f \Rightarrow f = \dfrac{\omega}{2\pi}$, $df = \dfrac{d\omega}{2\pi}$ :
+
+    $$
+    x(t) = TF^{-1}(X(\omega)) = \frac{1}{2\pi} \int_{-\infty}^{+\infty} X(\omega) \exp(j\omega t)\, d\omega
+    $$
+</Definition>
+
+## Propriétés de la T.F.
+
+<Property titre="Propriétés">
+    1. **Linéarité** : $\forall a, b \in \mathbb{R}$, $\ F\{a x_1(t) + b x_2(t)\} = a X_1(f) + b X_2(f)$.
+    2. **Translation temporelle** : $F\{x(t - t_0)\} = X(f) e^{-j2\pi f t_0}$.
+    3. **Translation fréquentielle** : $F\{\exp(j2\pi f_0 t) \cdot x(t)\} = X(f - f_0)$.
+    4. **Changement d'échelle temporelle** : $F\{x(at)\} = \dfrac{1}{|a|} X\left(\dfrac{f}{a}\right)$, $a \ne 0$.
+    5. **Dérivation temporelle** : $F\left\{\dfrac{d^n}{dt^n} x(t)\right\} = (j2\pi f)^n \cdot X(f)$.
+    6. **Dérivation fréquentielle** : $F\{t x(t)\} = j\dfrac{d}{df} X(f)$.
+    7. **Convolution** : $F\{x(t) * y(t)\} = X(f) \times Y(f)$ et $F\{x(t) \times y(t)\} = X(f) * Y(f)$.
+    8. **TF de l'impulsion de Dirac** : $F\{\delta(t)\} = 1$.
+    9. **TF de $x(t) = 1$** : $F\{1\} = \delta(t)$.
+</Property>
+
+{/* FOND ? cours2.pdf p. 24, propriété 9 : la transformée de Fourier est une fonction de f, on attend F{1} = δ(f) et non δ(t). Signalé, non corrigé. */}
+
+## Densité spectrale d'énergie
+
+<Definition titre="Densité spectrale d'énergie (DSE)">
+    La DSE d'un signal non périodique $x(t)$ est définie par :
+
+    $$
+    \phi_{xx}(f) = |X(f)|^2
+    $$
+
+    $$
+    \text{ou} \ \phi_{xx}(\omega) = |X(\omega)|^2 \ \text{avec } \omega = 2\pi f
+    $$
+</Definition>
+
+On peut alors calculer l'énergie du signal contenue dans une bande de fréquence donnée :
+
+$$
+\Delta E = \int_{f_0 - \Delta f/2}^{f_0 + \Delta f/2} \phi_{xx}(f)\, df
+$$
+
+$$
+f = \frac{\omega}{2\pi}
+$$
+
+<Figure legende="Énergie contenue dans une bande de largeur Δf autour de f0" page="cours2.pdf p. 25">
+    <svg viewBox="0 0 300 130" role="img" aria-label="Module |X(f)| d'un spectre continu ; la bande hachurée de largeur Δf autour de f0 représente l'énergie ΔE contenue dans cette bande">
+    <defs>
+    <marker id="fl-dse" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="21" y1="105" x2="285" y2="105" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-dse)" />
+    <line x1="125" y1="109" x2="125" y2="7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-dse)" />
+    <text x="130" y="14" font-size="11" font-style="italic" fill="currentColor">|X(f)|</text>
+    <text x="285" y="119" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <path d="M150.0 105.0 L150.0 40.4 L151.0 41.4 L152.0 42.5 L153.0 43.5 L154.0 44.6 L155.0 45.7 L156.0 46.8 L157.0 47.9 L158.0 49.0 L159.0 50.2 L160.0 51.3 L161.0 52.5 L162.0 53.6 L163.0 54.8 L164.0 56.0 L165.0 57.2 L166.0 58.3 L167.0 59.5 L168.0 60.7 L169.0 61.9 L170.0 63.0 L171.0 64.2 L172.0 65.3 L173.0 66.5 L174.0 67.6 L175.0 68.7 L176.0 69.8 L177.0 70.9 L178.0 72.0 L179.0 73.1 L180.0 74.1 L180.0 105.0 Z" fill="var(--accent)" fill-opacity="0.25" stroke="none" />
+    <path d="M30.0 100.1 L30.8 99.9 L31.6 99.7 L32.4 99.4 L33.1 99.2 L33.9 98.9 L34.7 98.6 L35.5 98.4 L36.3 98.1 L37.1 97.8 L37.8 97.4 L38.6 97.1 L39.4 96.8 L40.2 96.4 L41.0 96.1 L41.8 95.7 L42.5 95.3 L43.3 95.0 L44.1 94.6 L44.9 94.1 L45.7 93.7 L46.5 93.3 L47.2 92.8 L48.0 92.4 L48.8 91.9 L49.6 91.4 L50.4 90.9 L51.2 90.4 L51.9 89.9 L52.7 89.3 L53.5 88.8 L54.3 88.2 L55.1 87.6 L55.8 87.0 L56.6 86.4 L57.4 85.8 L58.2 85.2 L59.0 84.5 L59.8 83.9 L60.6 83.2 L61.3 82.5 L62.1 81.8 L62.9 81.1 L63.7 80.4 L64.5 79.7 L65.2 78.9 L66.0 78.2 L66.8 77.4 L67.6 76.6 L68.4 75.8 L69.2 75.0 L70.0 74.2 L70.7 73.4 L71.5 72.5 L72.3 71.7 L73.1 70.9 L73.9 70.0 L74.6 69.1 L75.4 68.3 L76.2 67.4 L77.0 66.5 L77.8 65.6 L78.6 64.7 L79.3 63.8 L80.1 62.9 L80.9 62.0 L81.7 61.0 L82.5 60.1 L83.3 59.2 L84.0 58.3 L84.8 57.4 L85.6 56.4 L86.4 55.5 L87.2 54.6 L88.0 53.7 L88.8 52.8 L89.5 51.9 L90.3 50.9 L91.1 50.0 L91.9 49.2 L92.7 48.3 L93.4 47.4 L94.2 46.5 L95.0 45.7 L95.8 44.8 L96.6 44.0 L97.4 43.1 L98.1 42.3 L98.9 41.5 L99.7 40.7 L100.5 39.9 L101.3 39.2 L102.1 38.4 L102.8 37.7 L103.6 37.0 L104.4 36.3 L105.2 35.6 L106.0 35.0 L106.8 34.3 L107.5 33.7 L108.3 33.2 L109.1 32.6 L109.9 32.0 L110.7 31.5 L111.5 31.0 L112.2 30.6 L113.0 30.1 L113.8 29.7 L114.6 29.3 L115.4 28.9 L116.2 28.6 L117.0 28.3 L117.7 28.0 L118.5 27.7 L119.3 27.5 L120.1 27.3 L120.9 27.1 L121.6 27.0 L122.4 26.9 L123.2 26.8 L124.0 26.8 L124.8 26.7 L125.6 26.7 L126.3 26.8 L127.1 26.8 L127.9 26.9 L128.7 27.1 L129.5 27.2 L130.3 27.4 L131.1 27.6 L131.8 27.9 L132.6 28.1 L133.4 28.4 L134.2 28.7 L135.0 29.1 L135.8 29.5 L136.5 29.9 L137.3 30.3 L138.1 30.8 L138.9 31.2 L139.7 31.8 L140.4 32.3 L141.2 32.8 L142.0 33.4 L142.8 34.0 L143.6 34.6 L144.4 35.3 L145.1 35.9 L145.9 36.6 L146.7 37.3 L147.5 38.0 L148.3 38.8 L149.1 39.5 L149.8 40.3 L150.6 41.1 L151.4 41.9 L152.2 42.7 L153.0 43.5 L153.8 44.3 L154.6 45.2 L155.3 46.0 L156.1 46.9 L156.9 47.8 L157.7 48.7 L158.5 49.6 L159.2 50.5 L160.0 51.4 L160.8 52.3 L161.6 53.2 L162.4 54.1 L163.2 55.0 L163.9 55.9 L164.7 56.9 L165.5 57.8 L166.3 58.7 L167.1 59.6 L167.9 60.5 L168.7 61.5 L169.4 62.4 L170.2 63.3 L171.0 64.2 L171.8 65.1 L172.6 66.0 L173.3 66.9 L174.1 67.8 L174.9 68.6 L175.7 69.5 L176.5 70.4 L177.3 71.2 L178.0 72.1 L178.8 72.9 L179.6 73.7 L180.4 74.6 L181.2 75.4 L182.0 76.2 L182.8 77.0 L183.5 77.7 L184.3 78.5 L185.1 79.2 L185.9 80.0 L186.7 80.7 L187.4 81.4 L188.2 82.1 L189.0 82.8 L189.8 83.5 L190.6 84.2 L191.4 84.8 L192.1 85.5 L192.9 86.1 L193.7 86.7 L194.5 87.3 L195.3 87.9 L196.1 88.5 L196.8 89.0 L197.6 89.6 L198.4 90.1 L199.2 90.6 L200.0 91.1 L200.8 91.6 L201.6 92.1 L202.3 92.6 L203.1 93.0 L203.9 93.5 L204.7 93.9 L205.5 94.3 L206.2 94.7 L207.0 95.1 L207.8 95.5 L208.6 95.9 L209.4 96.2 L210.2 96.6 L210.9 96.9 L211.7 97.3 L212.5 97.6 L213.3 97.9 L214.1 98.2 L214.9 98.5 L215.6 98.8 L216.4 99.0 L217.2 99.3 L218.0 99.5 L218.8 99.8 L219.6 100.0 L220.3 100.2 L221.1 100.4 L221.9 100.7 L222.7 100.9 L223.5 101.0 L224.3 101.2 L225.0 101.4 L225.8 101.6 L226.6 101.7 L227.4 101.9 L228.2 102.0 L229.0 102.2 L229.7 102.3 L230.5 102.5 L231.3 102.6 L232.1 102.7 L232.9 102.8 L233.7 102.9 L234.4 103.0 L235.2 103.1 L236.0 103.2 L236.8 103.3 L237.6 103.4 L238.4 103.5 L239.1 103.6 L239.9 103.7 L240.7 103.7 L241.5 103.8 L242.3 103.9 L243.1 103.9 L243.9 104.0 L244.6 104.0 L245.4 104.1 L246.2 104.1 L247.0 104.2 L247.8 104.2 L248.5 104.3 L249.3 104.3 L250.1 104.4 L250.9 104.4 L251.7 104.4 L252.5 104.5 L253.2 104.5 L254.0 104.5 L254.8 104.6 L255.6 104.6 L256.4 104.6 L257.2 104.6 L257.9 104.7 L258.7 104.7 L259.5 104.7 L260.3 104.7 L261.1 104.7 L261.9 104.8 L262.6 104.8 L263.4 104.8 L264.2 104.8 L265.0 104.8" fill="none" stroke="var(--accent)" stroke-width="2" />
+    <line x1="165" y1="102" x2="165" y2="108" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="165" y="119" font-size="9.5" text-anchor="middle" fill="currentColor"></text>
+    <text x="160.2" y="120" font-size="10" font-style="italic" fill="currentColor">f</text>
+    <text x="165.7" y="123" font-size="7.199999999999999" font-style="italic" fill="currentColor">0</text>
+    <text x="186.5" y="62" font-size="10" fill="var(--accent)">Δf</text>
+    </svg>
+</Figure>
+
+<Theorem type="À retenir" titre="Énergie totale">
+    $$
+    E_{tot} = \int_{-\infty}^{+\infty} \phi_{xx}(f)\, df = \int_{-\infty}^{+\infty} |X(f)|^2\, df = \frac{1}{2\pi} \int_{-\infty}^{+\infty} |X(\omega)|^2\, d\omega
+    $$
+</Theorem>
+
+## Théorème de Parseval-Plancherel
+
+Dans le domaine temporel, l'énergie totale du signal non périodique (à énergie finie) $x(t)$ est calculée par :
+
+$$
+E_{tot} = \int_{-\infty}^{+\infty} |x(t)|^2\, dt
+$$
+
+<Theorem titre="Parseval-Plancherel">
+    L'énergie totale du signal est **conservée** dans le domaine fréquentiel :
+
+    $$
+    \underbrace{E_{tot} = \int_{-\infty}^{+\infty} |x(t)|^2\, dt}_{\text{domaine temporel}} = \underbrace{\frac{1}{2\pi} \int_{-\infty}^{+\infty} |X(\omega)|^2\, d\omega = \int_{-\infty}^{+\infty} |X(f)|^2\, df}_{\text{domaine fréquentiel}}
+    $$
+</Theorem>
+
+## Fiche récapitulative
+
+<Formulas titre="Transformée de Fourier">
+    <Formula label="Transformée directe">
+        $$
+        X(f) = \int_{-\infty}^{+\infty} x(t) e^{-j2\pi f t}\, dt
+        $$
+
+        $$
+        X(\omega) = \int_{-\infty}^{+\infty} x(t) e^{-j\omega t}\, dt
+        $$
+    </Formula>
+    <Formula label="Transformée inverse">
+        $$
+        x(t) = \int_{-\infty}^{+\infty} X(f) e^{j2\pi f t}\, df = \frac{1}{2\pi} \int_{-\infty}^{+\infty} X(\omega) e^{j\omega t}\, d\omega
+        $$
+    </Formula>
+    <Formula label="Existence">
+        $$
+        \int_{-\infty}^{+\infty} |x(t)|\, dt < \infty
+        $$
+    </Formula>
+    <Formula label="Translations">
+        $$
+        F\{x(t - t_0)\} = X(f) e^{-j2\pi f t_0}
+        $$
+
+        $$
+        F\{e^{j2\pi f_0 t} x(t)\} = X(f - f_0)
+        $$
+    </Formula>
+    <Formula label="Échelle et dérivation">
+        $$
+        F\{x(at)\} = \frac{1}{|a|} X\left(\frac{f}{a}\right)
+        $$
+
+        $$
+        F\left\{\frac{d^n x}{dt^n}\right\} = (j2\pi f)^n X(f)
+        $$
+    </Formula>
+    <Formula label="Convolution">
+        $$
+        F\{x * y\} = X \times Y
+        $$
+
+        $$
+        F\{x \times y\} = X * Y
+        $$
+    </Formula>
+    <Formula label="Dirac">
+        $$
+        F\{\delta(t)\} = 1
+        $$
+    </Formula>
+    <Formula label="DSE et Parseval">
+        $$
+        \phi_{xx}(f) = |X(f)|^2
+        $$
+
+        $$
+        \int_{-\infty}^{+\infty} |x(t)|^2\, dt = \int_{-\infty}^{+\infty} |X(f)|^2\, df
+        $$
+    </Formula>
+</Formulas>

@@ -1,0 +1,759 @@
+---
+titre: Signaux discrets et transformée de Fourier discrète
+resume: Signal discret et longueur, signaux discrets élémentaires, liens temps continu - temps discret, périodicité d'un signal échantillonné, énergie et puissance, TFTD, TFD et TFD inverse, propriétés, exemple de calcul et FFT.
+tags: [signal discret, échantillonnage, TFTD, TFD, FFT]
+duree: 10
+sources: ["cours3.pdf p. 2–19"]
+---
+
+## Signal discret
+
+Le signal discret $x[n]$ est une suite de valeurs qui peuvent être issues :
+
+- de l'**échantillonnage** du signal analogique (en considérant $T_e = 1$) :
+
+    $$
+    x_e(t) = \sum_{n=-\infty}^{+\infty} x(nT_e)\, \delta(t - nT_e)
+    $$
+
+    $$
+    x[n] = x(nT_e),\ n \in \mathbb{Z}
+    $$
+
+- d'une **séquence d'information discrète**, par exemple des données statistiques (variable $n$ discrète).
+
+Un signal discret est représenté en fonction du **numéro de l'échantillon** $n$, et non en fonction du temps. On utilise $x[n]$ pour représenter le signal discret au lieu de $x(t)$.
+
+<Definition titre="Longueur d'un signal discret">
+    La longueur du signal indique le nombre d'échantillons du signal discret :
+
+    $$
+    \{x[n]\} = \{x[D], x[D+1], \ldots, x[M]\}, \quad D \le M
+    $$
+
+    $$
+    \text{longueur } l = M - D + 1
+    $$
+</Definition>
+
+<Example titre="Longueur">
+    $\{x[-3], x[-2], x[-1], x[0], x[1], x[2], x[3], x[4]\} = \{2, 0, 0, 1, 0, -2, 0, 3\}$.
+
+    $D = -3$, $M = 4$, $l = 4 - (-3) + 1 = 8$ : nombre d'échantillons de $x[n]$. On note $x[-3] = x_{-3} = 2$, $x[0] = x_0 = 1$, $x[2] = x_2 = -2$, $x[4] = x_4 = 3$, les autres valeurs étant nulles.
+</Example>
+
+<Figure legende="Le signal discret de l'exemple" page="cours3.pdf p. 5">
+    <svg viewBox="0 0 300 140" role="img" aria-label="Signal discret x[n] défini de n = −3 à n = 4 : x[−3] = 2, x[0] = 1, x[2] = −2, x[4] = 3, les autres échantillons nuls">
+    <defs>
+    <marker id="fl-xn" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="21" y1="76.2" x2="285" y2="76.2" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-xn)" />
+    <line x1="136.1" y1="124" x2="136.1" y2="7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-xn)" />
+    <text x="141.1" y="14" font-size="11" font-style="italic" fill="currentColor">x[n]</text>
+    <text x="285" y="90.2" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">n</text>
+    <line x1="52.8" y1="76.2" x2="52.8" y2="41.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="52.8" cy="41.2" r="3" fill="var(--accent)" />
+    <circle cx="80.6" cy="76.2" r="3" fill="var(--accent)" />
+    <circle cx="108.3" cy="76.2" r="3" fill="var(--accent)" />
+    <line x1="136.1" y1="76.2" x2="136.1" y2="58.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="136.1" cy="58.7" r="3" fill="var(--accent)" />
+    <circle cx="163.9" cy="76.2" r="3" fill="var(--accent)" />
+    <line x1="191.7" y1="76.2" x2="191.7" y2="111.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="191.7" cy="111.2" r="3" fill="var(--accent)" />
+    <circle cx="219.4" cy="76.2" r="3" fill="var(--accent)" />
+    <line x1="247.2" y1="76.2" x2="247.2" y2="23.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="247.2" cy="23.8" r="3" fill="var(--accent)" />
+    <line x1="52.8" y1="73.2" x2="52.8" y2="79.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="52.8" y="90.2" font-size="9.5" text-anchor="middle" fill="currentColor">−3</text>
+    <line x1="80.6" y1="73.2" x2="80.6" y2="79.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="80.6" y="90.2" font-size="9.5" text-anchor="middle" fill="currentColor">−2</text>
+    <line x1="108.3" y1="73.2" x2="108.3" y2="79.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="108.3" y="90.2" font-size="9.5" text-anchor="middle" fill="currentColor">−1</text>
+    <line x1="163.9" y1="73.2" x2="163.9" y2="79.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="163.9" y="90.2" font-size="9.5" text-anchor="middle" fill="currentColor">1</text>
+    <line x1="191.7" y1="73.2" x2="191.7" y2="79.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="191.7" y="70.2" font-size="9.5" text-anchor="middle" fill="currentColor">2</text>
+    <line x1="219.4" y1="73.2" x2="219.4" y2="79.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="219.4" y="90.2" font-size="9.5" text-anchor="middle" fill="currentColor">3</text>
+    <line x1="247.2" y1="73.2" x2="247.2" y2="79.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="247.2" y="90.2" font-size="9.5" text-anchor="middle" fill="currentColor">4</text>
+    <text x="64.8" y="45.2" font-size="10" font-style="italic" fill="var(--accent)">x</text>
+    <text x="70.3" y="48.2" font-size="7.199999999999999" font-style="italic" fill="var(--accent)">−3</text>
+    <text x="148.1" y="62.7" font-size="10" font-style="italic" fill="var(--accent)">x</text>
+    <text x="153.6" y="65.8" font-size="7.199999999999999" font-style="italic" fill="var(--accent)">0</text>
+    <text x="203.7" y="121.2" font-size="10" font-style="italic" fill="var(--accent)">x</text>
+    <text x="209.2" y="124.2" font-size="7.199999999999999" font-style="italic" fill="var(--accent)">2</text>
+    <text x="259.2" y="27.8" font-size="10" font-style="italic" fill="var(--accent)">x</text>
+    <text x="264.7" y="30.8" font-size="7.199999999999999" font-style="italic" fill="var(--accent)">4</text>
+    </svg>
+</Figure>
+
+## Signaux discrets élémentaires
+
+<Definition titre="Impulsion discrète">
+    $$
+    \delta[n] = \begin{cases} 1 & \text{si } n = 0 \\ 0 & \text{si } n \ne 0 \end{cases}
+    $$
+
+    $$
+    \delta[n - n_0] = \begin{cases} 1 & \text{si } n = n_0 \\ 0 & \text{si } n \ne n_0 \end{cases}
+    $$
+</Definition>
+
+<Figure legende="Impulsion discrète et impulsion translatée" page="cours3.pdf p. 6">
+    <svg viewBox="0 0 340 120" role="img" aria-label="Impulsion discrète δ[n] : 1 en n = 0, 0 ailleurs ; impulsion translatée δ[n − n0] : 1 en n = n0">
+    <defs>
+    <marker id="fl-impulsion-discrete" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="11" y1="84.7" x2="165" y2="84.7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-impulsion-discrete)" />
+    <line x1="85" y1="99" x2="85" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-impulsion-discrete)" />
+    <text x="90" y="19" font-size="11" font-style="italic" fill="currentColor">δ[n]</text>
+    <text x="165" y="98.7" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">n</text>
+    <circle cx="25" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="45" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="65" cy="84.7" r="3" fill="var(--accent)" />
+    <line x1="85" y1="84.7" x2="85" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="85" cy="32.9" r="3" fill="var(--accent)" />
+    <circle cx="105" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="125" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="145" cy="84.7" r="3" fill="var(--accent)" />
+    <line x1="45" y1="81.7" x2="45" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="45" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">−2</text>
+    <line x1="65" y1="81.7" x2="65" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="65" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">−1</text>
+    <line x1="105" y1="81.7" x2="105" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="105" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">1</text>
+    <line x1="125" y1="81.7" x2="125" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="125" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">2</text>
+    <line x1="181" y1="84.7" x2="335" y2="84.7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-impulsion-discrete)" />
+    <line x1="246.2" y1="99" x2="246.2" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-impulsion-discrete)" />
+    <text x="251.2" y="19" font-size="11" font-style="italic" fill="currentColor">δ[n − n0]</text>
+    <text x="335" y="98.7" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">n</text>
+    <circle cx="193.8" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="211.2" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="228.8" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="246.2" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="263.8" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="281.2" cy="84.7" r="3" fill="var(--accent)" />
+    <line x1="298.8" y1="84.7" x2="298.8" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="298.8" cy="32.9" r="3" fill="var(--accent)" />
+    <circle cx="316.2" cy="84.7" r="3" fill="var(--accent)" />
+    <line x1="298.8" y1="81.7" x2="298.8" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="298.8" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor"></text>
+    <text x="294" y="99.7" font-size="10" font-style="italic" fill="currentColor">n</text>
+    <text x="299.5" y="102.7" font-size="7.199999999999999" font-style="italic" fill="currentColor">0</text>
+    </svg>
+</Figure>
+
+<Theorem type="À retenir" titre="Décomposition en impulsions">
+    Tout signal à temps discret peut s'écrire sous forme d'une combinaison d'impulsions discrètes :
+
+    $$
+    x[n] = \sum_{k=-\infty}^{+\infty} x_k\, \delta[n - k]
+    $$
+
+    *Exemple* (signal précédent) : $x[n] = x_{-3}\delta[n+3] + x_0\delta[n] + x_2\delta[n-2] + x_4\delta[n-4]$.
+</Theorem>
+
+<Definition titre="Échelon unité">
+    $$
+    u[n] = \begin{cases} 1 & \text{si } n \ge 0 \\ 0 & \text{si } n < 0 \end{cases}
+    $$
+
+    $$
+    \text{on a} \ u[n] = \sum_{m=0}^{+\infty} \delta[n - m]
+    $$
+
+    Translation de $n_0$ :
+
+    $$
+    u[n - n_0] = \begin{cases} 1 & \text{si } n \ge n_0 \\ 0 & \text{si } n < n_0 \end{cases}
+    $$
+</Definition>
+
+<Figure legende="Échelon unité discret et échelon translaté" page="cours3.pdf p. 7">
+    <svg viewBox="0 0 340 120" role="img" aria-label="Échelon unité discret u[n] : 1 pour n ≥ 0 ; échelon translaté u[n − n0] : 1 pour n ≥ n0">
+    <defs>
+    <marker id="fl-echelon-discret" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="11" y1="84.7" x2="165" y2="84.7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-echelon-discret)" />
+    <line x1="72.6" y1="99" x2="72.6" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-echelon-discret)" />
+    <text x="77.6" y="19" font-size="11" font-style="italic" fill="currentColor">u[n]</text>
+    <text x="165" y="98.7" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">n</text>
+    <circle cx="23.2" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="39.7" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="56.2" cy="84.7" r="3" fill="var(--accent)" />
+    <line x1="72.6" y1="84.7" x2="72.6" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="72.6" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="89.1" y1="84.7" x2="89.1" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="89.1" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="105.6" y1="84.7" x2="105.6" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="105.6" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="122.1" y1="84.7" x2="122.1" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="122.1" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="138.5" y1="84.7" x2="138.5" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="138.5" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="39.7" y1="81.7" x2="39.7" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="39.7" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">−2</text>
+    <line x1="56.2" y1="81.7" x2="56.2" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="56.2" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">−1</text>
+    <line x1="89.1" y1="81.7" x2="89.1" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="89.1" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">1</text>
+    <line x1="105.6" y1="81.7" x2="105.6" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="105.6" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">2</text>
+    <line x1="122.1" y1="81.7" x2="122.1" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="122.1" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor">3</text>
+    <line x1="181" y1="84.7" x2="335" y2="84.7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-echelon-discret)" />
+    <line x1="236.6" y1="99" x2="236.6" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-echelon-discret)" />
+    <text x="241.6" y="19" font-size="11" font-style="italic" fill="currentColor">u[n − n0]</text>
+    <text x="335" y="98.7" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">n</text>
+    <circle cx="192.4" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="207.1" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="221.8" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="236.6" cy="84.7" r="3" fill="var(--accent)" />
+    <circle cx="251.3" cy="84.7" r="3" fill="var(--accent)" />
+    <line x1="266.1" y1="84.7" x2="266.1" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="266.1" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="280.8" y1="84.7" x2="280.8" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="280.8" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="295.5" y1="84.7" x2="295.5" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="295.5" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="310.3" y1="84.7" x2="310.3" y2="32.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="310.3" cy="32.9" r="3" fill="var(--accent)" />
+    <line x1="266.1" y1="81.7" x2="266.1" y2="87.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="266.1" y="98.7" font-size="9.5" text-anchor="middle" fill="currentColor"></text>
+    <text x="261.3" y="99.7" font-size="10" font-style="italic" fill="currentColor">n</text>
+    <text x="266.8" y="102.7" font-size="7.199999999999999" font-style="italic" fill="currentColor">0</text>
+    </svg>
+</Figure>
+
+{/* FOND ? cours3.pdf p. 8 : la condition « a < 1 » ne suffit pas pour une exponentielle décroissante (a = −2 la vérifie) ; on attend 0 < a < 1 (ou |a| < 1 pour une décroissance en module). Signalé, non corrigé. */}
+
+<Definition titre="Exponentielle décroissante causale">
+    $$
+    x[n] = a^n u[n] \ ; \quad a < 1, \quad n \in \mathbb{Z}
+    $$
+</Definition>
+
+<Definition titre="Signal rectangulaire">
+    $$
+    \Pi_T(n) = \begin{cases} 1 & \text{pour } -T \le n \le T \\ 0 & \text{sinon} \end{cases}
+    $$
+
+    $$
+    T \in \mathbb{N}
+    $$
+
+    Longueur du signal (nombre d'échantillons) $= 2T + 1$.
+</Definition>
+
+<Figure legende="Exponentielle décroissante causale et signal rectangulaire" page="cours3.pdf p. 8">
+    <svg viewBox="0 0 340 120" role="img" aria-label="Exponentielle décroissante causale aⁿu[n] (1 en n = 0 puis décroissance) ; signal rectangulaire ΠT[n] égal à 1 de −T à T">
+    <defs>
+    <marker id="fl-expo-rect" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="11" y1="89.2" x2="165" y2="89.2" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-expo-rect)" />
+    <line x1="51.8" y1="99" x2="51.8" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-expo-rect)" />
+    <text x="56.8" y="19" font-size="11" font-style="italic" fill="currentColor">x[n]</text>
+    <text x="165" y="103.2" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">n</text>
+    <circle cx="22.4" cy="89.2" r="3" fill="var(--accent)" />
+    <circle cx="37.1" cy="89.2" r="3" fill="var(--accent)" />
+    <line x1="51.8" y1="89.2" x2="51.8" y2="31.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="51.8" cy="31.5" r="3" fill="var(--accent)" />
+    <line x1="66.6" y1="89.2" x2="66.6" y2="60.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="66.6" cy="60.4" r="3" fill="var(--accent)" />
+    <line x1="81.3" y1="89.2" x2="81.3" y2="74.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="81.3" cy="74.8" r="3" fill="var(--accent)" />
+    <line x1="96.1" y1="89.2" x2="96.1" y2="82" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="96.1" cy="82" r="3" fill="var(--accent)" />
+    <line x1="110.8" y1="89.2" x2="110.8" y2="85.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="110.8" cy="85.6" r="3" fill="var(--accent)" />
+    <line x1="125.5" y1="89.2" x2="125.5" y2="87.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="125.5" cy="87.4" r="3" fill="var(--accent)" />
+    <line x1="140.3" y1="89.2" x2="140.3" y2="88.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="140.3" cy="88.3" r="3" fill="var(--accent)" />
+    <line x1="66.6" y1="86.2" x2="66.6" y2="92.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="66.6" y="103.2" font-size="9.5" text-anchor="middle" fill="currentColor">1</text>
+    <line x1="81.3" y1="86.2" x2="81.3" y2="92.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="81.3" y="103.2" font-size="9.5" text-anchor="middle" fill="currentColor">2</text>
+    <line x1="96.1" y1="86.2" x2="96.1" y2="92.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="96.1" y="103.2" font-size="9.5" text-anchor="middle" fill="currentColor">3</text>
+    <line x1="110.8" y1="86.2" x2="110.8" y2="92.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="110.8" y="103.2" font-size="9.5" text-anchor="middle" fill="currentColor">4</text>
+    <line x1="125.5" y1="86.2" x2="125.5" y2="92.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="125.5" y="103.2" font-size="9.5" text-anchor="middle" fill="currentColor">5</text>
+    <line x1="140.3" y1="86.2" x2="140.3" y2="92.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="140.3" y="103.2" font-size="9.5" text-anchor="middle" fill="currentColor">6</text>
+    <line x1="48.8" y1="31.5" x2="54.8" y2="31.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="46.8" y="35" font-size="9.5" text-anchor="end" fill="currentColor">1</text>
+    <line x1="181" y1="89.2" x2="335" y2="89.2" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-expo-rect)" />
+    <line x1="255" y1="99" x2="255" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-expo-rect)" />
+    <text x="260" y="19" font-size="11" font-style="italic" fill="currentColor">ΠT[n]</text>
+    <text x="335" y="103.2" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">n</text>
+    <circle cx="192.8" cy="89.2" r="3" fill="var(--accent)" />
+    <circle cx="208.3" cy="89.2" r="3" fill="var(--accent)" />
+    <line x1="223.9" y1="89.2" x2="223.9" y2="31.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="223.9" cy="31.5" r="3" fill="var(--accent)" />
+    <line x1="239.4" y1="89.2" x2="239.4" y2="31.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="239.4" cy="31.5" r="3" fill="var(--accent)" />
+    <line x1="255" y1="89.2" x2="255" y2="31.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="255" cy="31.5" r="3" fill="var(--accent)" />
+    <line x1="270.6" y1="89.2" x2="270.6" y2="31.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="270.6" cy="31.5" r="3" fill="var(--accent)" />
+    <line x1="286.1" y1="89.2" x2="286.1" y2="31.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="286.1" cy="31.5" r="3" fill="var(--accent)" />
+    <circle cx="301.7" cy="89.2" r="3" fill="var(--accent)" />
+    <circle cx="317.2" cy="89.2" r="3" fill="var(--accent)" />
+    <line x1="223.9" y1="86.2" x2="223.9" y2="92.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="223.9" y="103.2" font-size="9.5" text-anchor="middle" fill="currentColor">−T</text>
+    <line x1="286.1" y1="86.2" x2="286.1" y2="92.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="286.1" y="103.2" font-size="9.5" text-anchor="middle" fill="currentColor">T</text>
+    </svg>
+</Figure>
+
+## Temps continu et temps discret
+
+Un signal numérique est défini par un nombre d'échantillons $N$ prélevés à une fréquence d'échantillonnage $F_e$.
+
+<Theorem type="À retenir" titre="Durée et nombre d'échantillons">
+    $$
+    \text{Durée du signal : } t = N T_e = \frac{N}{F_e}
+    $$
+
+    $$
+    \text{Nombre d'échantillons : } N = t \times F_e = \frac{t}{T_e}
+    $$
+</Theorem>
+
+<Figure legende="N points prélevés à la période Te = 1/Fe" page="cours3.pdf p. 9">
+    <svg viewBox="0 0 300 130" role="img" aria-label="Signal échantillonné : N points espacés de Te = 1/Fe ; la durée du signal est t = N·Te">
+    <defs>
+    <marker id="fl-echantillonnage" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="16" y1="67.5" x2="290" y2="67.5" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-echantillonnage)" />
+    <line x1="20" y1="114" x2="20" y2="17" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-echantillonnage)" />
+    <text x="290" y="81.5" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">t</text>
+    <path d="M20.0 67.5 L20.9 66.8 L21.7 66.0 L22.6 65.3 L23.5 64.5 L24.3 63.8 L25.2 63.1 L26.1 62.3 L26.9 61.6 L27.8 60.9 L28.7 60.1 L29.5 59.4 L30.4 58.7 L31.3 58.0 L32.1 57.3 L33.0 56.6 L33.9 55.9 L34.7 55.2 L35.6 54.5 L36.5 53.8 L37.3 53.1 L38.2 52.4 L39.1 51.8 L39.9 51.1 L40.8 50.4 L41.7 49.8 L42.5 49.2 L43.4 48.5 L44.3 47.9 L45.1 47.3 L46.0 46.7 L46.9 46.1 L47.7 45.5 L48.6 44.9 L49.5 44.4 L50.3 43.8 L51.2 43.3 L52.1 42.7 L52.9 42.2 L53.8 41.7 L54.7 41.2 L55.5 40.7 L56.4 40.2 L57.3 39.7 L58.1 39.3 L59.0 38.8 L59.9 38.4 L60.7 38.0 L61.6 37.6 L62.5 37.2 L63.3 36.8 L64.2 36.5 L65.1 36.1 L65.9 35.8 L66.8 35.5 L67.7 35.1 L68.5 34.9 L69.4 34.6 L70.3 34.3 L71.1 34.1 L72.0 33.8 L72.9 33.6 L73.7 33.4 L74.6 33.2 L75.5 33.0 L76.3 32.9 L77.2 32.7 L78.1 32.6 L78.9 32.5 L79.8 32.4 L80.7 32.3 L81.5 32.2 L82.4 32.2 L83.3 32.1 L84.1 32.1 L85.0 32.1 L85.9 32.1 L86.7 32.1 L87.6 32.2 L88.5 32.2 L89.3 32.3 L90.2 32.4 L91.1 32.5 L91.9 32.6 L92.8 32.7 L93.7 32.9 L94.5 33.0 L95.4 33.2 L96.3 33.4 L97.1 33.6 L98.0 33.8 L98.9 34.1 L99.7 34.3 L100.6 34.6 L101.5 34.9 L102.3 35.1 L103.2 35.5 L104.1 35.8 L104.9 36.1 L105.8 36.5 L106.7 36.8 L107.5 37.2 L108.4 37.6 L109.3 38.0 L110.1 38.4 L111.0 38.8 L111.9 39.3 L112.7 39.7 L113.6 40.2 L114.5 40.7 L115.3 41.2 L116.2 41.7 L117.1 42.2 L117.9 42.7 L118.8 43.3 L119.7 43.8 L120.5 44.4 L121.4 44.9 L122.3 45.5 L123.1 46.1 L124.0 46.7 L124.9 47.3 L125.7 47.9 L126.6 48.5 L127.5 49.2 L128.3 49.8 L129.2 50.4 L130.1 51.1 L130.9 51.8 L131.8 52.4 L132.7 53.1 L133.5 53.8 L134.4 54.5 L135.3 55.2 L136.1 55.9 L137.0 56.6 L137.9 57.3 L138.7 58.0 L139.6 58.7 L140.5 59.4 L141.3 60.1 L142.2 60.9 L143.1 61.6 L143.9 62.3 L144.8 63.1 L145.7 63.8 L146.5 64.5 L147.4 65.3 L148.3 66.0 L149.1 66.8 L150.0 67.5 L150.9 68.2 L151.7 69.0 L152.6 69.7 L153.5 70.5 L154.3 71.2 L155.2 71.9 L156.1 72.7 L156.9 73.4 L157.8 74.1 L158.7 74.9 L159.5 75.6 L160.4 76.3 L161.3 77.0 L162.1 77.7 L163.0 78.4 L163.9 79.1 L164.7 79.8 L165.6 80.5 L166.5 81.2 L167.3 81.9 L168.2 82.6 L169.1 83.2 L169.9 83.9 L170.8 84.6 L171.7 85.2 L172.5 85.8 L173.4 86.5 L174.3 87.1 L175.1 87.7 L176.0 88.3 L176.9 88.9 L177.7 89.5 L178.6 90.1 L179.5 90.6 L180.3 91.2 L181.2 91.7 L182.1 92.3 L182.9 92.8 L183.8 93.3 L184.7 93.8 L185.5 94.3 L186.4 94.8 L187.3 95.3 L188.1 95.7 L189.0 96.2 L189.9 96.6 L190.7 97.0 L191.6 97.4 L192.5 97.8 L193.3 98.2 L194.2 98.5 L195.1 98.9 L195.9 99.2 L196.8 99.5 L197.7 99.9 L198.5 100.1 L199.4 100.4 L200.3 100.7 L201.1 100.9 L202.0 101.2 L202.9 101.4 L203.7 101.6 L204.6 101.8 L205.5 102.0 L206.3 102.1 L207.2 102.3 L208.1 102.4 L208.9 102.5 L209.8 102.6 L210.7 102.7 L211.5 102.8 L212.4 102.8 L213.3 102.9 L214.1 102.9 L215.0 102.9 L215.9 102.9 L216.7 102.9 L217.6 102.8 L218.5 102.8 L219.3 102.7 L220.2 102.6 L221.1 102.5 L221.9 102.4 L222.8 102.3 L223.7 102.1 L224.5 102.0 L225.4 101.8 L226.3 101.6 L227.1 101.4 L228.0 101.2 L228.9 100.9 L229.7 100.7 L230.6 100.4 L231.5 100.1 L232.3 99.9 L233.2 99.5 L234.1 99.2 L234.9 98.9 L235.8 98.5 L236.7 98.2 L237.5 97.8 L238.4 97.4 L239.3 97.0 L240.1 96.6 L241.0 96.2 L241.9 95.7 L242.7 95.3 L243.6 94.8 L244.5 94.3 L245.3 93.8 L246.2 93.3 L247.1 92.8 L247.9 92.3 L248.8 91.7 L249.7 91.2 L250.5 90.6 L251.4 90.1 L252.3 89.5 L253.1 88.9 L254.0 88.3 L254.9 87.7 L255.7 87.1 L256.6 86.5 L257.5 85.8 L258.3 85.2 L259.2 84.6 L260.1 83.9 L260.9 83.2 L261.8 82.6 L262.7 81.9 L263.5 81.2 L264.4 80.5 L265.3 79.8 L266.1 79.1 L267.0 78.4 L267.9 77.7 L268.7 77.0 L269.6 76.3 L270.5 75.6 L271.3 74.9 L272.2 74.1 L273.1 73.4 L273.9 72.7 L274.8 71.9 L275.7 71.2 L276.5 70.5 L277.4 69.7 L278.3 69.0 L279.1 68.2 L280.0 67.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.6" stroke-dasharray="4 3" />
+    <circle cx="20" cy="67.5" r="3" fill="var(--accent)" />
+    <line x1="33" y1="67.5" x2="33" y2="56.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="33" cy="56.6" r="3" fill="var(--accent)" />
+    <line x1="46" y1="67.5" x2="46" y2="46.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="46" cy="46.7" r="3" fill="var(--accent)" />
+    <line x1="59" y1="67.5" x2="59" y2="38.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="59" cy="38.8" r="3" fill="var(--accent)" />
+    <line x1="72" y1="67.5" x2="72" y2="33.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="72" cy="33.8" r="3" fill="var(--accent)" />
+    <line x1="85" y1="67.5" x2="85" y2="32.1" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="85" cy="32.1" r="3" fill="var(--accent)" />
+    <line x1="98" y1="67.5" x2="98" y2="33.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="98" cy="33.8" r="3" fill="var(--accent)" />
+    <line x1="111" y1="67.5" x2="111" y2="38.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="111" cy="38.8" r="3" fill="var(--accent)" />
+    <line x1="124" y1="67.5" x2="124" y2="46.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="124" cy="46.7" r="3" fill="var(--accent)" />
+    <line x1="137" y1="67.5" x2="137" y2="56.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="137" cy="56.6" r="3" fill="var(--accent)" />
+    <circle cx="150" cy="67.5" r="3" fill="var(--accent)" />
+    <line x1="163" y1="67.5" x2="163" y2="78.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="163" cy="78.4" r="3" fill="var(--accent)" />
+    <line x1="176" y1="67.5" x2="176" y2="88.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="176" cy="88.3" r="3" fill="var(--accent)" />
+    <line x1="189" y1="67.5" x2="189" y2="96.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="189" cy="96.2" r="3" fill="var(--accent)" />
+    <line x1="202" y1="67.5" x2="202" y2="101.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="202" cy="101.2" r="3" fill="var(--accent)" />
+    <line x1="215" y1="67.5" x2="215" y2="102.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="215" cy="102.9" r="3" fill="var(--accent)" />
+    <line x1="228" y1="67.5" x2="228" y2="101.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="228" cy="101.2" r="3" fill="var(--accent)" />
+    <line x1="241" y1="67.5" x2="241" y2="96.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="241" cy="96.2" r="3" fill="var(--accent)" />
+    <line x1="254" y1="67.5" x2="254" y2="88.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="254" cy="88.3" r="3" fill="var(--accent)" />
+    <line x1="267" y1="67.5" x2="267" y2="78.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="267" cy="78.4" r="3" fill="var(--accent)" />
+    <circle cx="280" cy="67.5" r="3" fill="var(--accent)" />
+    <line x1="33" y1="64.5" x2="33" y2="70.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="33" y="81.5" font-size="9.5" text-anchor="middle" fill="currentColor"></text>
+    <text x="35" y="93.5" font-size="9.5" fill="currentColor">Te = 1/Fe</text>
+    <line x1="20" y1="16" x2="280" y2="16" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="150" y="12" font-size="10" text-anchor="middle" fill="currentColor">N points</text>
+    </svg>
+</Figure>
+
+## Signal discret périodique
+
+$$
+x(t) = \cos(2\pi f_0 t) \quad\rightarrow\quad x[n] = \cos(2\pi f_0 n T_e) = \cos\left(2\pi \frac{f_0}{F_e} n\right)
+$$
+
+Condition de périodicité :
+
+$$
+\cos\left(2\pi \frac{f_0}{F_e}(n + N)\right) = \cos\left(2\pi \frac{f_0}{F_e} n\right) \iff \cos\left(2\pi \frac{f_0}{F_e} n + 2\pi \frac{f_0}{F_e} N\right) = \cos\left(2\pi \frac{f_0}{F_e} n\right)
+$$
+
+$$
+\Rightarrow 2\pi \frac{f_0}{F_e} N = 2k\pi \Rightarrow N = k\frac{F_e}{f_0}
+$$
+
+$$
+k, N \in \mathbb{N}
+$$
+
+<Warning titre="Périodicité d'un signal échantillonné">
+    - $x[n]$ n'est **pas nécessairement** périodique.
+    - La période $N$ est le **plus petit nombre d'échantillons** qui se répètent.
+    - La période est toujours un **entier**.
+</Warning>
+
+<Example titre="Échantillonnage d'un cosinus">
+    {/* FOND ? cours3.pdf p. 10 : coquille « k = 1, ℕ = 20 » pour « k = 1, N = 20 ». Signalé, non corrigé. */}
+
+    $$
+    T_e = 0{,}01\ \text{s} \Rightarrow F_e = 100\ \text{Hz}
+    $$
+
+    $$
+    f_0 = \frac{1}{0{,}2} = 5\ \text{Hz}
+    $$
+
+    $$
+    N = k\frac{F_e}{f_0} = k\frac{100}{5} = k\frac{20}{1}
+    $$
+
+    $$
+    k = 1, \ \mathbb{N} = 20
+    $$
+</Example>
+
+<Figure legende="Échantillonnage de la fonction cosinus : k = 1, N = 20" page="cours3.pdf p. 10">
+    <svg viewBox="0 0 340 130" role="img" aria-label="Échantillonnage de cos(2π·5t) à Fe = 100 Hz entre 0 et 0,5 s : le motif de N = 20 échantillons se répète">
+    <defs>
+    <marker id="fl-periodique" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="21" y1="60" x2="335" y2="60" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-periodique)" />
+    <line x1="25" y1="109" x2="25" y2="7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-periodique)" />
+    <text x="335" y="74" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">t (s)</text>
+    <path d="M25.0 22.5 L26.0 22.6 L27.0 22.7 L28.0 23.0 L29.0 23.3 L30.0 23.8 L31.0 24.3 L32.0 25.0 L33.0 25.7 L34.0 26.6 L35.0 27.5 L36.0 28.5 L37.0 29.7 L38.0 30.9 L39.0 32.1 L40.0 33.5 L41.0 34.9 L42.0 36.4 L43.0 38.0 L44.0 39.6 L45.0 41.2 L46.0 43.0 L47.0 44.7 L48.0 46.6 L49.0 48.4 L50.0 50.3 L51.0 52.2 L52.0 54.1 L53.0 56.1 L54.0 58.0 L55.0 60.0 L56.0 62.0 L57.0 63.9 L58.0 65.9 L59.0 67.8 L60.0 69.7 L61.0 71.6 L62.0 73.4 L63.0 75.3 L64.0 77.0 L65.0 78.8 L66.0 80.4 L67.0 82.0 L68.0 83.6 L69.0 85.1 L70.0 86.5 L71.0 87.9 L72.0 89.1 L73.0 90.3 L74.0 91.5 L75.0 92.5 L76.0 93.4 L77.0 94.3 L78.0 95.0 L79.0 95.7 L80.0 96.2 L81.0 96.7 L82.0 97.0 L83.0 97.3 L84.0 97.4 L85.0 97.5 L86.0 97.4 L87.0 97.3 L88.0 97.0 L89.0 96.7 L90.0 96.2 L91.0 95.7 L92.0 95.0 L93.0 94.3 L94.0 93.4 L95.0 92.5 L96.0 91.5 L97.0 90.3 L98.0 89.1 L99.0 87.9 L100.0 86.5 L101.0 85.1 L102.0 83.6 L103.0 82.0 L104.0 80.4 L105.0 78.8 L106.0 77.0 L107.0 75.3 L108.0 73.4 L109.0 71.6 L110.0 69.7 L111.0 67.8 L112.0 65.9 L113.0 63.9 L114.0 62.0 L115.0 60.0 L116.0 58.0 L117.0 56.1 L118.0 54.1 L119.0 52.2 L120.0 50.3 L121.0 48.4 L122.0 46.6 L123.0 44.7 L124.0 43.0 L125.0 41.3 L126.0 39.6 L127.0 38.0 L128.0 36.4 L129.0 34.9 L130.0 33.5 L131.0 32.1 L132.0 30.9 L133.0 29.7 L134.0 28.5 L135.0 27.5 L136.0 26.6 L137.0 25.7 L138.0 25.0 L139.0 24.3 L140.0 23.8 L141.0 23.3 L142.0 23.0 L143.0 22.7 L144.0 22.6 L145.0 22.5 L146.0 22.6 L147.0 22.7 L148.0 23.0 L149.0 23.3 L150.0 23.8 L151.0 24.3 L152.0 25.0 L153.0 25.7 L154.0 26.6 L155.0 27.5 L156.0 28.5 L157.0 29.7 L158.0 30.9 L159.0 32.1 L160.0 33.5 L161.0 34.9 L162.0 36.4 L163.0 38.0 L164.0 39.6 L165.0 41.2 L166.0 43.0 L167.0 44.7 L168.0 46.6 L169.0 48.4 L170.0 50.3 L171.0 52.2 L172.0 54.1 L173.0 56.1 L174.0 58.0 L175.0 60.0 L176.0 62.0 L177.0 63.9 L178.0 65.9 L179.0 67.8 L180.0 69.7 L181.0 71.6 L182.0 73.4 L183.0 75.3 L184.0 77.0 L185.0 78.7 L186.0 80.4 L187.0 82.0 L188.0 83.6 L189.0 85.1 L190.0 86.5 L191.0 87.9 L192.0 89.1 L193.0 90.3 L194.0 91.5 L195.0 92.5 L196.0 93.4 L197.0 94.3 L198.0 95.0 L199.0 95.7 L200.0 96.2 L201.0 96.7 L202.0 97.0 L203.0 97.3 L204.0 97.4 L205.0 97.5 L206.0 97.4 L207.0 97.3 L208.0 97.0 L209.0 96.7 L210.0 96.2 L211.0 95.7 L212.0 95.0 L213.0 94.3 L214.0 93.4 L215.0 92.5 L216.0 91.5 L217.0 90.3 L218.0 89.1 L219.0 87.9 L220.0 86.5 L221.0 85.1 L222.0 83.6 L223.0 82.0 L224.0 80.4 L225.0 78.8 L226.0 77.0 L227.0 75.3 L228.0 73.4 L229.0 71.6 L230.0 69.7 L231.0 67.8 L232.0 65.9 L233.0 63.9 L234.0 62.0 L235.0 60.0 L236.0 58.0 L237.0 56.1 L238.0 54.1 L239.0 52.2 L240.0 50.3 L241.0 48.4 L242.0 46.6 L243.0 44.7 L244.0 43.0 L245.0 41.3 L246.0 39.6 L247.0 38.0 L248.0 36.4 L249.0 34.9 L250.0 33.5 L251.0 32.1 L252.0 30.9 L253.0 29.7 L254.0 28.5 L255.0 27.5 L256.0 26.6 L257.0 25.7 L258.0 25.0 L259.0 24.3 L260.0 23.8 L261.0 23.3 L262.0 23.0 L263.0 22.7 L264.0 22.6 L265.0 22.5 L266.0 22.6 L267.0 22.7 L268.0 23.0 L269.0 23.3 L270.0 23.8 L271.0 24.3 L272.0 25.0 L273.0 25.7 L274.0 26.6 L275.0 27.5 L276.0 28.5 L277.0 29.7 L278.0 30.9 L279.0 32.1 L280.0 33.5 L281.0 34.9 L282.0 36.4 L283.0 38.0 L284.0 39.6 L285.0 41.2 L286.0 43.0 L287.0 44.7 L288.0 46.6 L289.0 48.4 L290.0 50.3 L291.0 52.2 L292.0 54.1 L293.0 56.1 L294.0 58.0 L295.0 60.0 L296.0 62.0 L297.0 63.9 L298.0 65.9 L299.0 67.8 L300.0 69.7 L301.0 71.6 L302.0 73.4 L303.0 75.3 L304.0 77.0 L305.0 78.7 L306.0 80.4 L307.0 82.0 L308.0 83.6 L309.0 85.1 L310.0 86.5 L311.0 87.9 L312.0 89.1 L313.0 90.3 L314.0 91.5 L315.0 92.5 L316.0 93.4 L317.0 94.3 L318.0 95.0 L319.0 95.7 L320.0 96.2 L321.0 96.7 L322.0 97.0 L323.0 97.3 L324.0 97.4 L325.0 97.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.5" />
+    <line x1="25" y1="60" x2="25" y2="22.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="25" cy="22.5" r="3" fill="var(--accent)" />
+    <line x1="31" y1="60" x2="31" y2="24.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="31" cy="24.3" r="3" fill="var(--accent)" />
+    <line x1="37" y1="60" x2="37" y2="29.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="37" cy="29.7" r="3" fill="var(--accent)" />
+    <line x1="43" y1="60" x2="43" y2="38" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="43" cy="38" r="3" fill="var(--accent)" />
+    <line x1="49" y1="60" x2="49" y2="48.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="49" cy="48.4" r="3" fill="var(--accent)" />
+    <circle cx="55" cy="60" r="3" fill="var(--accent)" />
+    <line x1="61" y1="60" x2="61" y2="71.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="61" cy="71.6" r="3" fill="var(--accent)" />
+    <line x1="67" y1="60" x2="67" y2="82" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="67" cy="82" r="3" fill="var(--accent)" />
+    <line x1="73" y1="60" x2="73" y2="90.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="73" cy="90.3" r="3" fill="var(--accent)" />
+    <line x1="79" y1="60" x2="79" y2="95.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="79" cy="95.7" r="3" fill="var(--accent)" />
+    <line x1="85" y1="60" x2="85" y2="97.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="85" cy="97.5" r="3" fill="var(--accent)" />
+    <line x1="91" y1="60" x2="91" y2="95.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="91" cy="95.7" r="3" fill="var(--accent)" />
+    <line x1="97" y1="60" x2="97" y2="90.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="97" cy="90.3" r="3" fill="var(--accent)" />
+    <line x1="103" y1="60" x2="103" y2="82" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="103" cy="82" r="3" fill="var(--accent)" />
+    <line x1="109" y1="60" x2="109" y2="71.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="109" cy="71.6" r="3" fill="var(--accent)" />
+    <circle cx="115" cy="60" r="3" fill="var(--accent)" />
+    <line x1="121" y1="60" x2="121" y2="48.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="121" cy="48.4" r="3" fill="var(--accent)" />
+    <line x1="127" y1="60" x2="127" y2="38" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="127" cy="38" r="3" fill="var(--accent)" />
+    <line x1="133" y1="60" x2="133" y2="29.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="133" cy="29.7" r="3" fill="var(--accent)" />
+    <line x1="139" y1="60" x2="139" y2="24.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="139" cy="24.3" r="3" fill="var(--accent)" />
+    <line x1="145" y1="60" x2="145" y2="22.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="145" cy="22.5" r="3" fill="var(--accent)" />
+    <line x1="151" y1="60" x2="151" y2="24.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="151" cy="24.3" r="3" fill="var(--accent)" />
+    <line x1="157" y1="60" x2="157" y2="29.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="157" cy="29.7" r="3" fill="var(--accent)" />
+    <line x1="163" y1="60" x2="163" y2="38" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="163" cy="38" r="3" fill="var(--accent)" />
+    <line x1="169" y1="60" x2="169" y2="48.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="169" cy="48.4" r="3" fill="var(--accent)" />
+    <circle cx="175" cy="60" r="3" fill="var(--accent)" />
+    <line x1="181" y1="60" x2="181" y2="71.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="181" cy="71.6" r="3" fill="var(--accent)" />
+    <line x1="187" y1="60" x2="187" y2="82" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="187" cy="82" r="3" fill="var(--accent)" />
+    <line x1="193" y1="60" x2="193" y2="90.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="193" cy="90.3" r="3" fill="var(--accent)" />
+    <line x1="199" y1="60" x2="199" y2="95.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="199" cy="95.7" r="3" fill="var(--accent)" />
+    <line x1="205" y1="60" x2="205" y2="97.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="205" cy="97.5" r="3" fill="var(--accent)" />
+    <line x1="211" y1="60" x2="211" y2="95.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="211" cy="95.7" r="3" fill="var(--accent)" />
+    <line x1="217" y1="60" x2="217" y2="90.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="217" cy="90.3" r="3" fill="var(--accent)" />
+    <line x1="223" y1="60" x2="223" y2="82" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="223" cy="82" r="3" fill="var(--accent)" />
+    <line x1="229" y1="60" x2="229" y2="71.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="229" cy="71.6" r="3" fill="var(--accent)" />
+    <circle cx="235" cy="60" r="3" fill="var(--accent)" />
+    <line x1="241" y1="60" x2="241" y2="48.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="241" cy="48.4" r="3" fill="var(--accent)" />
+    <line x1="247" y1="60" x2="247" y2="38" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="247" cy="38" r="3" fill="var(--accent)" />
+    <line x1="253" y1="60" x2="253" y2="29.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="253" cy="29.7" r="3" fill="var(--accent)" />
+    <line x1="259" y1="60" x2="259" y2="24.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="259" cy="24.3" r="3" fill="var(--accent)" />
+    <line x1="265" y1="60" x2="265" y2="22.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="265" cy="22.5" r="3" fill="var(--accent)" />
+    <line x1="271" y1="60" x2="271" y2="24.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="271" cy="24.3" r="3" fill="var(--accent)" />
+    <line x1="277" y1="60" x2="277" y2="29.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="277" cy="29.7" r="3" fill="var(--accent)" />
+    <line x1="283" y1="60" x2="283" y2="38" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="283" cy="38" r="3" fill="var(--accent)" />
+    <line x1="289" y1="60" x2="289" y2="48.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="289" cy="48.4" r="3" fill="var(--accent)" />
+    <circle cx="295" cy="60" r="3" fill="var(--accent)" />
+    <line x1="301" y1="60" x2="301" y2="71.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="301" cy="71.6" r="3" fill="var(--accent)" />
+    <line x1="307" y1="60" x2="307" y2="82" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="307" cy="82" r="3" fill="var(--accent)" />
+    <line x1="313" y1="60" x2="313" y2="90.3" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="313" cy="90.3" r="3" fill="var(--accent)" />
+    <line x1="319" y1="60" x2="319" y2="95.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="319" cy="95.7" r="3" fill="var(--accent)" />
+    <line x1="325" y1="60" x2="325" y2="97.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="325" cy="97.5" r="3" fill="var(--accent)" />
+    <line x1="85" y1="57" x2="85" y2="63" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="85" y="74" font-size="9.5" text-anchor="middle" fill="currentColor">0,1</text>
+    <line x1="145" y1="57" x2="145" y2="63" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="145" y="74" font-size="9.5" text-anchor="middle" fill="currentColor">0,2</text>
+    <line x1="205" y1="57" x2="205" y2="63" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="205" y="74" font-size="9.5" text-anchor="middle" fill="currentColor">0,3</text>
+    <line x1="265" y1="57" x2="265" y2="63" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="265" y="74" font-size="9.5" text-anchor="middle" fill="currentColor">0,4</text>
+    <line x1="325" y1="57" x2="325" y2="63" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="325" y="74" font-size="9.5" text-anchor="middle" fill="currentColor">0,5</text>
+    <line x1="25" y1="122" x2="145" y2="122" stroke="var(--accent)" stroke-width="2" />
+    <text x="85" y="118" font-size="10" text-anchor="middle" fill="var(--accent)">k = 1, N = 20</text>
+    </svg>
+</Figure>
+
+## Énergie et puissance des signaux discrets
+
+| Grandeur | Expression |
+|---|---|
+| Valeur moyenne | $x_{av} = \frac{1}{N} \sum_{n=0}^{N-1} x[n]$ |
+| Énergie | $E = \sum_{n=-\infty}^{+\infty} \lvert x[n] \rvert^2$ |
+| Puissance ($N$ échantillons) | $P_{moy} = \frac{1}{N} \sum_{n=0}^{N-1} \lvert x[n] \rvert^2$ |
+
+$N$ : nombre d'échantillons.
+
+## Transformée de Fourier à temps discret (TFTD)
+
+Signal échantillonné à la période $T_e$ :
+
+$$
+x_e(t) = \sum_{n=-\infty}^{+\infty} x(nT_e)\, \delta(t - nT_e)
+$$
+
+On calcule généralement la TFTD en considérant $T_e = 1$ :
+
+$$
+x_e(t) = \sum_{n=-\infty}^{+\infty} x[n]\, \delta[t - n]
+$$
+
+On calcule la transformée de Fourier de $x_e(t)$ (rappel : $TF\{\delta(t - t_0)\} = e^{-j2\pi f t_0}$) :
+
+$$
+X(f) = TF\{x_e(t)\} = TF\left\{\sum_{n=-\infty}^{+\infty} x[n]\, \delta[t - n]\right\} = \sum_{n=-\infty}^{+\infty} x[n] \cdot TF\{\delta[t - n]\} = \sum_{n=-\infty}^{+\infty} x[n] \exp(-j2\pi f n)
+$$
+
+<Definition titre="TFTD">
+    $$
+    X(f) = \sum_{n=-\infty}^{+\infty} x[n] \exp(-j2\pi f n)
+    $$
+
+    $$
+    f \text{ : fréquence (variable continue)}
+    $$
+
+    - $X(f)$ est une fonction **continue et périodique**, car $f$ est une variable continue.
+    - On peut montrer que $X(f)$ est périodique de période $F = 1$.
+    - L'information fréquentielle est localisée dans l'intervalle de fréquence normalisée $f \in \left[-\frac{1}{2}, \frac{1}{2}\right]$.
+</Definition>
+
+<Figure legende="TFTD : x[n] est caractérisé par ce contenu fréquentiel" page="cours3.pdf p. 13">
+    <svg viewBox="0 0 300 120" role="img" aria-label="TFTD X(f) : fonction continue et périodique de période 1 ; le contenu fréquentiel est caractérisé sur [−1/2, 1/2]">
+    <defs>
+    <marker id="fl-tftd" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="11" y1="95" x2="295" y2="95" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-tftd)" />
+    <line x1="130.7" y1="99" x2="130.7" y2="7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-tftd)" />
+    <text x="135.7" y="14" font-size="11" font-style="italic" fill="currentColor">X(f)</text>
+    <text x="295" y="109" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f/Fe</text>
+    <path d="M15.0 69.4 L15.7 67.6 L16.4 65.7 L17.0 63.8 L17.7 61.8 L18.4 59.8 L19.1 57.7 L19.7 55.7 L20.4 53.6 L21.1 51.5 L21.8 49.4 L22.4 47.3 L23.1 45.3 L23.8 43.3 L24.5 41.4 L25.1 39.5 L25.8 37.7 L26.5 36.0 L27.2 34.3 L27.8 32.8 L28.5 31.4 L29.2 30.2 L29.8 29.0 L30.5 28.0 L31.2 27.2 L31.9 26.5 L32.5 26.0 L33.2 25.6 L33.9 25.5 L34.6 25.5 L35.2 25.6 L35.9 25.9 L36.6 26.4 L37.3 27.1 L38.0 27.9 L38.6 28.9 L39.3 30.0 L40.0 31.2 L40.7 32.6 L41.3 34.1 L42.0 35.7 L42.7 37.4 L43.4 39.2 L44.0 41.1 L44.7 43.0 L45.4 45.0 L46.0 47.0 L46.7 49.1 L47.4 51.2 L48.1 53.3 L48.8 55.4 L49.4 57.4 L50.1 59.5 L50.8 61.5 L51.4 63.5 L52.1 65.4 L52.8 67.3 L53.5 69.2 L54.1 70.9 L54.8 72.6 L55.5 74.3 L56.2 75.8 L56.9 77.3 L57.5 78.7 L58.2 80.1 L58.9 81.3 L59.6 82.5 L60.2 83.6 L60.9 84.6 L61.6 85.6 L62.3 86.5 L62.9 87.3 L63.6 88.1 L64.3 88.8 L65.0 89.4 L65.6 90.0 L66.3 90.6 L67.0 91.1 L67.6 91.5 L68.3 91.9 L69.0 92.3 L69.7 92.6 L70.3 92.9 L71.0 93.2 L71.7 93.4 L72.4 93.6 L73.0 93.8 L73.7 93.9 L74.4 94.1 L75.1 94.2 L75.8 94.3 L76.4 94.4 L77.1 94.5 L77.8 94.6 L78.4 94.6 L79.1 94.7 L79.8 94.7 L80.5 94.8 L81.2 94.8 L81.8 94.8 L82.5 94.9 L83.2 94.8 L83.8 94.8 L84.5 94.8 L85.2 94.7 L85.9 94.7 L86.5 94.6 L87.2 94.6 L87.9 94.5 L88.6 94.4 L89.2 94.3 L89.9 94.2 L90.6 94.1 L91.3 93.9 L91.9 93.8 L92.6 93.6 L93.3 93.4 L94.0 93.2 L94.6 92.9 L95.3 92.6 L96.0 92.3 L96.7 91.9 L97.3 91.5 L98.0 91.1 L98.7 90.6 L99.4 90.0 L100.0 89.4 L100.7 88.8 L101.4 88.1 L102.1 87.3 L102.8 86.5 L103.4 85.6 L104.1 84.6 L104.8 83.6 L105.5 82.5 L106.1 81.3 L106.8 80.1 L107.5 78.7 L108.2 77.3 L108.8 75.8 L109.5 74.3 L110.2 72.6 L110.8 70.9 L111.5 69.2 L112.2 67.3 L112.9 65.4 L113.5 63.5 L114.2 61.5 L114.9 59.5 L115.6 57.4 L116.3 55.4 L116.9 53.3 L117.6 51.2 L118.3 49.1 L119.0 47.0 L119.6 45.0 L120.3 43.0 L121.0 41.1 L121.6 39.2 L122.3 37.4 L123.0 35.7 L123.7 34.1 L124.3 32.6 L125.0 31.2 L125.7 30.0 L126.4 28.9 L127.0 27.9 L127.7 27.1 L128.4 26.4 L129.1 25.9 L129.8 25.6 L130.4 25.5 L131.1 25.5 L131.8 25.6 L132.4 26.0 L133.1 26.5 L133.8 27.2 L134.5 28.0 L135.2 29.0 L135.8 30.2 L136.5 31.4 L137.2 32.8 L137.9 34.3 L138.5 36.0 L139.2 37.7 L139.9 39.5 L140.6 41.4 L141.2 43.3 L141.9 45.3 L142.6 47.3 L143.2 49.4 L143.9 51.5 L144.6 53.6 L145.3 55.7 L145.9 57.7 L146.6 59.8 L147.3 61.8 L148.0 63.8 L148.7 65.7 L149.3 67.6 L150.0 69.4 L150.7 71.2 L151.3 72.9 L152.0 74.5 L152.7 76.0 L153.4 77.5 L154.1 78.9 L154.7 80.2 L155.4 81.5 L156.1 82.7 L156.8 83.8 L157.4 84.8 L158.1 85.7 L158.8 86.6 L159.4 87.4 L160.1 88.2 L160.8 88.9 L161.5 89.5 L162.2 90.1 L162.8 90.7 L163.5 91.1 L164.2 91.6 L164.8 92.0 L165.5 92.3 L166.2 92.6 L166.9 92.9 L167.5 93.2 L168.2 93.4 L168.9 93.6 L169.6 93.8 L170.3 94.0 L170.9 94.1 L171.6 94.2 L172.3 94.3 L172.9 94.4 L173.6 94.5 L174.3 94.6 L175.0 94.6 L175.7 94.7 L176.3 94.7 L177.0 94.8 L177.7 94.8 L178.3 94.8 L179.0 94.9 L179.7 94.8 L180.4 94.8 L181.1 94.8 L181.7 94.7 L182.4 94.7 L183.1 94.6 L183.8 94.6 L184.4 94.5 L185.1 94.4 L185.8 94.3 L186.4 94.2 L187.1 94.1 L187.8 93.9 L188.5 93.8 L189.2 93.6 L189.8 93.4 L190.5 93.1 L191.2 92.9 L191.8 92.6 L192.5 92.2 L193.2 91.9 L193.9 91.5 L194.6 91.0 L195.2 90.5 L195.9 90.0 L196.6 89.4 L197.2 88.7 L197.9 88.0 L198.6 87.2 L199.3 86.4 L200.0 85.5 L200.6 84.5 L201.3 83.5 L202.0 82.3 L202.7 81.1 L203.3 79.9 L204.0 78.5 L204.7 77.1 L205.3 75.6 L206.0 74.0 L206.7 72.4 L207.4 70.7 L208.0 68.9 L208.7 67.1 L209.4 65.2 L210.1 63.2 L210.8 61.2 L211.4 59.2 L212.1 57.1 L212.8 55.1 L213.4 53.0 L214.1 50.9 L214.8 48.8 L215.5 46.8 L216.2 44.7 L216.8 42.8 L217.5 40.8 L218.2 39.0 L218.8 37.2 L219.5 35.5 L220.2 33.9 L220.9 32.4 L221.6 31.0 L222.2 29.8 L222.9 28.7 L223.6 27.8 L224.2 27.0 L224.9 26.3 L225.6 25.9 L226.3 25.6 L227.0 25.4 L227.6 25.5 L228.3 25.7 L229.0 26.1 L229.7 26.6 L230.3 27.3 L231.0 28.2 L231.7 29.2 L232.3 30.3 L233.0 31.6 L233.7 33.0 L234.4 34.6 L235.1 36.2 L235.7 37.9 L236.4 39.8 L237.1 41.6 L237.8 43.6 L238.4 45.6 L239.1 47.6 L239.8 49.7 L240.4 51.8 L241.1 53.9 L241.8 56.0 L242.5 58.0 L243.2 60.1 L243.8 62.1 L244.5 64.1 L245.2 66.0 L245.8 67.9 L246.5 69.7 L247.2 71.4 L247.9 73.1 L248.6 74.7 L249.2 76.2 L249.9 77.7 L250.6 79.1 L251.2 80.4 L251.9 81.7 L252.6 82.8 L253.3 83.9 L253.9 84.9 L254.6 85.9 L255.3 86.7 L256.0 87.6 L256.6 88.3 L257.3 89.0 L258.0 89.6 L258.7 90.2 L259.4 90.7 L260.0 91.2 L260.7 91.6 L261.4 92.0 L262.1 92.4 L262.7 92.7 L263.4 93.0 L264.1 93.2 L264.8 93.4 L265.4 93.6 L266.1 93.8 L266.8 94.0 L267.5 94.1 L268.1 94.2 L268.8 94.3 L269.5 94.4 L270.1 94.5 L270.8 94.6 L271.5 94.6 L272.2 94.7 L272.9 94.7 L273.5 94.8 L274.2 94.8 L274.9 94.8 L275.6 94.9 L276.2 94.8 L276.9 94.8 L277.6 94.8 L278.2 94.7 L278.9 94.7 L279.6 94.6 L280.3 94.5 L280.9 94.5 L281.6 94.4 L282.3 94.3 L283.0 94.2 L283.6 94.0 L284.3 93.9 L285.0 93.7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.45" />
+    <path d="M82.5 94.9 L83.1 94.8 L83.8 94.8 L84.4 94.8 L85.1 94.7 L85.7 94.7 L86.4 94.6 L87.0 94.6 L87.6 94.5 L88.3 94.4 L88.9 94.4 L89.6 94.3 L90.2 94.2 L90.9 94.0 L91.5 93.9 L92.1 93.7 L92.8 93.5 L93.4 93.3 L94.1 93.1 L94.7 92.9 L95.4 92.6 L96.0 92.3 L96.6 91.9 L97.3 91.6 L97.9 91.1 L98.6 90.7 L99.2 90.2 L99.9 89.6 L100.5 89.0 L101.1 88.4 L101.8 87.7 L102.4 86.9 L103.1 86.1 L103.7 85.2 L104.4 84.3 L105.0 83.2 L105.6 82.2 L106.3 81.0 L106.9 79.8 L107.6 78.5 L108.2 77.2 L108.9 75.7 L109.5 74.3 L110.1 72.7 L110.8 71.1 L111.4 69.4 L112.1 67.7 L112.7 65.9 L113.4 64.1 L114.0 62.2 L114.6 60.3 L115.3 58.3 L115.9 56.4 L116.6 54.4 L117.2 52.4 L117.9 50.4 L118.5 48.4 L119.1 46.5 L119.8 44.5 L120.4 42.7 L121.1 40.8 L121.7 39.0 L122.4 37.3 L123.0 35.7 L123.6 34.2 L124.3 32.8 L124.9 31.4 L125.6 30.2 L126.2 29.1 L126.9 28.2 L127.5 27.3 L128.1 26.7 L128.8 26.1 L129.4 25.7 L130.1 25.5 L130.7 25.4 L131.4 25.5 L132.0 25.7 L132.6 26.1 L133.3 26.7 L133.9 27.3 L134.6 28.2 L135.2 29.1 L135.9 30.2 L136.5 31.4 L137.1 32.8 L137.8 34.2 L138.4 35.7 L139.1 37.3 L139.7 39.0 L140.4 40.8 L141.0 42.7 L141.6 44.5 L142.3 46.5 L142.9 48.4 L143.6 50.4 L144.2 52.4 L144.9 54.4 L145.5 56.4 L146.1 58.3 L146.8 60.3 L147.4 62.2 L148.1 64.1 L148.7 65.9 L149.4 67.7 L150.0 69.4 L150.6 71.1 L151.3 72.7 L151.9 74.3 L152.6 75.7 L153.2 77.2 L153.9 78.5 L154.5 79.8 L155.1 81.0 L155.8 82.2 L156.4 83.2 L157.1 84.3 L157.7 85.2 L158.4 86.1 L159.0 86.9 L159.6 87.7 L160.3 88.4 L160.9 89.0 L161.6 89.6 L162.2 90.2 L162.9 90.7 L163.5 91.1 L164.1 91.6 L164.8 91.9 L165.4 92.3 L166.1 92.6 L166.7 92.9 L167.4 93.1 L168.0 93.3 L168.6 93.5 L169.3 93.7 L169.9 93.9 L170.6 94.0 L171.2 94.2 L171.9 94.3 L172.5 94.4 L173.1 94.4 L173.8 94.5 L174.4 94.6 L175.1 94.6 L175.7 94.7 L176.4 94.7 L177.0 94.8 L177.6 94.8 L178.3 94.8 L178.9 94.9" fill="none" stroke="var(--accent)" stroke-width="2" />
+    <line x1="82.5" y1="92" x2="82.5" y2="98" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="82.5" y="109" font-size="9.5" text-anchor="middle" fill="currentColor">−1/2</text>
+    <line x1="178.9" y1="92" x2="178.9" y2="98" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="178.9" y="109" font-size="9.5" text-anchor="middle" fill="currentColor">1/2</text>
+    </svg>
+</Figure>
+
+La TFTD est une fonction continue de $f$, donc la TFTD inverse est une intégrale :
+
+$$
+TFTD^{-1}\{X(f)\} = x[n] = \int_{-1/2}^{1/2} X(f) \exp(j2\pi n f)\, df
+$$
+
+## Transformée de Fourier discrète (TFD)
+
+Inconvénients de la TFTD :
+
+- nombre d'échantillons de $x[n]$ infini ;
+- fréquence considérée comme une variable continue dans l'intervalle $\left[-\frac{1}{2}, \frac{1}{2}\right]$ → nombre d'échantillons de fréquence infini → difficile à traiter à l'aide d'un ordinateur.
+
+Solution : **limiter** le nombre d'échantillons de $x[n]$ à $N$ valeurs, et **discrétiser** la fréquence (limiter le nombre d'échantillons de $f$ à $L$ valeurs) → transformée de Fourier discrète (TFD).
+
+Soit la suite finie $\{x[n]\}$, $n = 0, 1, \ldots, N-1$. Sa TFTD pour $N$ échantillons est
+
+$$
+X(f) = \sum_{n=0}^{N-1} x[n] \exp(-jn \cdot 2\pi \cdot f)
+$$
+
+Pour obtenir $L$ valeurs pour la fréquence, on écrit $f_k = \dfrac{k}{L}$, avec $k \in [0, 1, \ldots, L-1]$. En général $L = N$, et l'on obtient la TFD de $x[n]$ :
+
+{/* FOND ? cours3.pdf p. 15 : coquille « Suite de N termes X(0), X(2), … » pour « X(0), X(1), … ». Signalé, non corrigé. */}
+
+<Definition titre="Transformée de Fourier discrète (TFD)">
+    $$
+    X(k) = \sum_{n=0}^{N-1} x[n] \exp\left(-jn \cdot 2\pi \cdot \frac{k}{N}\right), \quad k \in [0, 1, \ldots, N-1]
+    $$
+
+    C'est une suite de $N$ termes $X(0), X(2), \ldots, X(N-1)$.
+</Definition>
+
+## TFD inverse
+
+{/* FOND ? cours3.pdf p. 16 : dans la TFD inverse, la somme doit porter sur k (k = 0 … N − 1) et la formule vaut pour n ∈ [0, …, N − 1] ; la diapo écrit la somme sur n et « k ∈ [0, …, N − 1] ». Signalé, non corrigé. */}
+
+<Definition titre="TFD inverse">
+    $$
+    x[n] = \frac{1}{N} \sum_{n=0}^{N-1} X(k) \exp\left(j \cdot 2\pi \cdot n \cdot \frac{k}{N}\right), \quad k \in [0, 1, \ldots, N-1]
+    $$
+</Definition>
+
+## Propriétés de la TFD et de la TFTD
+
+| Propriété | $x[n]$ | $X(k)$ ou $X(f)$ |
+|---|---|---|
+| Linéarité | $a \cdot x(n) + b \cdot y(n)$ | $a \cdot X(k) + b \cdot Y(k)$ |
+| Translation (TFD) | $x(n - n_0)$ | $X(k) e^{-j2\pi k n_0 / N}$ |
+| Translation (TFTD) | $x(n - n_0)$ | $X(f) e^{-j2\pi n_0 f}$ |
+| Translation fréquentielle (TFD) | $x(n) e^{j2\pi k_0 n / N}$ | $X(k - k_0)$ |
+| Translation fréquentielle (TFTD) | $x(n) e^{j2\pi f_0 n}$ | $X(f - f_0)$ |
+| Convolution | $x(n) * y(n)$ | $X(k) \cdot Y(k)$ |
+| Produit | $x(n) \cdot y(n)$ | $X(k) * Y(k)$ |
+
+<Theorem titre="Plancherel-Parseval : conservation de l'énergie">
+    $$
+    \sum_{n=0}^{N-1} |x[n]|^2 = \frac{1}{N} \sum_{k=0}^{N-1} |X[k]|^2
+    $$
+</Theorem>
+
+## Exemple de calcul de TFD
+
+<Example titre="TFD de x[n] = {1, 2, 1, 0}">
+    On a $N = 4$ ; selon la définition, $e^{-j2\pi kn/N} = e^{-j\pi kn/2}$. On calcule les valeurs de $X(k)$ pour différentes valeurs de $k$ :
+
+    $$
+    \begin{aligned}
+    k = 0 :&\quad X[0] = \sum_{n=0}^{3} x[n] \cdot e^{0} = 1 + 2 + 1 + 0 = 4 \\
+    k = 1 :&\quad X[1] = \sum_{n=0}^{3} x[n] \cdot e^{-j\pi n/2} = 1 + 2e^{-j\pi/2} + 1e^{-j\pi} + 0 = -2j \\
+    k = 2 :&\quad X[2] = \sum_{n=0}^{3} x[n] \cdot e^{-j\pi n} = 1 + 2e^{-j\pi} + e^{-2j\pi} + 0 = 0 \\
+    k = 3 :&\quad X[3] = \sum_{n=0}^{3} x[n] \cdot e^{-3j\pi n/2} = 1 + 2e^{-j3\pi/2} + e^{-3j\pi} + 0 = 2j
+    \end{aligned}
+    $$
+
+    $$
+    X(k) = \{4, -2j, 0, 2j\}
+    $$
+</Example>
+
+## Transformée de Fourier rapide (FFT)
+
+<Definition titre="Transformée de Fourier rapide (TFR, ou FFT)">
+    - La transformée de Fourier rapide est simplement un **algorithme** permettant de réduire le nombre d'opérations, en particulier le nombre de multiplications, pour calculer la TFD. Ce temps de calcul est en effet primordial pour réaliser des systèmes numériques en « temps réel ».
+    - Il existe différents algorithmes de TFR. Le plus connu est l'algorithme de **Cooley-Tukey**.
+</Definition>
+
+## Fiche récapitulative
+
+<Formulas titre="Signaux discrets et TFD">
+    <Formula label="Longueur">
+        $$
+        l = M - D + 1
+        $$
+    </Formula>
+    <Formula label="Décomposition en impulsions">
+        $$
+        x[n] = \sum_{k=-\infty}^{+\infty} x_k\, \delta[n - k]
+        $$
+
+        $$
+        u[n] = \sum_{m=0}^{+\infty} \delta[n - m]
+        $$
+    </Formula>
+    <Formula label="Durée, nombre d'échantillons">
+        $$
+        t = N T_e = \frac{N}{F_e}
+        $$
+
+        $$
+        N = t \times F_e
+        $$
+    </Formula>
+    <Formula label="Période d'un cosinus échantillonné">
+        $$
+        N = k\frac{F_e}{f_0}, \quad k, N \in \mathbb{N} \ \text{(plus petit entier)}
+        $$
+    </Formula>
+    <Formula label="Énergie, puissance">
+        $$
+        E = \sum_{n=-\infty}^{+\infty} |x[n]|^2
+        $$
+
+        $$
+        P_{moy} = \frac{1}{N} \sum_{n=0}^{N-1} |x[n]|^2
+        $$
+    </Formula>
+    <Formula label="TFTD (période 1)">
+        $$
+        X(f) = \sum_{n=-\infty}^{+\infty} x[n] e^{-j2\pi f n}
+        $$
+
+        $$
+        x[n] = \int_{-1/2}^{1/2} X(f) e^{j2\pi n f}\, df
+        $$
+    </Formula>
+    <Formula label="TFD">
+        $$
+        X(k) = \sum_{n=0}^{N-1} x[n]\, e^{-j2\pi nk/N}, \quad k = 0, \ldots, N-1
+        $$
+    </Formula>
+    <Formula label="Parseval (TFD)">
+        $$
+        \sum_{n=0}^{N-1} |x[n]|^2 = \frac{1}{N} \sum_{k=0}^{N-1} |X[k]|^2
+        $$
+    </Formula>
+</Formulas>

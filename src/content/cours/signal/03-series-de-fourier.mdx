@@ -1,0 +1,665 @@
+---
+titre: Séries de Fourier
+resume: Analyse spectrale, valeur moyenne, séries de Fourier trigonométrique, en cosinus et complexe, relations entre coefficients, spectres unilatéral et bilatéral (exemple du signal carré) et phénomène de Gibbs.
+tags: [analyse spectrale, série de Fourier, spectre, harmoniques, Gibbs]
+duree: 11
+sources: ["cours2.pdf p. 2–19"]
+---
+
+## Analyse spectrale
+
+L'analyse spectrale consiste à étudier le comportement des signaux dans le **domaine fréquentiel** (étude des ondes lumineuses, du son…).
+
+<Definition titre="Représentation temporelle">
+    Les variations de l'amplitude du signal sont présentées **en fonction du temps**. On peut visualiser le signal électrique sur l'oscilloscope.
+</Definition>
+
+<Definition titre="Représentation fréquentielle">
+    Pour voir les fréquences contenues dans un signal, on le représente sous la forme d'un diagramme amplitude-fréquence appelé **spectre d'amplitude**.
+</Definition>
+
+<Example titre="Sinusoïde">
+    $x(t) = 10\sin(400t)$ est un signal sinusoïdal d'amplitude $10\ \text{V}$, de pulsation $400\ \text{rad/s}$, soit une fréquence de $63{,}7\ \text{Hz}$. Son spectre d'amplitude unilatéral est une seule raie de hauteur 10.
+</Example>
+
+<Figure legende="Représentation temporelle et fréquentielle de 10 sin(400t)" page="cours2.pdf p. 3">
+    <svg viewBox="0 0 340 140" role="img" aria-label="Représentation temporelle de x(t) = 10 sin(400t), et représentation fréquentielle : une seule raie de hauteur 10 à la pulsation 400 rad/s">
+    <defs>
+    <marker id="fl-temps-freq" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="16" y1="67.5" x2="165" y2="67.5" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-temps-freq)" />
+    <line x1="20" y1="114" x2="20" y2="17" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-temps-freq)" />
+    <text x="25" y="24" font-size="11" font-style="italic" fill="currentColor">amplitude</text>
+    <text x="165" y="81.5" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">t</text>
+    <path d="M20.0 67.5 L20.4 61.9 L20.9 56.4 L21.4 51.1 L21.8 46.3 L22.2 42.1 L22.7 38.5 L23.1 35.6 L23.6 33.6 L24.1 32.4 L24.5 32.1 L24.9 32.7 L25.4 34.2 L25.9 36.6 L26.3 39.7 L26.8 43.6 L27.2 48.0 L27.6 53.0 L28.1 58.3 L28.5 63.9 L29.0 69.6 L29.4 75.2 L29.9 80.6 L30.4 85.7 L30.8 90.3 L31.2 94.3 L31.7 97.6 L32.1 100.2 L32.6 102.0 L33.0 102.8 L33.5 102.8 L34.0 101.8 L34.4 100.0 L34.9 97.4 L35.3 93.9 L35.8 89.9 L36.2 85.2 L36.6 80.1 L37.1 74.6 L37.5 69.0 L38.0 63.4 L38.5 57.8 L38.9 52.5 L39.4 47.6 L39.8 43.2 L40.2 39.4 L40.7 36.3 L41.1 34.0 L41.6 32.6 L42.0 32.1 L42.5 32.5 L43.0 33.7 L43.4 35.9 L43.8 38.8 L44.3 42.5 L44.8 46.8 L45.2 51.6 L45.6 56.9 L46.1 62.4 L46.5 68.0 L47.0 73.7 L47.5 79.2 L47.9 84.3 L48.4 89.1 L48.8 93.3 L49.2 96.8 L49.7 99.6 L50.1 101.6 L50.6 102.7 L51.0 102.9 L51.5 102.2 L52.0 100.6 L52.4 98.2 L52.9 94.9 L53.3 91.0 L53.8 86.5 L54.2 81.5 L54.7 76.1 L55.1 70.6 L55.6 64.9 L56.0 59.3 L56.5 53.9 L56.9 48.9 L57.4 44.3 L57.8 40.3 L58.2 37.1 L58.7 34.6 L59.1 32.9 L59.6 32.1 L60.1 32.3 L60.5 33.3 L61.0 35.2 L61.4 37.9 L61.9 41.4 L62.3 45.6 L62.8 50.3 L63.2 55.4 L63.6 60.9 L64.1 66.5 L64.5 72.2 L65.0 77.7 L65.5 83.0 L65.9 87.8 L66.3 92.2 L66.8 95.9 L67.2 98.9 L67.7 101.1 L68.2 102.5 L68.6 102.9 L69.1 102.5 L69.5 101.1 L70.0 98.9 L70.4 95.9 L70.8 92.1 L71.3 87.8 L71.8 82.9 L72.2 77.6 L72.6 72.1 L73.1 66.4 L73.5 60.8 L74.0 55.3 L74.4 50.2 L74.9 45.5 L75.3 41.4 L75.8 37.9 L76.2 35.2 L76.7 33.3 L77.2 32.3 L77.6 32.1 L78.0 32.9 L78.5 34.6 L78.9 37.1 L79.4 40.4 L79.8 44.4 L80.3 49.0 L80.8 54.0 L81.2 59.4 L81.7 65.0 L82.1 70.6 L82.5 76.2 L83.0 81.6 L83.4 86.6 L83.9 91.1 L84.4 95.0 L84.8 98.2 L85.2 100.6 L85.7 102.2 L86.2 102.9 L86.6 102.7 L87.0 101.6 L87.5 99.6 L88.0 96.8 L88.4 93.2 L88.8 89.0 L89.3 84.3 L89.7 79.1 L90.2 73.6 L90.6 68.0 L91.1 62.3 L91.5 56.8 L92.0 51.5 L92.4 46.7 L92.9 42.4 L93.3 38.7 L93.8 35.8 L94.2 33.7 L94.7 32.4 L95.1 32.1 L95.6 32.6 L96.0 34.1 L96.5 36.4 L97.0 39.4 L97.4 43.2 L97.8 47.7 L98.3 52.6 L98.8 57.9 L99.2 63.5 L99.6 69.1 L100.1 74.7 L100.5 80.2 L101.0 85.3 L101.4 89.9 L101.9 94.0 L102.3 97.4 L102.8 100.0 L103.2 101.9 L103.7 102.8 L104.1 102.8 L104.6 101.9 L105.0 100.2 L105.5 97.6 L105.9 94.2 L106.4 90.2 L106.9 85.6 L107.3 80.5 L107.8 75.1 L108.2 69.5 L108.6 63.8 L109.1 58.3 L109.5 52.9 L110.0 48.0 L110.4 43.5 L110.9 39.7 L111.3 36.5 L111.8 34.2 L112.2 32.7 L112.7 32.1 L113.2 32.4 L113.6 33.6 L114.0 35.7 L114.5 38.5 L115.0 42.2 L115.4 46.4 L115.8 51.2 L116.3 56.4 L116.8 61.9 L117.2 67.6 L117.7 73.2 L118.1 78.7 L118.5 83.9 L119.0 88.7 L119.4 93.0 L119.9 96.6 L120.3 99.4 L120.8 101.5 L121.2 102.6 L121.7 102.9 L122.1 102.3 L122.6 100.7 L123.1 98.4 L123.5 95.2 L124.0 91.4 L124.4 86.9 L124.8 81.9 L125.3 76.6 L125.8 71.0 L126.2 65.3 L126.7 59.7 L127.1 54.3 L127.6 49.3 L128.0 44.7 L128.4 40.6 L128.9 37.3 L129.3 34.7 L129.8 33.0 L130.2 32.2 L130.7 32.2 L131.2 33.2 L131.6 35.0 L132.1 37.7 L132.5 41.1 L132.9 45.2 L133.4 49.9 L133.9 55.0 L134.3 60.4 L134.8 66.1 L135.2 71.7 L135.7 77.3 L136.1 82.6 L136.6 87.5 L137.0 91.9 L137.5 95.7 L137.9 98.7 L138.4 101.0 L138.8 102.4 L139.2 102.9 L139.7 102.5 L140.2 101.2 L140.6 99.1 L141.1 96.1 L141.5 92.5 L141.9 88.1 L142.4 83.3 L142.8 78.0 L143.3 72.5 L143.8 66.9 L144.2 61.2 L144.7 55.8 L145.1 50.6 L145.6 45.8 L146.0 41.7 L146.4 38.1 L146.9 35.4 L147.4 33.4 L147.8 32.3 L148.2 32.1 L148.7 32.8 L149.2 34.4 L149.6 36.9 L150.1 40.1 L150.5 44.0 L151.0 48.6 L151.4 53.6 L151.8 58.9 L152.3 64.5 L152.8 70.2 L153.2 75.8 L153.7 81.2 L154.1 86.2 L154.5 90.7 L155.0 94.7" fill="none" stroke="var(--accent)" stroke-width="1.4" />
+    <line x1="17" y1="32.1" x2="23" y2="32.1" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="15" y="35.6" font-size="9.5" text-anchor="end" fill="currentColor">10</text>
+    <text x="85" y="135" font-size="10" text-anchor="middle" fill="currentColor">Représentation temporelle</text>
+    <line x1="191" y1="110" x2="335" y2="110" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-temps-freq)" />
+    <line x1="195" y1="114" x2="195" y2="17" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-temps-freq)" />
+    <text x="200" y="24" font-size="11" font-style="italic" fill="currentColor">amplitude</text>
+    <text x="335" y="124" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">ω</text>
+    <line x1="281.7" y1="110" x2="281.7" y2="39.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="281.7" cy="39.2" r="3" fill="var(--accent)" />
+    <line x1="281.7" y1="107" x2="281.7" y2="113" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="281.7" y="124" font-size="9.5" text-anchor="middle" fill="currentColor">400</text>
+    <line x1="192" y1="39.2" x2="198" y2="39.2" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="190" y="42.7" font-size="9.5" text-anchor="end" fill="currentColor">10</text>
+    <text x="260" y="135" font-size="10" text-anchor="middle" fill="currentColor">Spectre d’amplitude unilatéral</text>
+    </svg>
+</Figure>
+
+## Outils mathématiques d'analyse spectrale
+
+- **Décomposition en séries de Fourier** : s'applique aux *signaux périodiques*. Elle permet d'obtenir un **spectre discontinu** constitué de « raies » placées sur les fréquences contenues dans le signal.
+- **Transformée de Fourier** : s'applique principalement aux *signaux non périodiques*. Elle permet d'obtenir un **spectre continu**.
+- **Transformée de Fourier discrète** : s'applique aux signaux échantillonnés de $N$ échantillons. Elle permet d'obtenir un spectre constitué de $N$ points.
+
+<Figure legende="Spectre discontinu (série de Fourier) et spectre continu (transformée de Fourier)" page="cours2.pdf p. 4">
+    <svg viewBox="0 0 340 130" role="img" aria-label="Spectre discontinu (raies aux multiples de f0) d’un signal périodique ; spectre continu d’un signal non périodique">
+    <defs>
+    <marker id="fl-discontinu-continu" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="11" y1="100" x2="165" y2="100" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-discontinu-continu)" />
+    <line x1="15" y1="104" x2="15" y2="7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-discontinu-continu)" />
+    <text x="20" y="14" font-size="11" font-style="italic" fill="currentColor">amplitude</text>
+    <text x="165" y="114" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <line x1="35" y1="100" x2="35" y2="22.7" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="35" cy="22.7" r="3" fill="var(--accent)" />
+    <line x1="55" y1="100" x2="55" y2="65.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="55" cy="65.2" r="3" fill="var(--accent)" />
+    <line x1="75" y1="100" x2="75" y2="84.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="75" cy="84.5" r="3" fill="var(--accent)" />
+    <line x1="95" y1="100" x2="95" y2="57.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="95" cy="57.5" r="3" fill="var(--accent)" />
+    <line x1="115" y1="100" x2="115" y2="38.2" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="115" cy="38.2" r="3" fill="var(--accent)" />
+    <line x1="135" y1="100" x2="135" y2="76.8" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="135" cy="76.8" r="3" fill="var(--accent)" />
+    <line x1="35" y1="97" x2="35" y2="103" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="35" y="114" font-size="9.5" text-anchor="middle" fill="currentColor">f0</text>
+    <line x1="55" y1="97" x2="55" y2="103" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="55" y="114" font-size="9.5" text-anchor="middle" fill="currentColor">2f0</text>
+    <line x1="75" y1="97" x2="75" y2="103" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="75" y="114" font-size="9.5" text-anchor="middle" fill="currentColor">3f0</text>
+    <text x="85" y="125" font-size="10" text-anchor="middle" fill="var(--accent)">Spectre discontinu</text>
+    <line x1="181" y1="100" x2="335" y2="100" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-discontinu-continu)" />
+    <line x1="185" y1="104" x2="185" y2="7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-discontinu-continu)" />
+    <text x="190" y="14" font-size="11" font-style="italic" fill="currentColor">amplitude</text>
+    <text x="335" y="114" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <path d="M189.0 83.9 L189.4 83.3 L189.8 82.6 L190.2 81.8 L190.5 81.1 L190.9 80.3 L191.3 79.6 L191.7 78.8 L192.1 78.0 L192.5 77.2 L192.9 76.3 L193.3 75.5 L193.6 74.6 L194.0 73.7 L194.4 72.8 L194.8 71.9 L195.2 71.0 L195.6 70.1 L196.0 69.1 L196.3 68.2 L196.7 67.2 L197.1 66.3 L197.5 65.3 L197.9 64.3 L198.3 63.3 L198.7 62.3 L199.1 61.3 L199.4 60.3 L199.8 59.3 L200.2 58.3 L200.6 57.4 L201.0 56.4 L201.4 55.4 L201.8 54.4 L202.1 53.4 L202.5 52.5 L202.9 51.5 L203.3 50.6 L203.7 49.7 L204.1 48.8 L204.5 47.9 L204.9 47.0 L205.2 46.1 L205.6 45.3 L206.0 44.5 L206.4 43.7 L206.8 42.9 L207.2 42.2 L207.6 41.5 L207.9 40.8 L208.3 40.1 L208.7 39.5 L209.1 38.9 L209.5 38.3 L209.9 37.8 L210.3 37.3 L210.7 36.9 L211.0 36.4 L211.4 36.0 L211.8 35.7 L212.2 35.4 L212.6 35.1 L213.0 34.9 L213.4 34.7 L213.7 34.5 L214.1 34.4 L214.5 34.3 L214.9 34.3 L215.3 34.3 L215.7 34.4 L216.1 34.5 L216.5 34.6 L216.8 34.8 L217.2 35.0 L217.6 35.2 L218.0 35.5 L218.4 35.9 L218.8 36.2 L219.2 36.6 L219.5 37.1 L219.9 37.6 L220.3 38.1 L220.7 38.6 L221.1 39.2 L221.5 39.8 L221.9 40.5 L222.3 41.1 L222.6 41.8 L223.0 42.6 L223.4 43.3 L223.8 44.1 L224.2 44.9 L224.6 45.7 L225.0 46.6 L225.3 47.4 L225.7 48.3 L226.1 49.2 L226.5 50.1 L226.9 51.1 L227.3 52.0 L227.7 53.0 L228.1 53.9 L228.4 54.9 L228.8 55.9 L229.2 56.8 L229.6 57.8 L230.0 58.8 L230.4 59.8 L230.8 60.8 L231.1 61.8 L231.5 62.8 L231.9 63.7 L232.3 64.7 L232.7 65.7 L233.1 66.6 L233.5 67.6 L233.9 68.5 L234.2 69.4 L234.6 70.3 L235.0 71.2 L235.4 72.1 L235.8 73.0 L236.2 73.8 L236.6 74.7 L236.9 75.5 L237.3 76.3 L237.7 77.0 L238.1 77.8 L238.5 78.5 L238.9 79.2 L239.3 79.9 L239.7 80.6 L240.0 81.2 L240.4 81.8 L240.8 82.4 L241.2 82.9 L241.6 83.4 L242.0 83.9 L242.4 84.4 L242.7 84.8 L243.1 85.2 L243.5 85.6 L243.9 86.0 L244.3 86.3 L244.7 86.6 L245.1 86.8 L245.5 87.1 L245.8 87.2 L246.2 87.4 L246.6 87.5 L247.0 87.6 L247.4 87.7 L247.8 87.7 L248.2 87.7 L248.5 87.7 L248.9 87.7 L249.3 87.6 L249.7 87.5 L250.1 87.3 L250.5 87.2 L250.9 87.0 L251.3 86.7 L251.6 86.5 L252.0 86.2 L252.4 85.9 L252.8 85.6 L253.2 85.3 L253.6 85.0 L254.0 84.6 L254.3 84.2 L254.7 83.9 L255.1 83.5 L255.5 83.1 L255.9 82.7 L256.3 82.3 L256.7 81.9 L257.1 81.4 L257.4 81.0 L257.8 80.6 L258.2 80.2 L258.6 79.9 L259.0 79.5 L259.4 79.1 L259.8 78.8 L260.1 78.5 L260.5 78.1 L260.9 77.9 L261.3 77.6 L261.7 77.4 L262.1 77.1 L262.5 76.9 L262.9 76.8 L263.2 76.7 L263.6 76.6 L264.0 76.5 L264.4 76.5 L264.8 76.4 L265.2 76.5 L265.6 76.5 L265.9 76.6 L266.3 76.8 L266.7 76.9 L267.1 77.1 L267.5 77.3 L267.9 77.6 L268.3 77.8 L268.7 78.2 L269.0 78.5 L269.4 78.8 L269.8 79.2 L270.2 79.6 L270.6 80.1 L271.0 80.5 L271.4 81.0 L271.7 81.5 L272.1 82.0 L272.5 82.5 L272.9 83.0 L273.3 83.5 L273.7 84.0 L274.1 84.6 L274.5 85.1 L274.8 85.7 L275.2 86.2 L275.6 86.8 L276.0 87.3 L276.4 87.9 L276.8 88.4 L277.2 88.9 L277.5 89.4 L277.9 89.9 L278.3 90.4 L278.7 90.9 L279.1 91.4 L279.5 91.9 L279.9 92.3 L280.3 92.7 L280.6 93.2 L281.0 93.6 L281.4 94.0 L281.8 94.3 L282.2 94.7 L282.6 95.0 L283.0 95.4 L283.3 95.7 L283.7 96.0 L284.1 96.3 L284.5 96.5 L284.9 96.8 L285.3 97.0 L285.7 97.3 L286.1 97.5 L286.4 97.7 L286.8 97.9 L287.2 98.0 L287.6 98.2 L288.0 98.3 L288.4 98.5 L288.8 98.6 L289.1 98.7 L289.5 98.9 L289.9 99.0 L290.3 99.1 L290.7 99.1 L291.1 99.2 L291.5 99.3 L291.9 99.4 L292.2 99.4 L292.6 99.5 L293.0 99.5 L293.4 99.6 L293.8 99.6 L294.2 99.7 L294.6 99.7 L294.9 99.7 L295.3 99.8 L295.7 99.8 L296.1 99.8 L296.5 99.8 L296.9 99.9 L297.3 99.9 L297.7 99.9 L298.0 99.9 L298.4 99.9 L298.8 99.9 L299.2 99.9 L299.6 99.9 L300.0 99.9 L300.4 100.0 L300.7 100.0 L301.1 100.0 L301.5 100.0 L301.9 100.0 L302.3 100.0 L302.7 100.0 L303.1 100.0 L303.5 100.0 L303.8 100.0 L304.2 100.0 L304.6 100.0 L305.0 100.0" fill="none" stroke="var(--accent)" stroke-width="2" />
+    <text x="255" y="125" font-size="10" text-anchor="middle" fill="var(--accent)">Spectre continu</text>
+    </svg>
+</Figure>
+
+## Décomposition en série de Fourier
+
+Un signal périodique de fréquence $f_0$ et de forme quelconque (non sinusoïdal) peut être obtenu en **additionnant des sinusoïdes** de fréquence $f_0$ (fondamentale) et de multiples entiers de $f_0$ (harmoniques). Ces sinusoïdes ont des amplitudes et des positions de phase différentes.
+
+- $f_0$ : fréquence fondamentale ;
+- $f_n = nf_0$ : harmoniques de rang $n$ ($n > 1$).
+
+<Todo page="cours2.pdf p. 7">Tracés : x₁(t), x₂(t), x₃(t) de fréquences f₀, 2f₀, 3f₀, et les sommes 1 + x₁(t), 1 + x₁(t) + x₂(t), 1 + x₁(t) + x₂(t) + x₃(t) (la constante 1 est la valeur moyenne, de fréquence nulle ; la somme a la fréquence f₀). Vidéo citée : https://www.youtube.com/watch?v=d5ScbZVDaI4</Todo>
+
+Un signal périodique de fréquence $f_0$ peut s'écrire (se décomposer) sous forme d'une **somme infinie de signaux sinusoïdaux** de fréquences $nf_0$, $n \ge 1$. On ajoute à cette somme la valeur moyenne, ou composante continue du signal, lorsqu'elle existe. Cette méthode a été proposée pour la première fois par Joseph Fourier (1768-1830).
+
+<Theorem type="À retenir" titre="Trois formes de la série de Fourier">
+    1. **Série de Fourier trigonométrique** : somme de sinus et cosinus avec des coefficients $a_n$ et $b_n$ réels.
+    2. **Série de Fourier en cosinus** : somme de cosinus (avec phase à l'origine) avec des coefficients $A_n$ réels.
+    3. **Série de Fourier complexe** : somme d'exponentielles avec des coefficients $C_n$ complexes.
+
+    Les trois formes de la série de Fourier représentent **le même signal**.
+</Theorem>
+
+<Animation
+type="serie-fourier"
+titre="Reconstruire un signal carré harmonique par harmonique"
+params={{n: 3}}
+/>
+
+## Valeur moyenne d'un signal périodique
+
+<Definition titre="Valeur moyenne">
+    On calcule la valeur moyenne d'un signal périodique $u(t)$, de période $T$, à l'aide d'une intégrale :
+
+    $$
+    \langle U \rangle = \frac{1}{T} \int_{-T/2}^{T/2} u(t)\, dt
+    $$
+</Definition>
+
+Cas d'un signal périodique ayant une composante continue : $u(t)$ est la somme de sa valeur moyenne $\langle U \rangle$ et de sa composante alternative $u_{alt}(t)$, de valeur moyenne nulle :
+
+$$
+u(t) = \langle U \rangle + u_{alt}(t)
+$$
+
+<Figure legende="Un signal périodique = sa valeur moyenne + sa composante alternative" page="cours2.pdf p. 9">
+    <svg viewBox="0 0 340 120" role="img" aria-label="Signal triangulaire u(t) oscillant entre 1 et 3 = sa valeur moyenne ⟨U⟩ = 2 + sa composante alternative de moyenne nulle">
+    <defs>
+    <marker id="fl-valeur-moyenne" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="6" y1="74.3" x2="110" y2="74.3" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-valeur-moyenne)" />
+    <line x1="10" y1="99" x2="10" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-valeur-moyenne)" />
+    <text x="15" y="19" font-size="11" font-style="italic" fill="currentColor">u(t)</text>
+    <text x="110" y="88.3" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">t</text>
+    <path d="M10.0 42.3 L10.8 41.3 L11.5 40.2 L12.2 39.1 L13.0 38.1 L13.8 37.0 L14.5 36.0 L15.2 34.9 L16.0 33.8 L16.8 32.8 L17.5 31.7 L18.2 30.6 L19.0 29.6 L19.8 28.5 L20.5 27.4 L21.2 26.4 L22.0 27.4 L22.8 28.5 L23.5 29.6 L24.2 30.6 L25.0 31.7 L25.8 32.8 L26.5 33.8 L27.2 34.9 L28.0 36.0 L28.8 37.0 L29.5 38.1 L30.2 39.1 L31.0 40.2 L31.8 41.3 L32.5 42.3 L33.2 43.4 L34.0 44.5 L34.8 45.5 L35.5 46.6 L36.2 47.7 L37.0 48.7 L37.8 49.8 L38.5 50.9 L39.2 51.9 L40.0 53.0 L40.8 54.0 L41.5 55.1 L42.2 56.2 L43.0 57.2 L43.8 58.3 L44.5 57.2 L45.2 56.2 L46.0 55.1 L46.8 54.0 L47.5 53.0 L48.2 51.9 L49.0 50.9 L49.8 49.8 L50.5 48.7 L51.2 47.7 L52.0 46.6 L52.8 45.5 L53.5 44.5 L54.2 43.4 L55.0 42.3 L55.8 41.3 L56.5 40.2 L57.2 39.1 L58.0 38.1 L58.8 37.0 L59.5 36.0 L60.2 34.9 L61.0 33.8 L61.7 32.8 L62.5 31.7 L63.2 30.6 L64.0 29.6 L64.8 28.5 L65.5 27.4 L66.2 26.4 L67.0 27.4 L67.8 28.5 L68.5 29.6 L69.2 30.6 L70.0 31.7 L70.8 32.8 L71.5 33.8 L72.2 34.9 L73.0 36.0 L73.8 37.0 L74.5 38.1 L75.2 39.1 L76.0 40.2 L76.8 41.3 L77.5 42.3 L78.2 43.4 L79.0 44.5 L79.8 45.5 L80.5 46.6 L81.2 47.7 L82.0 48.7 L82.8 49.8 L83.5 50.9 L84.2 51.9 L85.0 53.0 L85.8 54.0 L86.5 55.1 L87.2 56.2 L88.0 57.2 L88.8 58.3 L89.5 57.2 L90.2 56.2 L91.0 55.1 L91.8 54.0 L92.5 53.0 L93.2 51.9 L94.0 50.9 L94.8 49.8 L95.5 48.7 L96.2 47.7 L97.0 46.6 L97.8 45.5 L98.5 44.5 L99.2 43.4 L100.0 42.3" fill="none" stroke="var(--accent)" stroke-width="2" />
+    <line x1="7" y1="42.3" x2="13" y2="42.3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="5" y="45.8" font-size="9.5" text-anchor="end" fill="currentColor">2</text>
+    <line x1="121" y1="74.3" x2="225" y2="74.3" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-valeur-moyenne)" />
+    <line x1="125" y1="99" x2="125" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-valeur-moyenne)" />
+    <text x="130" y="19" font-size="11" font-style="italic" fill="currentColor">⟨U⟩</text>
+    <text x="225" y="88.3" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">t</text>
+    <path d="M125.0 42.3 L125.8 42.3 L126.5 42.3 L127.2 42.3 L128.0 42.3 L128.8 42.3 L129.5 42.3 L130.2 42.3 L131.0 42.3 L131.8 42.3 L132.5 42.3 L133.2 42.3 L134.0 42.3 L134.8 42.3 L135.5 42.3 L136.2 42.3 L137.0 42.3 L137.8 42.3 L138.5 42.3 L139.2 42.3 L140.0 42.3 L140.8 42.3 L141.5 42.3 L142.2 42.3 L143.0 42.3 L143.8 42.3 L144.5 42.3 L145.2 42.3 L146.0 42.3 L146.8 42.3 L147.5 42.3 L148.2 42.3 L149.0 42.3 L149.8 42.3 L150.5 42.3 L151.2 42.3 L152.0 42.3 L152.8 42.3 L153.5 42.3 L154.2 42.3 L155.0 42.3 L155.8 42.3 L156.5 42.3 L157.2 42.3 L158.0 42.3 L158.8 42.3 L159.5 42.3 L160.2 42.3 L161.0 42.3 L161.8 42.3 L162.5 42.3 L163.2 42.3 L164.0 42.3 L164.8 42.3 L165.5 42.3 L166.2 42.3 L167.0 42.3 L167.8 42.3 L168.5 42.3 L169.2 42.3 L170.0 42.3 L170.8 42.3 L171.5 42.3 L172.2 42.3 L173.0 42.3 L173.8 42.3 L174.5 42.3 L175.2 42.3 L176.0 42.3 L176.8 42.3 L177.5 42.3 L178.2 42.3 L179.0 42.3 L179.8 42.3 L180.5 42.3 L181.2 42.3 L182.0 42.3 L182.8 42.3 L183.5 42.3 L184.2 42.3 L185.0 42.3 L185.8 42.3 L186.5 42.3 L187.2 42.3 L188.0 42.3 L188.8 42.3 L189.5 42.3 L190.2 42.3 L191.0 42.3 L191.8 42.3 L192.5 42.3 L193.2 42.3 L194.0 42.3 L194.8 42.3 L195.5 42.3 L196.2 42.3 L197.0 42.3 L197.8 42.3 L198.5 42.3 L199.2 42.3 L200.0 42.3 L200.8 42.3 L201.5 42.3 L202.2 42.3 L203.0 42.3 L203.8 42.3 L204.5 42.3 L205.2 42.3 L206.0 42.3 L206.8 42.3 L207.5 42.3 L208.2 42.3 L209.0 42.3 L209.8 42.3 L210.5 42.3 L211.2 42.3 L212.0 42.3 L212.8 42.3 L213.5 42.3 L214.2 42.3 L215.0 42.3" fill="none" stroke="var(--accent)" stroke-width="2" />
+    <line x1="122" y1="42.3" x2="128" y2="42.3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="120" y="45.8" font-size="9.5" text-anchor="end" fill="currentColor">2</text>
+    <line x1="236" y1="74.3" x2="340" y2="74.3" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-valeur-moyenne)" />
+    <line x1="240" y1="99" x2="240" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-valeur-moyenne)" />
+    <text x="245" y="19" font-size="11" font-style="italic" fill="currentColor">ualt(t)</text>
+    <text x="340" y="88.3" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">t</text>
+    <path d="M240.0 74.3 L240.8 73.2 L241.5 72.1 L242.2 71.1 L243.0 70.0 L243.8 68.9 L244.5 67.9 L245.2 66.8 L246.0 65.7 L246.8 64.7 L247.5 63.6 L248.2 62.6 L249.0 61.5 L249.8 60.4 L250.5 59.4 L251.2 58.3 L252.0 59.4 L252.8 60.4 L253.5 61.5 L254.2 62.6 L255.0 63.6 L255.8 64.7 L256.5 65.7 L257.2 66.8 L258.0 67.9 L258.8 68.9 L259.5 70.0 L260.2 71.1 L261.0 72.1 L261.8 73.2 L262.5 74.3 L263.2 75.3 L264.0 76.4 L264.8 77.4 L265.5 78.5 L266.2 79.6 L267.0 80.6 L267.8 81.7 L268.5 82.8 L269.2 83.8 L270.0 84.9 L270.8 86.0 L271.5 87.0 L272.2 88.1 L273.0 89.1 L273.8 90.2 L274.5 89.1 L275.2 88.1 L276.0 87.0 L276.8 86.0 L277.5 84.9 L278.2 83.8 L279.0 82.8 L279.8 81.7 L280.5 80.6 L281.2 79.6 L282.0 78.5 L282.8 77.4 L283.5 76.4 L284.2 75.3 L285.0 74.3 L285.8 73.2 L286.5 72.1 L287.2 71.1 L288.0 70.0 L288.8 68.9 L289.5 67.9 L290.2 66.8 L291.0 65.7 L291.8 64.7 L292.5 63.6 L293.2 62.6 L294.0 61.5 L294.8 60.4 L295.5 59.4 L296.2 58.3 L297.0 59.4 L297.8 60.4 L298.5 61.5 L299.2 62.6 L300.0 63.6 L300.8 64.7 L301.5 65.7 L302.2 66.8 L303.0 67.9 L303.8 68.9 L304.5 70.0 L305.2 71.1 L306.0 72.1 L306.8 73.2 L307.5 74.3 L308.2 75.3 L309.0 76.4 L309.8 77.4 L310.5 78.5 L311.2 79.6 L312.0 80.6 L312.8 81.7 L313.5 82.8 L314.2 83.8 L315.0 84.9 L315.8 86.0 L316.5 87.0 L317.2 88.1 L318.0 89.1 L318.8 90.2 L319.5 89.1 L320.2 88.1 L321.0 87.0 L321.8 86.0 L322.5 84.9 L323.2 83.8 L324.0 82.8 L324.8 81.7 L325.5 80.6 L326.2 79.6 L327.0 78.5 L327.8 77.4 L328.5 76.4 L329.2 75.3 L330.0 74.3" fill="none" stroke="var(--accent)" stroke-width="2" />
+    <line x1="237" y1="58.3" x2="243" y2="58.3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="235" y="61.8" font-size="9.5" text-anchor="end" fill="currentColor">1</text>
+    <text x="110" y="66" font-size="16" text-anchor="middle" fill="currentColor">=</text>
+    <text x="225" y="66" font-size="16" text-anchor="middle" fill="currentColor">+</text>
+    </svg>
+</Figure>
+
+## Série de Fourier trigonométrique
+
+<Definition titre="Série de Fourier trigonométrique">
+    Soit $x(t)$ un signal $T_0$-périodique. Sa décomposition en série de Fourier trigonométrique s'écrit :
+
+    $$
+    x(t) = \frac{a_0}{2} + \sum_{n=1}^{+\infty} \left[a_n \cos(2\pi n f_0 t) + b_n \sin(2\pi n f_0 t)\right]
+    $$
+
+    $$
+    f_0 = \frac{1}{T_0},\ \omega_0 = 2\pi f_0
+    $$
+
+    - $f_0$ : fréquence fondamentale ; $f_n = nf_0$ : harmoniques de rang $n$ ($n > 1$) ;
+    - $\dfrac{a_0}{2}$ : valeur moyenne du signal (composante continue), de fréquence nulle ;
+    - $a_n$ et $b_n$ : coefficients trigonométriques de la série de Fourier.
+</Definition>
+
+<Theorem type="À retenir" titre="Coefficients trigonométriques">
+    $$
+    a_n = \frac{2}{T_0} \int_{-T_0/2}^{T_0/2} x(t) \cos(2\pi n f_0 t)\, dt
+    $$
+
+    $$
+    b_n = \frac{2}{T_0} \int_{-T_0/2}^{T_0/2} x(t) \sin(2\pi n f_0 t)\, dt
+    $$
+
+    $$
+    a_0 = \frac{2}{T_0} \int_{-T_0/2}^{T_0/2} x(t)\, dt = 2 \times \langle x(t) \rangle
+    $$
+
+    $$
+    \Rightarrow  \langle x(t) \rangle = \frac{a_0}{2}
+    $$
+</Theorem>
+
+## Série de Fourier en cosinus
+
+{/* FOND ? cours2.pdf p. 11 : la relation A cos x + B sin x = √(A² + B²) cos(x + arctan(−B/A)) n'est valable que pour A > 0 (sinon il faut ajouter π à la phase) ; de même φn = arctan(−bn/an) suppose an > 0 et n'est pas défini si an = 0 (cas du signal carré, où l'on prend φn = −π/2). Signalé, non corrigé. */}
+
+Relation trigonométrique :
+
+$$
+A\cos(x) + B\sin(x) = \sqrt{A^2 + B^2}\cos\left(x + \arctan\left(-\frac{B}{A}\right)\right)
+$$
+
+En partant de la série de Fourier trigonométrique, on obtient la **série de cosinus** :
+
+<Definition titre="Série de Fourier en cosinus">
+    $$
+    x(t) = A_0 + \sum_{n=1}^{+\infty} A_n \cos(2\pi n f_0 t + \varphi_n)
+    $$
+
+    avec
+
+    $$
+    A_0 = \frac{a_0}{2} \ \text{(valeur moyenne)}
+    $$
+
+    $$
+    A_n = \sqrt{a_n^2 + b_n^2}
+    $$
+
+    $$
+    \text{et} \ \varphi_n = \arctan\left(\frac{-b_n}{a_n}\right)
+    $$
+
+    où $a_n$ et $b_n$ sont les coefficients de la série trigonométrique.
+</Definition>
+
+## Série de Fourier complexe
+
+Formules d'Euler :
+
+$$
+\cos x = \frac{e^{jx} + e^{-jx}}{2}
+$$
+
+$$
+\sin x = \frac{e^{jx} - e^{-jx}}{2j}
+$$
+
+{/* FOND ? cours2.pdf p. 12 : la série trigonométrique y est notée S_f(x) alors qu'elle dépend de t. Signalé, non corrigé. */}
+
+<Definition titre="Série de Fourier complexe">
+    $$
+    x(t) = C_0 + \sum_{\substack{n=-\infty \\ n \ne 0}}^{+\infty} C_n e^{j2\pi n f_0 t}
+    $$
+
+    Coefficients complexes :
+
+    $$
+    C_n = \frac{1}{T_0} \int_{-T_0/2}^{T_0/2} x(t) e^{-j2\pi n f_0 t}\, dt
+    $$
+
+    $$
+    \rightarrow  C_0 = \frac{1}{T_0} \int_{-T_0/2}^{T_0/2} x(t)\, dt \quad \text{: valeur moyenne de } x(t)
+    $$
+</Definition>
+
+<Theorem type="À retenir" titre="Lien avec les coefficients trigonométriques">
+    $$
+    C_0 = \frac{a_0}{2}
+    $$
+
+    $$
+    C_n = \frac{a_n}{2} - j\frac{b_n}{2}
+    $$
+
+    $$
+    C_{-n} = \overline{C_n} = \frac{a_n}{2} + j\frac{b_n}{2}
+    $$
+
+    $$
+    C_n = |C_n| \exp(j \arg(C_n))
+    $$
+
+    $$
+    |C_n| = \frac{\sqrt{a_n^2 + b_n^2}}{2}
+    $$
+
+    $$
+    \arg(C_n) = \arctan\left(-\frac{b_n}{a_n}\right)
+    $$
+</Theorem>
+
+## Propriétés des coefficients
+
+<Property>
+    On montre que :
+
+    1. Si $x(t)$ est **pair**, alors $b_n = 0 \rightarrow C_n = \dfrac{a_n}{2}$ (coefficients réels).
+    2. Si $x(t)$ est **impair**, alors $a_n = 0 \rightarrow C_n = -j\dfrac{b_n}{2}$ (coefficients imaginaires).
+    3. $a_n = C_n + \overline{C_n}$, $\quad b_n = j(C_n - \overline{C_n})$.
+    4. $C_{-n} = \overline{C_n} \Rightarrow |C_{-n}| = |\overline{C_n}| = |C_n|$.
+    5. $\arg(C_n) = \operatorname{atan}\left(-\dfrac{b_n}{a_n}\right)$, $\quad \arg(C_{-n}) = \operatorname{atan}\left(\dfrac{b_n}{a_n}\right) = -\arg(C_n)$.
+</Property>
+
+## Relations entre les coefficients
+
+| Série trigonométrique | Série complexe | Série en cosinus |
+|---|---|---|
+| $x(t) = \frac{a_0}{2} + \sum_{n=1}^{+\infty} a_n \cos(n2\pi f_0 t) + b_n \sin(n2\pi f_0 t)$ | $x(t) = C_0 + \sum_{n \ne 0} C_n e^{jn\omega_0 t}$ | $x(t) = A_0 + \sum_{n=1}^{+\infty} A_n \cos(n2\pi f_0 t + \varphi_n)$ |
+
+<Theorem type="À retenir" titre="Passer d'une forme à l'autre">
+    $$
+    C_0 = \frac{a_0}{2} = A_0 \ \text{(valeur moyenne)}
+    $$
+
+    $$
+    C_n = \frac{a_n - jb_n}{2}
+    $$
+
+    $$
+    C_{-n} = \frac{a_n + jb_n}{2} = \overline{C_n}
+    $$
+
+    $$
+    |C_{-n}| = |\overline{C_n}| = |C_n| = \frac{\sqrt{a_n^2 + b_n^2}}{2} = \frac{A_n}{2}
+    $$
+
+    $$
+    A_n = \sqrt{a_n^2 + b_n^2}
+    $$
+
+    $$
+    \varphi_n = \operatorname{atan}\left(\frac{-b_n}{a_n}\right)
+    $$
+
+    $$
+    \arg(C_n) = \operatorname{atan}\left(\frac{-b_n}{a_n}\right) = \varphi_n
+    $$
+
+    $$
+    \arg(C_{-n}) = \operatorname{atan}\left(\frac{b_n}{a_n}\right) = -\varphi_n
+    $$
+</Theorem>
+
+## Spectre unilatéral
+
+<Definition titre="Spectres unilatéraux">
+    Le **spectre d'amplitude unilatéral** d'un signal $T_0$-périodique est un spectre sous forme d'impulsions (spectre discontinu) d'amplitude $A_n$ (coefficients de la série de cosinus), situées aux fréquences $nf_0$, $n \ge 0$.
+
+    Le **spectre de phase unilatéral** est constitué d'impulsions d'amplitude $\varphi_n$ situées aux fréquences $nf_0$, $n \ge 0$.
+
+    $$
+    x(t) = A_0 + \sum_{n=1}^{+\infty} A_n \cos(2\pi n f_0 t + \varphi_n)
+    $$
+</Definition>
+
+<Figure legende="Spectre d'amplitude unilatéral (valeur moyenne, fondamental, harmoniques) et spectre de phase unilatéral" page="cours2.pdf p. 15">
+    <svg viewBox="0 0 340 140" role="img" aria-label="Spectre d’amplitude unilatéral : raies A0, A1, A2… aux fréquences 0, f0, 2f0… ; spectre de phase unilatéral : raies φn, positives ou négatives">
+    <defs>
+    <marker id="fl-spectre-unilateral" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    <marker id="fa-spectre-unilateral" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--accent)" /></marker>
+    </defs>
+    <line x1="11" y1="110" x2="175" y2="110" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-spectre-unilateral)" />
+    <line x1="23.5" y1="114" x2="23.5" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-spectre-unilateral)" />
+    <text x="28.5" y="19" font-size="11" font-style="italic" fill="currentColor">An</text>
+    <text x="175" y="124" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f = nf0</text>
+    <line x1="23.5" y1="110" x2="23.5" y2="48.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="23.5" cy="48.6" r="3" fill="var(--accent)" />
+    <line x1="51.8" y1="110" x2="51.8" y2="36.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="51.8" cy="36.4" r="3" fill="var(--accent)" />
+    <line x1="80.1" y1="110" x2="80.1" y2="81.4" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="80.1" cy="81.4" r="3" fill="var(--accent)" />
+    <line x1="108.4" y1="110" x2="108.4" y2="85.5" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="108.4" cy="85.5" r="3" fill="var(--accent)" />
+    <line x1="136.7" y1="110" x2="136.7" y2="65" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="136.7" cy="65" r="3" fill="var(--accent)" />
+    <text x="19" y="41.6" font-size="9.5" font-style="italic" fill="var(--accent)">A</text>
+    <text x="24.2" y="44.6" font-size="6.84" font-style="italic" fill="var(--accent)">0</text>
+    <text x="47.3" y="29.4" font-size="9.5" font-style="italic" fill="var(--accent)">A</text>
+    <text x="52.5" y="32.4" font-size="6.84" font-style="italic" fill="var(--accent)">1</text>
+    <text x="75.6" y="74.4" font-size="9.5" font-style="italic" fill="var(--accent)">A</text>
+    <text x="80.8" y="77.4" font-size="6.84" font-style="italic" fill="var(--accent)">2</text>
+    <text x="103.9" y="78.5" font-size="9.5" font-style="italic" fill="var(--accent)">A</text>
+    <text x="109.1" y="81.5" font-size="6.84" font-style="italic" fill="var(--accent)">3</text>
+    <text x="132.2" y="58" font-size="9.5" font-style="italic" fill="var(--accent)">A</text>
+    <text x="137.4" y="61" font-size="6.84" font-style="italic" fill="var(--accent)">4</text>
+    <line x1="51.8" y1="107" x2="51.8" y2="113" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="51.8" y="124" font-size="9.5" text-anchor="middle" fill="currentColor">f0</text>
+    <line x1="80.1" y1="107" x2="80.1" y2="113" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="80.1" y="124" font-size="9.5" text-anchor="middle" fill="currentColor">2f0</text>
+    <line x1="108.4" y1="107" x2="108.4" y2="113" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="108.4" y="124" font-size="9.5" text-anchor="middle" fill="currentColor">3f0</text>
+    <line x1="136.7" y1="107" x2="136.7" y2="113" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="136.7" y="124" font-size="9.5" text-anchor="middle" fill="currentColor">4f0</text>
+    <line x1="186" y1="67.1" x2="335" y2="67.1" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-spectre-unilateral)" />
+    <line x1="197.6" y1="114" x2="197.6" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-spectre-unilateral)" />
+    <text x="202.6" y="19" font-size="11" font-style="italic" fill="currentColor">φn (rad)</text>
+    <text x="335" y="81.1" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <line x1="223.1" y1="67.1" x2="223.1" y2="47.9" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-unilateral)" />
+    <text x="226.6" y="51.9" font-size="9.5" font-style="italic" fill="var(--accent)">φ</text>
+    <text x="231.8" y="54.9" font-size="6.84" font-style="italic" fill="var(--accent)">1</text>
+    <line x1="248.6" y1="67.1" x2="248.6" y2="92.9" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-unilateral)" />
+    <text x="252.1" y="98.9" font-size="9.5" font-style="italic" fill="var(--accent)">φ</text>
+    <text x="257.3" y="101.9" font-size="6.84" font-style="italic" fill="var(--accent)">2</text>
+    <line x1="274.1" y1="67.1" x2="274.1" y2="39.3" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-unilateral)" />
+    <text x="277.5" y="43.3" font-size="9.5" font-style="italic" fill="var(--accent)">φ</text>
+    <text x="282.8" y="46.3" font-size="6.84" font-style="italic" fill="var(--accent)">3</text>
+    <line x1="299.5" y1="67.1" x2="299.5" y2="26.4" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-unilateral)" />
+    <text x="303" y="30.4" font-size="9.5" font-style="italic" fill="var(--accent)">φ</text>
+    <text x="308.2" y="33.4" font-size="6.84" font-style="italic" fill="var(--accent)">4</text>
+    </svg>
+</Figure>
+
+<Example titre="Spectres unilatéraux d'un signal carré périodique">
+    Signal carré de période $T_0 = 1$, valant $1$ puis $-1$ :
+
+    $$
+    x(t) = \sum_{n=1}^{+\infty} \frac{2(1 - (-1)^n)}{n\pi} \sin(2\pi n f_0 t)
+    $$
+
+    $$
+    \begin{cases} b_n = 0 & \text{si } n \text{ pair} \\[4pt] b_n = \dfrac{4}{n\pi} & \text{si } n \text{ impair} \end{cases}
+    $$
+
+    Série trigonométrique :
+
+    $$
+    x(t) = \frac{4}{\pi}\sin(2\pi f_0 t) + \frac{4}{3\pi}\sin(2\pi (3f_0) t) + \frac{4}{5\pi}\sin(2\pi (5f_0) t) + \ldots
+    $$
+
+    Série de cosinus :
+
+    $$
+    x(t) = \underbrace{0}_{A_0} + \underbrace{\frac{4}{\pi}}_{A_1}\cos\Big(2\pi f_0 t \underbrace{- \frac{\pi}{2}}_{\varphi_1}\Big) + \underbrace{\frac{4}{3\pi}}_{A_3}\cos\Big(2\pi \times 3f_0 t \underbrace{- \frac{\pi}{2}}_{\varphi_3}\Big) + \underbrace{\frac{4}{5\pi}}_{A_5}\cos\Big(2\pi \times 5f_0 t \underbrace{- \frac{\pi}{2}}_{\varphi_5}\Big) + \ldots
+    $$
+</Example>
+
+<Figure legende="Signal carré, spectre d'amplitude unilatéral et spectre de phase unilatéral" page="cours2.pdf p. 16">
+    <svg viewBox="0 0 340 150" role="img" aria-label="Signal carré de période T0 = 1 entre −1 et 1 ; spectre d’amplitude unilatéral : raies 4/π, 4/(3π), 4/(5π) en f0, 3f0, 5f0 ; spectre de phase : −π/2 pour chaque harmonique impair">
+    <defs>
+    <marker id="fl-carre" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    <marker id="fa-carre" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--accent)" /></marker>
+    </defs>
+    <line x1="11" y1="70" x2="145" y2="70" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre)" />
+    <line x1="67.2" y1="124" x2="67.2" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre)" />
+    <text x="72.2" y="19" font-size="11" font-style="italic" fill="currentColor">x(t)</text>
+    <text x="145" y="84" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">t</text>
+    <path d="M15.0 34.3 L41.1 34.3 L41.1 105.7 L67.2 105.7 L67.2 34.3 L93.3 34.3 L93.3 105.7 L119.3 105.7 L119.3 34.3 L135.0 34.3" fill="none" stroke="var(--accent)" stroke-width="2" />
+    <line x1="64.2" y1="34.3" x2="70.2" y2="34.3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="62.2" y="37.8" font-size="9.5" text-anchor="end" fill="currentColor">1</text>
+    <line x1="64.2" y1="105.7" x2="70.2" y2="105.7" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="62.2" y="109.2" font-size="9.5" text-anchor="end" fill="currentColor">−1</text>
+    <line x1="119.3" y1="67" x2="119.3" y2="73" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="119.3" y="84" font-size="9.5" text-anchor="middle" fill="currentColor">1</text>
+    <line x1="15" y1="67" x2="15" y2="73" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="15" y="64" font-size="9.5" text-anchor="middle" fill="currentColor">−1</text>
+    <line x1="161" y1="60" x2="325" y2="60" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre)" />
+    <line x1="165" y1="64" x2="165" y2="4" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre)" />
+    <text x="170" y="11" font-size="11" font-style="italic" fill="currentColor">An</text>
+    <text x="325" y="74" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <line x1="188.1" y1="60" x2="188.1" y2="17.9" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="188.1" cy="17.9" r="3" fill="var(--accent)" />
+    <line x1="188.1" y1="57" x2="188.1" y2="63" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="188.1" y="74" font-size="9.5" text-anchor="middle" fill="currentColor">f0</text>
+    <line x1="234.2" y1="60" x2="234.2" y2="46" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="234.2" cy="46" r="3" fill="var(--accent)" />
+    <line x1="234.2" y1="57" x2="234.2" y2="63" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="234.2" y="74" font-size="9.5" text-anchor="middle" fill="currentColor">3f0</text>
+    <line x1="280.4" y1="60" x2="280.4" y2="51.6" stroke="var(--accent)" stroke-width="1.6" />
+    <circle cx="280.4" cy="51.6" r="3" fill="var(--accent)" />
+    <line x1="280.4" y1="57" x2="280.4" y2="63" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="280.4" y="74" font-size="9.5" text-anchor="middle" fill="currentColor">5f0</text>
+    <text x="193.1" y="21.9" font-size="9" fill="var(--accent)">4/π</text>
+    <line x1="161" y1="104" x2="325" y2="104" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre)" />
+    <line x1="165" y1="141" x2="165" y2="89" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre)" />
+    <text x="170" y="96" font-size="11" font-style="italic" fill="currentColor">φn</text>
+    <text x="325" y="118" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <line x1="188.1" y1="104" x2="188.1" y2="131.3" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre)" />
+    <line x1="234.2" y1="104" x2="234.2" y2="131.3" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre)" />
+    <line x1="280.4" y1="104" x2="280.4" y2="131.3" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre)" />
+    <line x1="162" y1="131.3" x2="168" y2="131.3" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="160" y="134.8" font-size="9.5" text-anchor="end" fill="currentColor">−π/2</text>
+    </svg>
+</Figure>
+
+## Spectre bilatéral
+
+<Definition titre="Spectres bilatéraux">
+    Le **spectre d'amplitude bilatéral** d'un signal $T_0$-périodique est un spectre sous forme d'impulsions (spectre discontinu) d'amplitude $|C_n|$, situées aux fréquences $nf_0$, $n \in \mathbb{Z}$. C'est une **fonction paire** (symétrique par rapport à l'axe des ordonnées) car $|C_n| = |C_{-n}|$. On note que :
+
+    $$
+    |C_n| = |C_{-n}| = \frac{A_n}{2}
+    $$
+
+    Le **spectre de phase bilatéral** est constitué d'impulsions d'amplitude $\arg(C_n) = \varphi_n$ pour $n > 0$ et $\arg(C_{-n}) = -\varphi_n$ pour $n < 0$. C'est une **fonction impaire** car $\varphi_{-n} = -\varphi_n$.
+</Definition>
+
+<Figure legende="Spectre d'amplitude bilatéral (pair) et spectre de phase bilatéral (impair)" page="cours2.pdf p. 17">
+    <svg viewBox="0 0 340 140" role="img" aria-label="Spectre d’amplitude bilatéral |Cn|, symétrique (fonction paire) ; spectre de phase bilatéral, antisymétrique (fonction impaire)">
+    <defs>
+    <marker id="fl-spectre-bilateral" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    <marker id="fa-spectre-bilateral" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--accent)" /></marker>
+    </defs>
+    <line x1="11" y1="110" x2="175" y2="110" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-spectre-bilateral)" />
+    <line x1="90" y1="114" x2="90" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-spectre-bilateral)" />
+    <text x="95" y="19" font-size="11" font-style="italic" fill="currentColor">|Cn|</text>
+    <text x="175" y="124" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <line x1="27.5" y1="110" x2="27.5" y2="93.6" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="48.3" y1="110" x2="48.3" y2="85.5" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="69.2" y1="110" x2="69.2" y2="65" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="90" y1="110" x2="90" y2="48.6" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="110.8" y1="110" x2="110.8" y2="65" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="131.7" y1="110" x2="131.7" y2="85.5" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="152.5" y1="110" x2="152.5" y2="93.6" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="48.3" y1="107" x2="48.3" y2="113" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="48.3" y="124" font-size="9.5" text-anchor="middle" fill="currentColor">−2f0</text>
+    <line x1="131.7" y1="107" x2="131.7" y2="113" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="131.7" y="124" font-size="9.5" text-anchor="middle" fill="currentColor">2f0</text>
+    <text x="96" y="50.6" font-size="9.5" font-style="italic" fill="var(--accent)">C</text>
+    <text x="101.2" y="53.6" font-size="6.84" font-style="italic" fill="var(--accent)">0</text>
+    <line x1="186" y1="65" x2="340" y2="65" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-spectre-bilateral)" />
+    <line x1="260" y1="114" x2="260" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-spectre-bilateral)" />
+    <text x="265" y="19" font-size="11" font-style="italic" fill="currentColor">φn</text>
+    <text x="340" y="79" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <line x1="279.4" y1="65" x2="279.4" y2="92" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="240.6" y1="65" x2="240.6" y2="38" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="298.9" y1="65" x2="298.9" y2="40.2" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="221.1" y1="65" x2="221.1" y2="89.8" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="318.3" y1="65" x2="318.3" y2="101" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    <line x1="201.7" y1="65" x2="201.7" y2="29" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-spectre-bilateral)" />
+    </svg>
+</Figure>
+
+<Example titre="Spectres bilatéraux d'un signal carré périodique">
+    À partir de la série de cosinus du signal carré ($T_0 = 1$) :
+
+    $$
+    |C_n| = |C_{-n}| = \frac{A_n}{2} \Rightarrow C_0 = A_0 = 0, \quad |C_1| = |C_{-1}| = \frac{A_1}{2} = \frac{2}{\pi}, \quad |C_3| = |C_{-3}| = \frac{A_3}{2} = \frac{2}{3\pi}, \ \ldots
+    $$
+
+    {/* FOND ? cours2.pdf p. 18 : comme φ1 = −π/2, on a φ−1 = −φ1 = +π/2 (c'est d'ailleurs ce que montre la figure de la même page), et non −π/2. Signalé, non corrigé. */}
+
+    $$
+    \varphi_0 = 0, \quad \varphi_{-1} = -\varphi_1 = -\frac{\pi}{2}, \ \ldots
+    $$
+</Example>
+
+<Figure legende="Signal carré : spectres d'amplitude et de phase bilatéraux" page="cours2.pdf p. 18">
+    <svg viewBox="0 0 340 130" role="img" aria-label="Signal carré : spectre d’amplitude bilatéral, raies 2/π, 2/(3π), 2/(5π) en ±f0, ±3f0, ±5f0 ; spectre de phase : −π/2 pour f &gt; 0 et +π/2 pour f &lt; 0">
+    <defs>
+    <marker id="fl-carre-bilateral" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    <marker id="fa-carre-bilateral" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--accent)" /></marker>
+    </defs>
+    <line x1="11" y1="105" x2="175" y2="105" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre-bilateral)" />
+    <line x1="90" y1="109" x2="90" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre-bilateral)" />
+    <text x="95" y="19" font-size="11" font-style="italic" fill="currentColor">|Cn|</text>
+    <text x="175" y="119" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <line x1="102.5" y1="105" x2="102.5" y2="37.4" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="77.5" y1="105" x2="77.5" y2="37.4" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="127.5" y1="105" x2="127.5" y2="82.5" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="52.5" y1="105" x2="52.5" y2="82.5" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="152.5" y1="105" x2="152.5" y2="91.5" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="27.5" y1="105" x2="27.5" y2="91.5" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="27.5" y1="102" x2="27.5" y2="108" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="27.5" y="119" font-size="9.5" text-anchor="middle" fill="currentColor">−5f0</text>
+    <line x1="77.5" y1="102" x2="77.5" y2="108" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="77.5" y="119" font-size="9.5" text-anchor="middle" fill="currentColor">−f0</text>
+    <line x1="102.5" y1="102" x2="102.5" y2="108" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="102.5" y="119" font-size="9.5" text-anchor="middle" fill="currentColor">f0</text>
+    <line x1="152.5" y1="102" x2="152.5" y2="108" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="152.5" y="119" font-size="9.5" text-anchor="middle" fill="currentColor">5f0</text>
+    <text x="106.5" y="35.4" font-size="9" fill="var(--accent)">2/π</text>
+    <line x1="186" y1="62.5" x2="340" y2="62.5" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre-bilateral)" />
+    <line x1="260" y1="109" x2="260" y2="12" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-carre-bilateral)" />
+    <text x="265" y="19" font-size="11" font-style="italic" fill="currentColor">φn</text>
+    <text x="340" y="76.5" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">f</text>
+    <line x1="271.7" y1="62.5" x2="271.7" y2="97.6" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="248.3" y1="62.5" x2="248.3" y2="27.4" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="295" y1="62.5" x2="295" y2="97.6" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="225" y1="62.5" x2="225" y2="27.4" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="318.3" y1="62.5" x2="318.3" y2="97.6" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="201.7" y1="62.5" x2="201.7" y2="27.4" stroke="var(--accent)" stroke-width="2" marker-end="url(#fa-carre-bilateral)" />
+    <line x1="257" y1="27.4" x2="263" y2="27.4" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="265" y="30.9" font-size="9.5" fill="currentColor">π/2</text>
+    <line x1="257" y1="97.6" x2="263" y2="97.6" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="255" y="101.1" font-size="9.5" text-anchor="end" fill="currentColor">−π/2</text>
+    </svg>
+</Figure>
+
+## Phénomène de Gibbs
+
+<Definition titre="Phénomène de Gibbs">
+    Prenons l'exemple du signal carré. Lorsque l'on trace $x(t)$ à partir de sa série de Fourier, de fortes oscillations apparaissent aux points de discontinuité. Lorsque le nombre d'harmoniques devient grand, l'amplitude de ces oscillations tend vers une limite **strictement plus grande** que l'amplitude de la discontinuité, tandis que la largeur de la zone d'oscillations tend vers zéro.
+</Definition>
+
+<Figure legende="Signal carré restitué à partir de la série de Fourier avec 50 sinusoïdes" page="cours2.pdf p. 19">
+    <svg viewBox="0 0 340 150" role="img" aria-label="Signal carré restitué à partir des 50 premiers termes non nuls de sa série de Fourier : oscillations (dépassements) au voisinage de chaque discontinuité">
+    <defs>
+    <marker id="fl-gibbs" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55" /></marker>
+    </defs>
+    <line x1="21" y1="72.5" x2="335" y2="72.5" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-gibbs)" />
+    <line x1="25" y1="134" x2="25" y2="7" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#fl-gibbs)" />
+    <text x="335" y="86.5" font-size="11" font-style="italic" text-anchor="end" fill="currentColor">t</text>
+    <path d="M25.0 72.5 L25.2 55.8 L25.4 41.3 L25.6 30.5 L25.8 24.2 L25.9 22.3 L26.1 23.7 L26.3 27.0 L26.5 30.6 L26.7 33.2 L26.9 34.0 L27.1 33.3 L27.2 31.4 L27.4 29.3 L27.6 27.7 L27.8 27.1 L28.0 27.6 L28.2 28.9 L28.4 30.4 L28.6 31.6 L28.8 32.0 L28.9 31.6 L29.1 30.6 L29.3 29.5 L29.5 28.5 L29.7 28.2 L29.9 28.5 L30.1 29.3 L30.2 30.3 L30.4 31.1 L30.6 31.3 L30.8 31.1 L31.0 30.4 L31.2 29.6 L31.4 28.9 L31.6 28.7 L31.8 28.9 L31.9 29.5 L32.1 30.2 L32.3 30.8 L32.5 31.0 L32.7 30.8 L32.9 30.3 L33.1 29.6 L33.2 29.1 L33.4 28.9 L33.6 29.1 L33.8 29.6 L34.0 30.2 L34.2 30.6 L34.4 30.8 L34.6 30.6 L34.8 30.2 L34.9 29.7 L35.1 29.3 L35.3 29.1 L35.5 29.3 L35.7 29.6 L35.9 30.1 L36.1 30.5 L36.2 30.6 L36.4 30.5 L36.6 30.1 L36.8 29.7 L37.0 29.4 L37.2 29.2 L37.4 29.4 L37.6 29.7 L37.8 30.1 L37.9 30.4 L38.1 30.5 L38.3 30.4 L38.5 30.1 L38.7 29.7 L38.9 29.4 L39.1 29.3 L39.2 29.4 L39.4 29.7 L39.6 30.1 L39.8 30.4 L40.0 30.5 L40.2 30.4 L40.4 30.1 L40.6 29.7 L40.8 29.5 L40.9 29.4 L41.1 29.5 L41.3 29.7 L41.5 30.1 L41.7 30.3 L41.9 30.4 L42.1 30.3 L42.2 30.1 L42.4 29.8 L42.6 29.5 L42.8 29.4 L43.0 29.5 L43.2 29.8 L43.4 30.0 L43.6 30.3 L43.8 30.4 L43.9 30.3 L44.1 30.1 L44.3 29.8 L44.5 29.6 L44.7 29.5 L44.9 29.5 L45.1 29.8 L45.2 30.0 L45.4 30.3 L45.6 30.3 L45.8 30.3 L46.0 30.0 L46.2 29.8 L46.4 29.6 L46.6 29.5 L46.8 29.6 L46.9 29.8 L47.1 30.0 L47.3 30.2 L47.5 30.3 L47.7 30.2 L47.9 30.0 L48.1 29.8 L48.2 29.6 L48.4 29.5 L48.6 29.6 L48.8 29.8 L49.0 30.0 L49.2 30.2 L49.4 30.3 L49.6 30.2 L49.8 30.0 L49.9 29.8 L50.1 29.6 L50.3 29.5 L50.5 29.6 L50.7 29.8 L50.9 30.0 L51.1 30.2 L51.2 30.3 L51.4 30.2 L51.6 30.0 L51.8 29.8 L52.0 29.6 L52.2 29.6 L52.4 29.6 L52.6 29.8 L52.8 30.0 L52.9 30.2 L53.1 30.2 L53.3 30.2 L53.5 30.0 L53.7 29.8 L53.9 29.6 L54.1 29.6 L54.2 29.6 L54.4 29.8 L54.6 30.0 L54.8 30.2 L55.0 30.2 L55.2 30.2 L55.4 30.0 L55.6 29.8 L55.8 29.7 L55.9 29.6 L56.1 29.7 L56.3 29.8 L56.5 30.0 L56.7 30.2 L56.9 30.2 L57.1 30.2 L57.2 30.0 L57.4 29.8 L57.6 29.7 L57.8 29.6 L58.0 29.7 L58.2 29.8 L58.4 30.0 L58.6 30.1 L58.8 30.2 L58.9 30.1 L59.1 30.0 L59.3 29.8 L59.5 29.7 L59.7 29.6 L59.9 29.7 L60.1 29.8 L60.2 30.0 L60.4 30.1 L60.6 30.2 L60.8 30.1 L61.0 30.0 L61.2 29.8 L61.4 29.7 L61.6 29.6 L61.8 29.7 L61.9 29.8 L62.1 30.0 L62.3 30.1 L62.5 30.2 L62.7 30.1 L62.9 30.0 L63.1 29.8 L63.2 29.7 L63.4 29.6 L63.6 29.7 L63.8 29.8 L64.0 30.0 L64.2 30.1 L64.4 30.2 L64.6 30.1 L64.8 30.0 L64.9 29.8 L65.1 29.7 L65.3 29.6 L65.5 29.7 L65.7 29.8 L65.9 30.0 L66.1 30.1 L66.2 30.2 L66.4 30.1 L66.6 30.0 L66.8 29.8 L67.0 29.7 L67.2 29.6 L67.4 29.7 L67.6 29.8 L67.8 30.0 L67.9 30.1 L68.1 30.2 L68.3 30.1 L68.5 30.0 L68.7 29.8 L68.9 29.7 L69.1 29.6 L69.2 29.7 L69.4 29.8 L69.6 30.0 L69.8 30.1 L70.0 30.2 L70.2 30.1 L70.4 30.0 L70.6 29.8 L70.8 29.7 L70.9 29.6 L71.1 29.7 L71.3 29.8 L71.5 30.0 L71.7 30.1 L71.9 30.2 L72.1 30.1 L72.2 30.0 L72.4 29.8 L72.6 29.7 L72.8 29.6 L73.0 29.7 L73.2 29.8 L73.4 30.0 L73.6 30.1 L73.8 30.2 L73.9 30.1 L74.1 30.0 L74.3 29.8 L74.5 29.7 L74.7 29.6 L74.9 29.7 L75.1 29.8 L75.2 30.0 L75.4 30.1 L75.6 30.2 L75.8 30.1 L76.0 30.0 L76.2 29.8 L76.4 29.7 L76.6 29.6 L76.8 29.7 L76.9 29.8 L77.1 30.0 L77.3 30.1 L77.5 30.2 L77.7 30.1 L77.9 30.0 L78.1 29.8 L78.2 29.7 L78.4 29.6 L78.6 29.7 L78.8 29.8 L79.0 30.0 L79.2 30.1 L79.4 30.2 L79.6 30.1 L79.8 30.0 L79.9 29.8 L80.1 29.7 L80.3 29.6 L80.5 29.7 L80.7 29.8 L80.9 30.0 L81.1 30.1 L81.2 30.2 L81.4 30.1 L81.6 30.0 L81.8 29.8 L82.0 29.7 L82.2 29.6 L82.4 29.7 L82.6 29.8 L82.8 30.0 L82.9 30.1 L83.1 30.2 L83.3 30.1 L83.5 30.0 L83.7 29.8 L83.9 29.7 L84.1 29.6 L84.2 29.7 L84.4 29.8 L84.6 30.0 L84.8 30.1 L85.0 30.2 L85.2 30.1 L85.4 30.0 L85.6 29.8 L85.8 29.7 L85.9 29.6 L86.1 29.7 L86.3 29.8 L86.5 30.0 L86.7 30.2 L86.9 30.2 L87.1 30.2 L87.2 30.0 L87.4 29.8 L87.6 29.7 L87.8 29.6 L88.0 29.7 L88.2 29.8 L88.4 30.0 L88.6 30.2 L88.8 30.2 L88.9 30.2 L89.1 30.0 L89.3 29.8 L89.5 29.6 L89.7 29.6 L89.9 29.6 L90.1 29.8 L90.2 30.0 L90.4 30.2 L90.6 30.2 L90.8 30.2 L91.0 30.0 L91.2 29.8 L91.4 29.6 L91.6 29.6 L91.8 29.6 L91.9 29.8 L92.1 30.0 L92.3 30.2 L92.5 30.3 L92.7 30.2 L92.9 30.0 L93.1 29.8 L93.2 29.6 L93.4 29.5 L93.6 29.6 L93.8 29.8 L94.0 30.0 L94.2 30.2 L94.4 30.3 L94.6 30.2 L94.8 30.0 L94.9 29.8 L95.1 29.6 L95.3 29.5 L95.5 29.6 L95.7 29.8 L95.9 30.0 L96.1 30.2 L96.2 30.3 L96.4 30.2 L96.6 30.0 L96.8 29.8 L97.0 29.6 L97.2 29.5 L97.4 29.6 L97.6 29.8 L97.8 30.0 L97.9 30.3 L98.1 30.3 L98.3 30.3 L98.5 30.0 L98.7 29.8 L98.9 29.5 L99.1 29.5 L99.2 29.6 L99.4 29.8 L99.6 30.1 L99.8 30.3 L100.0 30.4 L100.2 30.3 L100.4 30.0 L100.6 29.8 L100.8 29.5 L100.9 29.4 L101.1 29.5 L101.3 29.8 L101.5 30.1 L101.7 30.3 L101.9 30.4 L102.1 30.3 L102.2 30.1 L102.4 29.7 L102.6 29.5 L102.8 29.4 L103.0 29.5 L103.2 29.7 L103.4 30.1 L103.6 30.4 L103.7 30.5 L103.9 30.4 L104.1 30.1 L104.3 29.7 L104.5 29.4 L104.7 29.3 L104.9 29.4 L105.1 29.7 L105.2 30.1 L105.4 30.4 L105.6 30.5 L105.8 30.4 L106.0 30.1 L106.2 29.7 L106.4 29.4 L106.6 29.2 L106.7 29.4 L106.9 29.7 L107.1 30.1 L107.3 30.5 L107.5 30.6 L107.7 30.5 L107.9 30.1 L108.1 29.6 L108.3 29.3 L108.4 29.1 L108.6 29.3 L108.8 29.7 L109.0 30.2 L109.2 30.6 L109.4 30.8 L109.6 30.6 L109.7 30.2 L109.9 29.6 L110.1 29.1 L110.3 28.9 L110.5 29.1 L110.7 29.6 L110.9 30.3 L111.1 30.8 L111.2 31.0 L111.4 30.8 L111.6 30.2 L111.8 29.5 L112.0 28.9 L112.2 28.7 L112.4 28.9 L112.6 29.6 L112.8 30.4 L112.9 31.1 L113.1 31.3 L113.3 31.1 L113.5 30.3 L113.7 29.3 L113.9 28.5 L114.1 28.2 L114.2 28.5 L114.4 29.5 L114.6 30.6 L114.8 31.6 L115.0 32.0 L115.2 31.6 L115.4 30.4 L115.6 28.9 L115.8 27.6 L115.9 27.1 L116.1 27.7 L116.3 29.3 L116.5 31.4 L116.7 33.3 L116.9 34.0 L117.1 33.2 L117.2 30.6 L117.4 27.0 L117.6 23.7 L117.8 22.3 L118.0 24.2 L118.2 30.5 L118.4 41.3 L118.6 55.8 L118.8 72.5 L118.9 89.2 L119.1 103.7 L119.3 114.5 L119.5 120.8 L119.7 122.7 L119.9 121.3 L120.1 118.0 L120.2 114.4 L120.4 111.8 L120.6 111.0 L120.8 111.7 L121.0 113.6 L121.2 115.7 L121.4 117.3 L121.6 117.9 L121.8 117.4 L121.9 116.1 L122.1 114.6 L122.3 113.4 L122.5 113.0 L122.7 113.4 L122.9 114.4 L123.1 115.5 L123.2 116.5 L123.4 116.8 L123.6 116.5 L123.8 115.7 L124.0 114.7 L124.2 113.9 L124.4 113.7 L124.6 113.9 L124.8 114.6 L124.9 115.4 L125.1 116.1 L125.3 116.3 L125.5 116.1 L125.7 115.5 L125.9 114.8 L126.1 114.2 L126.2 114.0 L126.4 114.2 L126.6 114.7 L126.8 115.4 L127.0 115.9 L127.2 116.1 L127.4 115.9 L127.6 115.4 L127.8 114.8 L127.9 114.4 L128.1 114.2 L128.3 114.4 L128.5 114.8 L128.7 115.3 L128.9 115.7 L129.1 115.9 L129.2 115.7 L129.4 115.4 L129.6 114.9 L129.8 114.5 L130.0 114.4 L130.2 114.5 L130.4 114.9 L130.6 115.3 L130.8 115.6 L130.9 115.8 L131.1 115.6 L131.3 115.3 L131.5 114.9 L131.7 114.6 L131.9 114.5 L132.1 114.6 L132.2 114.9 L132.4 115.3 L132.6 115.6 L132.8 115.7 L133.0 115.6 L133.2 115.3 L133.4 114.9 L133.6 114.6 L133.8 114.5 L133.9 114.6 L134.1 114.9 L134.3 115.3 L134.5 115.5 L134.7 115.6 L134.9 115.5 L135.1 115.3 L135.2 114.9 L135.4 114.7 L135.6 114.6 L135.8 114.7 L136.0 114.9 L136.2 115.2 L136.4 115.5 L136.6 115.6 L136.8 115.5 L136.9 115.2 L137.1 115.0 L137.3 114.7 L137.5 114.6 L137.7 114.7 L137.9 114.9 L138.1 115.2 L138.2 115.4 L138.4 115.5 L138.6 115.5 L138.8 115.2 L139.0 115.0 L139.2 114.7 L139.4 114.7 L139.6 114.7 L139.8 115.0 L139.9 115.2 L140.1 115.4 L140.3 115.5 L140.5 115.4 L140.7 115.2 L140.9 115.0 L141.1 114.8 L141.2 114.7 L141.4 114.8 L141.6 115.0 L141.8 115.2 L142.0 115.4 L142.2 115.5 L142.4 115.4 L142.6 115.2 L142.8 115.0 L142.9 114.8 L143.1 114.7 L143.3 114.8 L143.5 115.0 L143.7 115.2 L143.9 115.4 L144.1 115.5 L144.2 115.4 L144.4 115.2 L144.6 115.0 L144.8 114.8 L145.0 114.7 L145.2 114.8 L145.4 115.0 L145.6 115.2 L145.8 115.4 L145.9 115.4 L146.1 115.4 L146.3 115.2 L146.5 115.0 L146.7 114.8 L146.9 114.8 L147.1 114.8 L147.2 115.0 L147.4 115.2 L147.6 115.4 L147.8 115.4 L148.0 115.4 L148.2 115.2 L148.4 115.0 L148.6 114.8 L148.8 114.8 L148.9 114.8 L149.1 115.0 L149.3 115.2 L149.5 115.3 L149.7 115.4 L149.9 115.3 L150.1 115.2 L150.2 115.0 L150.4 114.8 L150.6 114.8 L150.8 114.8 L151.0 115.0 L151.2 115.2 L151.4 115.3 L151.6 115.4 L151.8 115.3 L151.9 115.2 L152.1 115.0 L152.3 114.9 L152.5 114.8 L152.7 114.9 L152.9 115.0 L153.1 115.2 L153.2 115.3 L153.4 115.4 L153.6 115.3 L153.8 115.2 L154.0 115.0 L154.2 114.9 L154.4 114.8 L154.6 114.9 L154.8 115.0 L154.9 115.2 L155.1 115.3 L155.3 115.4 L155.5 115.3 L155.7 115.2 L155.9 115.0 L156.1 114.9 L156.2 114.8 L156.4 114.9 L156.6 115.0 L156.8 115.2 L157.0 115.3 L157.2 115.4 L157.4 115.3 L157.6 115.2 L157.7 115.0 L157.9 114.9 L158.1 114.8 L158.3 114.9 L158.5 115.0 L158.7 115.2 L158.9 115.3 L159.1 115.4 L159.2 115.3 L159.4 115.2 L159.6 115.0 L159.8 114.9 L160.0 114.8 L160.2 114.9 L160.4 115.0 L160.6 115.2 L160.8 115.3 L160.9 115.4 L161.1 115.3 L161.3 115.2 L161.5 115.0 L161.7 114.9 L161.9 114.8 L162.1 114.9 L162.2 115.0 L162.4 115.2 L162.6 115.3 L162.8 115.4 L163.0 115.3 L163.2 115.2 L163.4 115.0 L163.6 114.9 L163.8 114.8 L163.9 114.9 L164.1 115.0 L164.3 115.2 L164.5 115.3 L164.7 115.4 L164.9 115.3 L165.1 115.2 L165.2 115.0 L165.4 114.9 L165.6 114.8 L165.8 114.9 L166.0 115.0 L166.2 115.2 L166.4 115.3 L166.6 115.4 L166.8 115.3 L166.9 115.2 L167.1 115.0 L167.3 114.9 L167.5 114.8 L167.7 114.9 L167.9 115.0 L168.1 115.2 L168.2 115.3 L168.4 115.4 L168.6 115.3 L168.8 115.2 L169.0 115.0 L169.2 114.9 L169.4 114.8 L169.6 114.9 L169.8 115.0 L169.9 115.2 L170.1 115.3 L170.3 115.4 L170.5 115.3 L170.7 115.2 L170.9 115.0 L171.1 114.9 L171.2 114.8 L171.4 114.9 L171.6 115.0 L171.8 115.2 L172.0 115.3 L172.2 115.4 L172.4 115.3 L172.6 115.2 L172.8 115.0 L172.9 114.9 L173.1 114.8 L173.3 114.9 L173.5 115.0 L173.7 115.2 L173.9 115.3 L174.1 115.4 L174.2 115.3 L174.4 115.2 L174.6 115.0 L174.8 114.9 L175.0 114.8 L175.2 114.9 L175.4 115.0 L175.6 115.2 L175.7 115.3 L175.9 115.4 L176.1 115.3 L176.3 115.2 L176.5 115.0 L176.7 114.9 L176.9 114.8 L177.1 114.9 L177.2 115.0 L177.4 115.2 L177.6 115.3 L177.8 115.4 L178.0 115.3 L178.2 115.2 L178.4 115.0 L178.6 114.9 L178.8 114.8 L178.9 114.9 L179.1 115.0 L179.3 115.2 L179.5 115.3 L179.7 115.4 L179.9 115.3 L180.1 115.2 L180.2 115.0 L180.4 114.8 L180.6 114.8 L180.8 114.8 L181.0 115.0 L181.2 115.2 L181.4 115.3 L181.6 115.4 L181.8 115.3 L181.9 115.2 L182.1 115.0 L182.3 114.8 L182.5 114.8 L182.7 114.8 L182.9 115.0 L183.1 115.2 L183.2 115.4 L183.4 115.4 L183.6 115.4 L183.8 115.2 L184.0 115.0 L184.2 114.8 L184.4 114.8 L184.6 114.8 L184.8 115.0 L184.9 115.2 L185.1 115.4 L185.3 115.4 L185.5 115.4 L185.7 115.2 L185.9 115.0 L186.1 114.8 L186.2 114.7 L186.4 114.8 L186.6 115.0 L186.8 115.2 L187.0 115.4 L187.2 115.5 L187.4 115.4 L187.6 115.2 L187.8 115.0 L187.9 114.8 L188.1 114.7 L188.3 114.8 L188.5 115.0 L188.7 115.2 L188.9 115.4 L189.1 115.5 L189.2 115.4 L189.4 115.2 L189.6 115.0 L189.8 114.8 L190.0 114.7 L190.2 114.8 L190.4 115.0 L190.6 115.2 L190.8 115.4 L190.9 115.5 L191.1 115.4 L191.3 115.2 L191.5 115.0 L191.7 114.7 L191.9 114.7 L192.1 114.7 L192.2 115.0 L192.4 115.2 L192.6 115.5 L192.8 115.5 L193.0 115.4 L193.2 115.2 L193.4 114.9 L193.6 114.7 L193.8 114.6 L193.9 114.7 L194.1 115.0 L194.3 115.2 L194.5 115.5 L194.7 115.6 L194.9 115.5 L195.1 115.2 L195.2 114.9 L195.4 114.7 L195.6 114.6 L195.8 114.7 L196.0 114.9 L196.2 115.3 L196.4 115.5 L196.6 115.6 L196.8 115.5 L196.9 115.3 L197.1 114.9 L197.3 114.6 L197.5 114.5 L197.7 114.6 L197.9 114.9 L198.1 115.3 L198.2 115.6 L198.4 115.7 L198.6 115.6 L198.8 115.3 L199.0 114.9 L199.2 114.6 L199.4 114.5 L199.6 114.6 L199.8 114.9 L199.9 115.3 L200.1 115.6 L200.3 115.8 L200.5 115.6 L200.7 115.3 L200.9 114.9 L201.1 114.5 L201.2 114.4 L201.4 114.5 L201.6 114.9 L201.8 115.4 L202.0 115.7 L202.2 115.9 L202.4 115.7 L202.6 115.3 L202.8 114.8 L202.9 114.4 L203.1 114.2 L203.3 114.4 L203.5 114.8 L203.7 115.4 L203.9 115.9 L204.1 116.1 L204.2 115.9 L204.4 115.4 L204.6 114.7 L204.8 114.2 L205.0 114.0 L205.2 114.2 L205.4 114.8 L205.6 115.5 L205.8 116.1 L205.9 116.3 L206.1 116.1 L206.3 115.4 L206.5 114.6 L206.7 113.9 L206.9 113.7 L207.1 113.9 L207.2 114.7 L207.4 115.7 L207.6 116.5 L207.8 116.8 L208.0 116.5 L208.2 115.5 L208.4 114.4 L208.6 113.4 L208.7 113.0 L208.9 113.4 L209.1 114.6 L209.3 116.1 L209.5 117.4 L209.7 117.9 L209.9 117.3 L210.1 115.7 L210.3 113.6 L210.4 111.7 L210.6 111.0 L210.8 111.8 L211.0 114.4 L211.2 118.0 L211.4 121.3 L211.6 122.7 L211.8 120.8 L211.9 114.5 L212.1 103.7 L212.3 89.2 L212.5 72.5 L212.7 55.8 L212.9 41.3 L213.1 30.5 L213.2 24.2 L213.4 22.3 L213.6 23.7 L213.8 27.0 L214.0 30.6 L214.2 33.2 L214.4 34.0 L214.6 33.3 L214.7 31.4 L214.9 29.3 L215.1 27.7 L215.3 27.1 L215.5 27.6 L215.7 28.9 L215.9 30.4 L216.1 31.6 L216.2 32.0 L216.4 31.6 L216.6 30.6 L216.8 29.5 L217.0 28.5 L217.2 28.2 L217.4 28.5 L217.6 29.3 L217.8 30.3 L217.9 31.1 L218.1 31.3 L218.3 31.1 L218.5 30.4 L218.7 29.6 L218.9 28.9 L219.1 28.7 L219.2 28.9 L219.4 29.5 L219.6 30.2 L219.8 30.8 L220.0 31.0 L220.2 30.8 L220.4 30.3 L220.6 29.6 L220.8 29.1 L220.9 28.9 L221.1 29.1 L221.3 29.6 L221.5 30.2 L221.7 30.6 L221.9 30.8 L222.1 30.6 L222.2 30.2 L222.4 29.7 L222.6 29.3 L222.8 29.1 L223.0 29.3 L223.2 29.6 L223.4 30.1 L223.6 30.5 L223.8 30.6 L223.9 30.5 L224.1 30.1 L224.3 29.7 L224.5 29.4 L224.7 29.2 L224.9 29.4 L225.1 29.7 L225.2 30.1 L225.4 30.4 L225.6 30.5 L225.8 30.4 L226.0 30.1 L226.2 29.7 L226.4 29.4 L226.6 29.3 L226.8 29.4 L226.9 29.7 L227.1 30.1 L227.3 30.4 L227.5 30.5 L227.7 30.4 L227.9 30.1 L228.1 29.7 L228.2 29.5 L228.4 29.4 L228.6 29.5 L228.8 29.7 L229.0 30.1 L229.2 30.3 L229.4 30.4 L229.6 30.3 L229.8 30.1 L229.9 29.8 L230.1 29.5 L230.3 29.4 L230.5 29.5 L230.7 29.8 L230.9 30.0 L231.1 30.3 L231.2 30.4 L231.4 30.3 L231.6 30.1 L231.8 29.8 L232.0 29.6 L232.2 29.5 L232.4 29.5 L232.6 29.8 L232.8 30.0 L232.9 30.3 L233.1 30.3 L233.3 30.3 L233.5 30.0 L233.7 29.8 L233.9 29.6 L234.1 29.5 L234.2 29.6 L234.4 29.8 L234.6 30.0 L234.8 30.2 L235.0 30.3 L235.2 30.2 L235.4 30.0 L235.6 29.8 L235.8 29.6 L235.9 29.5 L236.1 29.6 L236.3 29.8 L236.5 30.0 L236.7 30.2 L236.9 30.3 L237.1 30.2 L237.2 30.0 L237.4 29.8 L237.6 29.6 L237.8 29.5 L238.0 29.6 L238.2 29.8 L238.4 30.0 L238.6 30.2 L238.7 30.3 L238.9 30.2 L239.1 30.0 L239.3 29.8 L239.5 29.6 L239.7 29.6 L239.9 29.6 L240.1 29.8 L240.2 30.0 L240.4 30.2 L240.6 30.2 L240.8 30.2 L241.0 30.0 L241.2 29.8 L241.4 29.6 L241.6 29.6 L241.8 29.6 L241.9 29.8 L242.1 30.0 L242.3 30.2 L242.5 30.2 L242.7 30.2 L242.9 30.0 L243.1 29.8 L243.2 29.7 L243.4 29.6 L243.6 29.7 L243.8 29.8 L244.0 30.0 L244.2 30.2 L244.4 30.2 L244.6 30.2 L244.7 30.0 L244.9 29.8 L245.1 29.7 L245.3 29.6 L245.5 29.7 L245.7 29.8 L245.9 30.0 L246.1 30.1 L246.2 30.2 L246.4 30.1 L246.6 30.0 L246.8 29.8 L247.0 29.7 L247.2 29.6 L247.4 29.7 L247.6 29.8 L247.8 30.0 L247.9 30.1 L248.1 30.2 L248.3 30.1 L248.5 30.0 L248.7 29.8 L248.9 29.7 L249.1 29.6 L249.3 29.7 L249.4 29.8 L249.6 30.0 L249.8 30.1 L250.0 30.2 L250.2 30.1 L250.4 30.0 L250.6 29.8 L250.7 29.7 L250.9 29.6 L251.1 29.7 L251.3 29.8 L251.5 30.0 L251.7 30.1 L251.9 30.2 L252.1 30.1 L252.2 30.0 L252.4 29.8 L252.6 29.7 L252.8 29.6 L253.0 29.7 L253.2 29.8 L253.4 30.0 L253.6 30.1 L253.8 30.2 L253.9 30.1 L254.1 30.0 L254.3 29.8 L254.5 29.7 L254.7 29.6 L254.9 29.7 L255.1 29.8 L255.3 30.0 L255.4 30.1 L255.6 30.2 L255.8 30.1 L256.0 30.0 L256.2 29.8 L256.4 29.7 L256.6 29.6 L256.8 29.7 L256.9 29.8 L257.1 30.0 L257.3 30.1 L257.5 30.2 L257.7 30.1 L257.9 30.0 L258.1 29.8 L258.2 29.7 L258.4 29.6 L258.6 29.7 L258.8 29.8 L259.0 30.0 L259.2 30.1 L259.4 30.2 L259.6 30.1 L259.8 30.0 L259.9 29.8 L260.1 29.7 L260.3 29.6 L260.5 29.7 L260.7 29.8 L260.9 30.0 L261.1 30.1 L261.2 30.2 L261.4 30.1 L261.6 30.0 L261.8 29.8 L262.0 29.7 L262.2 29.6 L262.4 29.7 L262.6 29.8 L262.8 30.0 L262.9 30.1 L263.1 30.2 L263.3 30.1 L263.5 30.0 L263.7 29.8 L263.9 29.7 L264.1 29.6 L264.2 29.7 L264.4 29.8 L264.6 30.0 L264.8 30.1 L265.0 30.2 L265.2 30.1 L265.4 30.0 L265.6 29.8 L265.8 29.7 L265.9 29.6 L266.1 29.7 L266.3 29.8 L266.5 30.0 L266.7 30.1 L266.9 30.2 L267.1 30.1 L267.2 30.0 L267.4 29.8 L267.6 29.7 L267.8 29.6 L268.0 29.7 L268.2 29.8 L268.4 30.0 L268.6 30.1 L268.8 30.2 L268.9 30.1 L269.1 30.0 L269.3 29.8 L269.5 29.7 L269.7 29.6 L269.9 29.7 L270.1 29.8 L270.2 30.0 L270.4 30.1 L270.6 30.2 L270.8 30.1 L271.0 30.0 L271.2 29.8 L271.4 29.7 L271.6 29.6 L271.8 29.7 L271.9 29.8 L272.1 30.0 L272.3 30.1 L272.5 30.2 L272.7 30.1 L272.9 30.0 L273.1 29.8 L273.2 29.7 L273.4 29.6 L273.6 29.7 L273.8 29.8 L274.0 30.0 L274.2 30.2 L274.4 30.2 L274.6 30.2 L274.8 30.0 L274.9 29.8 L275.1 29.7 L275.3 29.6 L275.5 29.7 L275.7 29.8 L275.9 30.0 L276.1 30.2 L276.2 30.2 L276.4 30.2 L276.6 30.0 L276.8 29.8 L277.0 29.6 L277.2 29.6 L277.4 29.6 L277.6 29.8 L277.8 30.0 L277.9 30.2 L278.1 30.2 L278.3 30.2 L278.5 30.0 L278.7 29.8 L278.9 29.6 L279.1 29.6 L279.2 29.6 L279.4 29.8 L279.6 30.0 L279.8 30.2 L280.0 30.3 L280.2 30.2 L280.4 30.0 L280.6 29.8 L280.8 29.6 L280.9 29.5 L281.1 29.6 L281.3 29.8 L281.5 30.0 L281.7 30.2 L281.9 30.3 L282.1 30.2 L282.2 30.0 L282.4 29.8 L282.6 29.6 L282.8 29.5 L283.0 29.6 L283.2 29.8 L283.4 30.0 L283.6 30.2 L283.8 30.3 L283.9 30.2 L284.1 30.0 L284.3 29.8 L284.5 29.6 L284.7 29.5 L284.9 29.6 L285.1 29.8 L285.2 30.0 L285.4 30.3 L285.6 30.3 L285.8 30.3 L286.0 30.0 L286.2 29.8 L286.4 29.5 L286.6 29.5 L286.8 29.6 L286.9 29.8 L287.1 30.1 L287.3 30.3 L287.5 30.4 L287.7 30.3 L287.9 30.0 L288.1 29.8 L288.2 29.5 L288.4 29.4 L288.6 29.5 L288.8 29.8 L289.0 30.1 L289.2 30.3 L289.4 30.4 L289.6 30.3 L289.8 30.1 L289.9 29.7 L290.1 29.5 L290.3 29.4 L290.5 29.5 L290.7 29.7 L290.9 30.1 L291.1 30.4 L291.2 30.5 L291.4 30.4 L291.6 30.1 L291.8 29.7 L292.0 29.4 L292.2 29.3 L292.4 29.4 L292.6 29.7 L292.8 30.1 L292.9 30.4 L293.1 30.5 L293.3 30.4 L293.5 30.1 L293.7 29.7 L293.9 29.4 L294.1 29.2 L294.2 29.4 L294.4 29.7 L294.6 30.1 L294.8 30.5 L295.0 30.6 L295.2 30.5 L295.4 30.1 L295.6 29.6 L295.8 29.3 L295.9 29.1 L296.1 29.3 L296.3 29.7 L296.5 30.2 L296.7 30.6 L296.9 30.8 L297.1 30.6 L297.2 30.2 L297.4 29.6 L297.6 29.1 L297.8 28.9 L298.0 29.1 L298.2 29.6 L298.4 30.3 L298.6 30.8 L298.8 31.0 L298.9 30.8 L299.1 30.2 L299.3 29.5 L299.5 28.9 L299.7 28.7 L299.9 28.9 L300.1 29.6 L300.2 30.4 L300.4 31.1 L300.6 31.3 L300.8 31.1 L301.0 30.3 L301.2 29.3 L301.4 28.5 L301.6 28.2 L301.8 28.5 L301.9 29.5 L302.1 30.6 L302.3 31.6 L302.5 32.0 L302.7 31.6 L302.9 30.4 L303.1 28.9 L303.2 27.6 L303.4 27.1 L303.6 27.7 L303.8 29.3 L304.0 31.4 L304.2 33.3 L304.4 34.0 L304.6 33.2 L304.8 30.6 L304.9 27.0 L305.1 23.7 L305.3 22.3 L305.5 24.2 L305.7 30.5 L305.9 41.3 L306.1 55.8 L306.2 72.5 L306.4 89.2 L306.6 103.7 L306.8 114.5 L307.0 120.8 L307.2 122.7 L307.4 121.3 L307.6 118.0 L307.8 114.4 L307.9 111.8 L308.1 111.0 L308.3 111.7 L308.5 113.6 L308.7 115.7 L308.9 117.3 L309.1 117.9 L309.2 117.4 L309.4 116.1 L309.6 114.6 L309.8 113.4 L310.0 113.0 L310.2 113.4 L310.4 114.4 L310.6 115.5 L310.8 116.5 L310.9 116.8 L311.1 116.5 L311.3 115.7 L311.5 114.7 L311.7 113.9 L311.9 113.7 L312.1 113.9 L312.3 114.6 L312.4 115.4 L312.6 116.1 L312.8 116.3 L313.0 116.1 L313.2 115.5 L313.4 114.8 L313.6 114.2 L313.8 114.0 L313.9 114.2 L314.1 114.7 L314.3 115.4 L314.5 115.9 L314.7 116.1 L314.9 115.9 L315.1 115.4 L315.2 114.8 L315.4 114.4 L315.6 114.2 L315.8 114.4 L316.0 114.8 L316.2 115.3 L316.4 115.7 L316.6 115.9 L316.8 115.7 L316.9 115.4 L317.1 114.9 L317.3 114.5 L317.5 114.4 L317.7 114.5 L317.9 114.9 L318.1 115.3 L318.2 115.6 L318.4 115.8 L318.6 115.6 L318.8 115.3 L319.0 114.9 L319.2 114.6 L319.4 114.5 L319.6 114.6 L319.8 114.9 L319.9 115.3 L320.1 115.6 L320.3 115.7 L320.5 115.6 L320.7 115.3 L320.9 114.9 L321.1 114.6 L321.2 114.5 L321.4 114.6 L321.6 114.9 L321.8 115.3 L322.0 115.5 L322.2 115.6 L322.4 115.5 L322.6 115.3 L322.8 114.9 L322.9 114.7 L323.1 114.6 L323.3 114.7 L323.5 114.9 L323.7 115.2 L323.9 115.5 L324.1 115.6 L324.3 115.5 L324.4 115.2 L324.6 115.0 L324.8 114.7 L325.0 114.6" fill="none" stroke="var(--accent)" stroke-width="1.1" />
+    <line x1="22" y1="29.9" x2="28" y2="29.9" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="20" y="33.4" font-size="9.5" text-anchor="end" fill="currentColor">1</text>
+    <line x1="22" y1="115.1" x2="28" y2="115.1" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="20" y="118.6" font-size="9.5" text-anchor="end" fill="currentColor">−1</text>
+    <line x1="118.8" y1="69.5" x2="118.8" y2="75.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="118.8" y="86.5" font-size="9.5" text-anchor="middle" fill="currentColor">0,5</text>
+    <line x1="212.5" y1="69.5" x2="212.5" y2="75.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="212.5" y="86.5" font-size="9.5" text-anchor="middle" fill="currentColor">1</text>
+    <line x1="306.2" y1="69.5" x2="306.2" y2="75.5" stroke="currentColor" stroke-width="1" stroke-opacity="0.6" />
+    <text x="306.2" y="86.5" font-size="9.5" text-anchor="middle" fill="currentColor">1,5</text>
+    </svg>
+</Figure>
+
+## Fiche récapitulative
+
+<Formulas titre="Séries de Fourier">
+    <Formula label="Valeur moyenne">
+        $$
+        \langle U \rangle = \frac{1}{T} \int_{-T/2}^{T/2} u(t)\, dt
+        $$
+    </Formula>
+    <Formula label="Série trigonométrique">
+        $$
+        x(t) = \frac{a_0}{2} + \sum_{n=1}^{+\infty} \left[a_n \cos(2\pi n f_0 t) + b_n \sin(2\pi n f_0 t)\right]
+        $$
+    </Formula>
+    <Formula label="Coefficients an, bn">
+        $$
+        a_n = \frac{2}{T_0} \int_{-T_0/2}^{T_0/2} x(t) \cos(2\pi n f_0 t)\, dt, \quad b_n = \frac{2}{T_0} \int_{-T_0/2}^{T_0/2} x(t) \sin(2\pi n f_0 t)\, dt
+        $$
+    </Formula>
+    <Formula label="Série en cosinus">
+        $$
+        x(t) = A_0 + \sum_{n=1}^{+\infty} A_n \cos(2\pi n f_0 t + \varphi_n), \quad A_0 = \frac{a_0}{2}, \quad A_n = \sqrt{a_n^2 + b_n^2}
+        $$
+    </Formula>
+    <Formula label="Série complexe">
+        $$
+        x(t) = C_0 + \sum_{n \ne 0} C_n e^{j2\pi n f_0 t}, \quad C_n = \frac{1}{T_0} \int_{-T_0/2}^{T_0/2} x(t) e^{-j2\pi n f_0 t}\, dt
+        $$
+    </Formula>
+    <Formula label="Liens">
+        $$
+        C_n = \frac{a_n - jb_n}{2}, \quad C_{-n} = \overline{C_n}, \quad |C_n| = |C_{-n}| = \frac{A_n}{2}, \quad \arg(C_{-n}) = -\varphi_n
+        $$
+    </Formula>
+    <Formula label="Parité">
+        $$
+        x \text{ pair} \Rightarrow b_n = 0,\ C_n = \frac{a_n}{2}
+        $$
+
+        $$
+        x \text{ impair} \Rightarrow a_n = 0,\ C_n = -j\frac{b_n}{2}
+        $$
+    </Formula>
+    <Formula label="Signal carré (T0 = 1, ±1)">
+        $$
+        b_n = \frac{4}{n\pi} \ (n \text{ impair}), \quad b_n = 0 \ (n \text{ pair}), \quad A_n = \frac{4}{n\pi}, \quad \varphi_n = -\frac{\pi}{2}
+        $$
+    </Formula>
+</Formulas>
