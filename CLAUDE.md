@@ -58,7 +58,7 @@ Ne jamais modifier pages/lib/composants pour ajouter du contenu. Procédure :
 
 Papier chaud + encre bleue, réglure Seyès (`.seyes`) en accent visuel. Titres Fraunces, texte IBM Plex Sans (polices auto-hébergées via @fontsource). Toutes les couleurs passent par les variables CSS de `global.css` (`--paper`, `--ink`, `--accent`… redéfinies sous `[data-theme='dark']`) ; la teinte `--h` vient du cours. Thème : `data-theme` posé avant rendu (script inline dans `Base.astro`), bascule auto → clair → sombre stockée sous `carnet:theme`.
 
-Pièges connus : Tailwind v4 utilise la propriété CSS `translate` (pas `transform`) ; la CSP nginx impose `'wasm-unsafe-eval'` pour Pagefind ; KaTeX est exclu de l'index Pagefind (`pagefind.yml`).
+Pièges connus : **Pagefind est épinglé à 1.5.2 exactement** — à partir de 1.6.0 le binaire exige AVX2 et plante (`Illegal instruction`, exit 132, sans message) sur le serveur Dokploy (Xeon E3-1220 V2, sans AVX2). Avant toute montée de version, tester `npx pagefind --version` dans `node:lts-alpine` sur le serveur. Tailwind v4 utilise la propriété CSS `translate` (pas `transform`) ; la CSP nginx impose `'wasm-unsafe-eval'` pour Pagefind ; KaTeX est exclu de l'index Pagefind (`pagefind.yml`).
 
 ## Déploiement
 
