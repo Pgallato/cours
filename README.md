@@ -35,6 +35,10 @@ Autres commandes :
 
 ## Ajouter un cours (pas à pas)
 
+> Avec Claude Code : déposer les documents du cours (photos, PDF, PPTX, Word…, numérotés ou non)
+> dans `sources/<cours>/`, puis lancer
+> `/nouveau-cours <cours>` — le skill transcrit, vérifie et rend compte (points de fond, TODO).
+
 **Règle d'or : un cours = un dossier. Aucun autre fichier à modifier.**
 Catalogue, filtres, navigation, pages et recherche se mettent à jour tout seuls.
 

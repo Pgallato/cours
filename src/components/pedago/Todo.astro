@@ -1,12 +1,15 @@
 ---
 /** Passage à compléter (figure trop complexe, page illisible…). Visible pour ne pas l'oublier. */
 interface Props {
-    page?: number
+    /** Numéro de page des notes, ou référence libre (« cours.pdf p. 4 »). */
+    page?: number | string
 }
+const {page} = Astro.props;
+const provenance = typeof page === 'number' ? `page ${page}` : page;
 ---
 <aside class="no-print my-6 rounded-lg border-2 border-dashed border-line-strong px-4 py-3 text-sm text-ink-2"
        data-pagefind-ignore>
-    <strong class="font-mono text-xs uppercase tracking-wider text-margin">TODO{Astro.props.page && ` · page ${Astro.props.page}`}</strong>
+    <strong class="font-mono text-xs uppercase tracking-wider text-margin">TODO{provenance && ` · ${provenance}`}</strong>
     <div class="mt-1">
         <slot/>
     </div>

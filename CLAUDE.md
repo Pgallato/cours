@@ -42,11 +42,13 @@ Ne jamais modifier pages/lib/composants pour ajouter du contenu. Procédure :
 3. Un fichier `NN-titre.mdx` par chapitre ; frontmatter : `titre`, `resume`, `tags`, `sources` (n° de pages photo) ; `duree`/`ordre` facultatifs
 4. `npm run check && npm test`
 
-## Conventions de contenu (transcription des photos `sources/page-XX.jpg`)
+## Conventions de contenu (transcription des documents de `sources/<cours>/`)
 
-- Le numéro en bas à droite de la photo donne l'ordre ; des numéros peuvent manquer (pages sans cours).
+Procédure complète d'ajout : skill **`/nouveau-cours <dossier>`** (`.claude/skills/nouveau-cours/SKILL.md`). Sources possibles : photos de notes, PDF, diapos (PPTX/ODP), Word… mélangés et pas forcément numérotés ; outils : `pdftotext`/`pdftoppm` (poppler) et `soffice --headless --convert-to pdf`. Les photos du cours de probabilités sont à la racine de `sources/` (historique) ; les suivants vont dans un sous-dossier par cours.
+
+- Ordre : numérotation interne (page des notes, n° de diapo, pagination PDF) sinon ordre logique du contenu ; des numéros peuvent manquer. Provenance notée par une référence courte : `4` (page de notes) ou `"cours.pdf p. 3"`, `"slides.pptx #12"` — dans `sources`, `FOND ?`, `TODO`, `<Figure page>`, `<Todo page>`.
 - **Transcription fidèle.** Ne rien inventer (ni énoncé, ni question). Erreur de fond repérée → la laisser telle quelle, ajouter `{/* FOND ? … Signalé, non corrigé. */}` juste avant, et la signaler à l'utilisateur. Corriger seulement après son accord.
-- Passage illisible/ambigu : `{/* TODO: illisible, page XX */}` ; énoncé ou figure manquant : `<Todo page={XX}>…</Todo>` (visible). Lister les TODO en fin de travail.
+- Passage illisible/ambigu : `{/* TODO: illisible, <référence> */}` ; énoncé ou figure manquant : `<Todo page={…}>…</Todo>` (visible). Contradiction entre deux sources = point `FOND ?`. Lister les TODO en fin de travail.
 - Formules en LaTeX : `$…$` en ligne ; **les formules centrées s'écrivent `$$` seul sur sa ligne** (un `$$x$$` sur une seule ligne est rendu *en ligne* par remark-math). Décimales françaises : `0{,}58`. Pourcentages dans KaTeX : `\%`.
 - Une section = un `##` (apparaît dans le plan et le sommaire) ; sections courtes ; `###` pour les sous-parties.
 - Composants : `Definition`, `Theorem` (prop `type` pour changer l'étiquette, ex. « À retenir »), `Property`, `Remark`, `Warning`, `Example`, `Exercise` (+ `<Solution>` repliée, `niveau={1..3}`), `Solution` (aussi pour « Détail du calcul »), `Formulas` + `Formula label`, `Figure` (SVG inline), `Animation`, `Todo`. Terminer chaque chapitre par `## Fiche récapitulative` avec `<Formulas>`.

@@ -24,4 +24,6 @@ Thumbs.db
 .idea/
 *.swp
 
-.claude
+# Claude Code : local, sauf les skills du projet
+.claude/*
+!.claude/skills/

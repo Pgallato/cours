@@ -48,8 +48,11 @@ const chapitres = defineCollection({
         /** Hérités du cours si absents. */
         matiere: z.string().optional(),
         semestre: z.string().optional(),
-        /** Pages des photos sources (traçabilité). */
-        sources: z.array(z.number().int()).default([]),
+        /**
+         * Provenance du contenu (traçabilité) : numéro de page des notes photographiées,
+         * ou référence libre pour un autre document (« cours.pdf p. 4 », « slides.pptx #12 »).
+         */
+        sources: z.array(z.union([z.number().int(), z.string()])).default([]),
     }),
 });
 

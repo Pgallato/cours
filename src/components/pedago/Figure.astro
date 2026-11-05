@@ -2,13 +2,15 @@
 /** Figure du cours (SVG inline en enfant) avec légende facultative. */
 interface Props {
     legende?: string;
-    page?: number
+    /** Provenance : numéro de page des notes, ou référence libre (« slides.pptx #12 »). */
+    page?: number | string
 }
 const {legende, page} = Astro.props;
+const provenance = typeof page === 'number' ? `notes p. ${page}` : page;
 ---
 <figure class="figure-cours">
     <slot/>
-    {(legende || page) && (
-            <figcaption>{legende}{page && <span class="opacity-70"> (notes p. {page})</span>}</figcaption>
+    {(legende || provenance) && (
+            <figcaption>{legende}{provenance && <span class="opacity-70"> ({provenance})</span>}</figcaption>
     )}
 </figure>
