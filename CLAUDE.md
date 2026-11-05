@@ -29,6 +29,10 @@ src/
   scripts/suivi.ts          localStorage « carnet:suivi:v1 » : vus, favoris, positions (reprise)
   scripts/animations/       animations SVG en TS ; index.ts = registre (imports dynamiques)
   styles/global.css         jetons de couleur (clair/sombre), prose, blocs, impression
+  scripts/pwa.ts            enregistrement du service worker + bouton « Installer »
+public/manifest.webmanifest, icon-*.png, apple-touch-icon.png   PWA (icônes : lettre « c » Fraunces sur réglure)
+scripts/generer-sw.mjs      génère dist/sw.js après le build (précache de tout le site, version = hash du contenu)
+scripts/verifier-liens.mjs  contrôle des liens/ancres internes
 ```
 
 URL : `/cours/<dossier>/<fichier-sans-NN>/` (trailing slash obligatoire, `trailingSlash: 'always'`).
@@ -55,6 +59,15 @@ Procédure complète d'ajout : skill **`/nouveau-cours <dossier>`** (`.claude/sk
 - Figures : redessiner en SVG inline (`currentColor`, `var(--accent)`), `role="img"` + `aria-label` ; ids de `<marker>` uniques par figure.
 - **Pas de contenu mixte texte + balise dans le SVG** (ex. `<text>C<tspan>f</tspan></text>`) : si un formateur (IDE) le coupe sur plusieurs lignes, MDX lit le texte comme un paragraphe Markdown et le build casse (« Expected a closing tag for `<text>` »). Utiliser deux `<text>` séparés (indice décalé en x/y).
 - Animations : au moins une par cours si pertinent. Types existants : `loi-discrete`, `binomiale-poisson`, `densite` (`loi`: normale|exponentielle|uniforme|toutes), `serie-fourier` (`n` : harmoniques impairs du signal carré, Gibbs), `poles-stabilite` (`p` : pôle d'un système discret du 1er ordre). Nouvelle animation = nouveau module dans `src/scripts/animations/` + entrée dans le registre.
+
+## PWA (installable + hors ligne)
+
+- `npm run build` = `astro build` → `pagefind` → `scripts/generer-sw.mjs`, qui écrit `dist/sw.js` : **tout** le site est précaché (pages, `/_astro/*` en woff2 seulement, index Pagefind). Aucun fichier à tenir à jour : un nouveau cours est précaché automatiquement.
+- Stratégie : pages réseau d'abord (3,5 s de délai si une copie existe) puis cache ; assets et recherche cache d'abord. Chaque déploiement change le nom du cache (`carnet-<hash>`), l'ancien est supprimé à l'activation.
+- Le worker n'est enregistré qu'en production (`import.meta.env.PROD`) : `npm run dev` ne l'installe pas. HTTPS obligatoire hors `localhost` (Dokploy/Let's Encrypt).
+- Pièges rencontrés : (1) **ne jamais précacher `/404.html`** (nginx la déclare `internal` → 404 en accès direct → `cache.addAll` échoue et le worker ne s'installe pas) ; (2) le cache doit être lu avec `ignoreVary: true` (une requête de module envoie un en-tête `Origin` absent de la requête de précache, sinon l'import de Pagefind échoue hors ligne) ; (3) nginx:alpine ne connaît pas `.webmanifest` (type forcé dans `nginx.conf`) et `/sw.js` doit rester en `Cache-Control: no-cache`.
+- Test hors ligne : construire l'image Docker, lancer le conteneur, ouvrir le site, attendre l'installation (≈ 3 s), couper le conteneur, recharger. Dans le navigateur intégré de Claude Code, les requêtes d'un service worker ne passent que pour un serveur déclaré dans `.claude/launch.json` (`{"name":"nginx","url":"http://localhost:8089","port":8089}`) ; sinon l'enregistrement échoue sans message clair.
+- Changer le logo : régénérer les 5 PNG de `public/` (carré arrondi `#3b4bc8`, « c » italique Fraunces 700 blanc, marge rouge à 20 %) ; les versions *maskable* gardent la lettre dans la zone centrale (≈ 60 %).
 
 ## Design (« Carnet »)
 

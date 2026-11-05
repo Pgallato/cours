@@ -21,6 +21,12 @@ const titreComplet = titre === 'Carnet' ? 'Carnet — révisions' : `${titre} ·
     <title>{titreComplet}</title>
     <meta name="description" content={description}/>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <link rel="manifest" href="/manifest.webmanifest"/>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-title" content="Carnet"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
     <meta name="theme-color" content="#fbf8f2" media="(prefers-color-scheme: light)"/>
     <meta name="theme-color" content="#171a22" media="(prefers-color-scheme: dark)"/>
     <script is:inline>
@@ -88,7 +94,11 @@ const titreComplet = titre === 'Carnet' ? 'Carnet — révisions' : `${titre} ·
             class="mx-auto flex max-w-[90rem] flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-ink-3 sm:px-6"
     >
         <p>Carnet — fiches de révision, ING1. Progression enregistrée uniquement sur cet appareil.</p>
-        <p class="flex items-center gap-2"><kbd>/</kbd> ou <kbd>Ctrl K</kbd> pour rechercher</p>
+        <p class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <button type="button" class="bouton !py-1" data-installer hidden>Installer l'application</button>
+            <span data-aide-ios hidden>Sur iPhone : Partager → « Sur l'écran d'accueil »</span>
+            <span><kbd>/</kbd> ou <kbd>Ctrl K</kbd> pour rechercher</span>
+        </p>
     </div>
 </footer>
 
@@ -107,6 +117,10 @@ const titreComplet = titre === 'Carnet' ? 'Carnet — révisions' : `${titre} ·
 </style>
 
 <script>
+    import {initialiserPWA} from '../scripts/pwa';
+
+    initialiserPWA();
+
     // Bascule à trois états : auto (système) → clair → sombre → auto
     const racine = document.documentElement;
     const bouton = document.getElementById('bascule-theme')!;

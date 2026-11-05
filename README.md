@@ -142,6 +142,17 @@ page 404 personnalisée et en-têtes de sécurité (CSP, nosniff, etc.).
 
 ---
 
+## Installer comme une application (PWA)
+
+Le site est installable et **fonctionne hors ligne** (tous les cours sont mis en cache à la première visite).
+L'installation exige **HTTPS** (acquis avec Dokploy + Let's Encrypt).
+
+- **Android (Chrome)** : bouton « Installer l'application » en bas de page, ou menu ⋮ → *Installer l'application*.
+- **iPhone / iPad (Safari)** : Partager → *Sur l'écran d'accueil*.
+- **Ordinateur (Chrome, Edge)** : icône d'installation dans la barre d'adresse.
+
+Après chaque déploiement, l'application se met à jour toute seule à la visite suivante (une fois en ligne).
+
 ## Suivi personnel
 
 « Vu », favoris et « reprendre là où je me suis arrêté » sont enregistrés dans le
