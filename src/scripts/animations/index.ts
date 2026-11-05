@@ -11,6 +11,8 @@ const registre: Record<string, () => Promise<{ default: Monteur }>> = {
     'loi-discrete': () => import('./loi-discrete'),
     'binomiale-poisson': () => import('./binomiale-poisson'),
     densite: () => import('./densite'),
+    'serie-fourier': () => import('./serie-fourier'),
+    'poles-stabilite': () => import('./poles-stabilite'),
 };
 
 export function animationsDisponibles() {

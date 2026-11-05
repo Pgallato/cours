@@ -8,7 +8,7 @@ sources: [9, 10]
 ## Variable aléatoire réelle
 
 <Definition titre="VA réelle ou continue (VAR)">
-    Une VA qui peut prendre toutes les valeurs d'un intervalle'appelle **VA réelle** ou **VA continue** (VAR).
+    Une VA qui peut prendre toutes les valeurs d'un intervalle s'appelle **VA réelle** ou **VA continue** (VAR).
 </Definition>
 
 ## Densité de probabilité
@@ -61,7 +61,7 @@ sources: [9, 10]
     P(X = a) = \int_{a}^{a} f(t)\,dt = 0
     $$
 
-    C'est pourquoi on calcule toujours la probabilité'un **intervalle**, et que $P(a < X < b) = P(a \le X \le)$.
+    C'est pourquoi on calcule toujours la probabilité d'un **intervalle**, et que $P(a < X < b) = P(a \le X \le b)$.
 </Remark>
 
 <Property titre="Probabilité d'être inférieur à c">
@@ -97,7 +97,7 @@ params={{loi: 'toutes'}}
     $$
 
     $$
-    \Rightarrow \operatorname{Var}(X) = \int_{-\infty}^{+\infty} x^2(x)\,dx - \left( \int_{-\infty}^{+\infty} x \,
+    \Rightarrow \operatorname{Var}(X) = \int_{-\infty}^{+\infty} x^2 f(x)\,dx - \left( \int_{-\infty}^{+\infty} x \,
     f(x)\,dx \right)^2
     $$
 </Definition>
@@ -140,7 +140,7 @@ params={{loi: 'toutes'}}
     </Formula>
     <Formula label="Variance">
         $$
-        \operatorname{Var}(X) = \int_{-\infty}^{+\infty} x^2(x)\,dx - \big(E(X)\big)^2
+        \operatorname{Var}(X) = \int_{-\infty}^{+\infty} x^2 f(x)\,dx - \big(E(X)\big)^2
         $$
     </Formula>
     <Formula label="Écart type">

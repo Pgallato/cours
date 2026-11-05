@@ -9,7 +9,7 @@ sources: [10, 11, 12]
 
 <Definition titre="Loi uniforme continue">
     $$
-    \forall x \in [a, b], \quad(x) = \frac{1}{b - a}
+    \forall x \in [a, b], \quad f(x) = \frac{1}{b - a}
     $$
 
     $$
@@ -99,20 +99,20 @@ $\forall x \ge 0$, alors
 <Property titre="Calculs de probabilités">
     $$
     \begin{aligned}
-    P(a \le X \le) &= F(b) - F(a) = e^{-\lambda a} - e^{-\lambda b} \\
-    P(0 \le X \le) &= F(a) = 1 - e^{-\lambda a} \\
-    P(X \ge) &= 1 - P(X < b) = 1 - F(b) = e^{-\lambda b}
+    P(a \le X \le b) &= F(b) - F(a) = e^{-\lambda a} - e^{-\lambda b} \\
+    P(0 \le X \le a) &= F(a) = 1 - e^{-\lambda a} \\
+    P(X \ge b) &= 1 - P(X < b) = 1 - F(b) = e^{-\lambda b}
     \end{aligned}
     $$
 </Property>
 
 <Property titre="Espérance, variance, écart type">
     $$
-    E(X) = \int x \, f(x)\,dx \qquad\Longrightarrow\qquad(X) = \frac{1}{\lambda}
+    E(X) = \int x \, f(x)\,dx \qquad\Longrightarrow\qquad E(X) = \frac{1}{\lambda}
     $$
 
     $$
-    V(X) = E(X^2) - \big(E(X)\big)^2 \qquad\Longrightarrow\qquad(X) = \frac{1}{\lambda^2}
+    V(X) = E(X^2) - \big(E(X)\big)^2 \qquad\Longrightarrow\qquad V(X) = \frac{1}{\lambda^2}
     $$
 
     $$
@@ -123,10 +123,10 @@ $\forall x \ge 0$, alors
 <Theorem type="À retenir" titre="Loi sans mémoire">
     $$
     \begin{aligned}
-    P(X \ge t + h \mid X \ge) &= \frac{P(X \ge t + h \,\cap\, X \ge t)}{P(X \ge t)} \\
+    P(X \ge t + h \mid X \ge t) &= \frac{P(X \ge t + h \,\cap\, X \ge t)}{P(X \ge t)} \\
     &= \frac{P(X \ge t + h)}{P(X \ge t)} = \frac{e ^ { -\lambda (t + h)}}{e ^ { -\lambda t}} \\
     &= \frac{e ^ { -\lambda t} \, e^{-\lambda h}}{e ^ { -\lambda t}} = e^{-\lambda h} \\
-    &= P(X \ge)
+    &= P(X \ge h)
     \end{aligned}
     $$
 </Theorem>
@@ -185,7 +185,7 @@ params={{loi: 'exponentielle', c: 0.5, d: 2}}
 
 <Property titre="Espérance, variance, écart type">
     $$
-    E(X) = \mu \qquad(X) = \sigma^2 \qquad \sigma(X) = \sigma
+    E(X) = \mu \qquad V(X) = \sigma^2 \qquad \sigma(X) = \sigma
     $$
 </Property>
 
@@ -239,7 +239,7 @@ params={{loi: 'exponentielle', c: 0.5, d: 2}}
     $F_T$ est noté généralement $\Phi$ (table de $\Phi$ fournie).
 
     $$
-    P(a \le X \le) = \Phi\left( \frac{b - \mu}{\sigma} \right) - \Phi\left( \frac{a - \mu}{\sigma} \right)
+    P(a \le X \le b) = \Phi\left( \frac{b - \mu}{\sigma} \right) - \Phi\left( \frac{a - \mu}{\sigma} \right)
     $$
 </Property>
 
@@ -254,24 +254,24 @@ params={{loi: 'normale', c: -1, d: 1}}
 <Formulas titre="Lois continues usuelles">
     <Formula label="Uniforme 𝒰(a, b)">
         $$
-        f(x) = \frac{1}{b - a}, \quad(x) = \frac{x - a}{b - a}, \quad(X) = \frac{a + b}{2}, \quad \operatorname{Var}(X)
+        f(x) = \frac{1}{b - a}, \quad F(x) = \frac{x - a}{b - a}, \quad E(X) = \frac{a + b}{2}, \quad \operatorname{Var}(X)
         = \frac{(a - b)^ 2}{12}
         $$
     </Formula>
     <Formula label="Exponentielle ℰ(λ)">
         $$
-        f(x) = \lambda e^{-\lambda x}, \quad(x) = 1 - e^{-\lambda x}, \quad(X) = \sigma(X) = \frac{1}{\lambda}, \quad(X)
+        f(x) = \lambda e^{-\lambda x}, \quad F(x) = 1 - e^{-\lambda x}, \quad E(X) = \sigma(X) = \frac{1}{\lambda}, \quad V(X)
         = \frac{1}{\lambda^2}
         $$
     </Formula>
     <Formula label="Sans mémoire (exponentielle)">
         $$
-        P(X \ge t + h \mid X \ge) = P(X \ge)
+        P(X \ge t + h \mid X \ge t) = P(X \ge h)
         $$
     </Formula>
     <Formula label="Normale 𝒩(μ, σ)">
         $$
-        f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}, \quad(X) = \mu, \quad(X)
+        f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}, \quad E(X) = \mu, \quad V(X)
         = \sigma^2
         $$
     </Formula>
@@ -282,7 +282,7 @@ params={{loi: 'normale', c: -1, d: 1}}
     </Formula>
     <Formula label="Avec la table de Φ">
         $$
-        P(a \le X \le) = \Phi\left(\frac{b-\mu}{\sigma}\right) - \Phi\left(\frac{a-\mu}{\sigma}\right)
+        P(a \le X \le b) = \Phi\left(\frac{b-\mu}{\sigma}\right) - \Phi\left(\frac{a-\mu}{\sigma}\right)
 $$
     </Formula>
 </Formulas>

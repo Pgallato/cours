@@ -54,7 +54,7 @@ Procédure complète d'ajout : skill **`/nouveau-cours <dossier>`** (`.claude/sk
 - Composants : `Definition`, `Theorem` (prop `type` pour changer l'étiquette, ex. « À retenir »), `Property`, `Remark`, `Warning`, `Example`, `Exercise` (+ `<Solution>` repliée, `niveau={1..3}`), `Solution` (aussi pour « Détail du calcul »), `Formulas` + `Formula label`, `Figure` (SVG inline), `Animation`, `Todo`. Terminer chaque chapitre par `## Fiche récapitulative` avec `<Formulas>`.
 - Figures : redessiner en SVG inline (`currentColor`, `var(--accent)`), `role="img"` + `aria-label` ; ids de `<marker>` uniques par figure.
 - **Pas de contenu mixte texte + balise dans le SVG** (ex. `<text>C<tspan>f</tspan></text>`) : si un formateur (IDE) le coupe sur plusieurs lignes, MDX lit le texte comme un paragraphe Markdown et le build casse (« Expected a closing tag for `<text>` »). Utiliser deux `<text>` séparés (indice décalé en x/y).
-- Animations : au moins une par cours si pertinent. Types existants : `loi-discrete`, `binomiale-poisson`, `densite` (`loi`: normale|exponentielle|uniforme|toutes). Nouvelle animation = nouveau module dans `src/scripts/animations/` + entrée dans le registre.
+- Animations : au moins une par cours si pertinent. Types existants : `loi-discrete`, `binomiale-poisson`, `densite` (`loi`: normale|exponentielle|uniforme|toutes), `serie-fourier` (`n` : harmoniques impairs du signal carré, Gibbs), `poles-stabilite` (`p` : pôle d'un système discret du 1er ordre). Nouvelle animation = nouveau module dans `src/scripts/animations/` + entrée dans le registre.
 
 ## Design (« Carnet »)
 

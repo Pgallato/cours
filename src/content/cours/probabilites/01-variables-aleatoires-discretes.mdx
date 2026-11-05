@@ -23,7 +23,7 @@ sources: [1, 2]
     $$
 
     $$
-    X(2) = X(4) = X(6) = 0 \qquad(1) = X(3) = X(5) = 1
+    X(2) = X(4) = X(6) = 0 \qquad X(1) = X(3) = X(5) = 1
     $$
 </Example>
 
@@ -45,12 +45,12 @@ sources: [1, 2]
 
 <Property>
     $$
-    \sum_i(X = x_i) = 1 \qquad\qquad 0 \le(X = x_i) \le 1
+    \sum_i P(X = x_i) = 1 \qquad\qquad 0 \le P(X = x_i) \le 1
     $$
 </Property>
 
 <Example titre="Pannes d'ordinateurs">
-    $X$ : nombre de pannes par ordinateur d'un parc'entreprise.
+    $X$ : nombre de pannes par ordinateur d'un parc d'entreprise.
 
     | $X$    | 0    | 1    | 2    | 3   | 4   |
     |--------|------|------|------|-----|-----|
@@ -66,7 +66,7 @@ sources: [1, 2]
 
     $$
     \begin{aligned}
-    F(x_i) &= P(X \le) \\
+    F(x_i) &= P(X \le x_i) \\
     &= \sum_{j=0}^{i} P(X = x_j)
     \end{aligned}
     $$
@@ -163,12 +163,12 @@ params={{valeurs: [0, 1, 2, 3, 4], probas: [0.65, 0.18, 0.12, 0.04, 0.01]}}
 <Formulas titre="Variables aléatoires discrètes">
     <Formula label="Normalisation">
         $$
-        \sum_i(X = x_i) = 1, \quad 0 \le(X = x_i) \le 1
+        \sum_i P(X = x_i) = 1, \quad 0 \le P(X = x_i) \le 1
         $$
     </Formula>
     <Formula label="Fonction de répartition">
         $$
-        F(x_i) = P(X \le) = \sum_{j=0}^{i} P(X = x_j)
+        F(x_i) = P(X \le x_i) = \sum_{j=0}^{i} P(X = x_j)
         $$
     </Formula>
     <Formula label="Espérance">
