@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base titre="Page introuvable">
+    <div class="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6">
+        <p class="font-display text-8xl font-semibold italic text-accent/80">404</p>
+        <h1 class="mt-4 text-3xl font-semibold">Cette page s’est perdue entre deux feuilles</h1>
+        <p class="mt-3 text-ink-2">Le lien est peut-être ancien, ou le chapitre a été renommé.</p>
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+            <a href="/" class="bouton bouton-plein">Retour au catalogue</a>
+            <button type="button" class="bouton" data-ouvrir-recherche>Rechercher</button>
+        </div>
+    </div>
+</Base>

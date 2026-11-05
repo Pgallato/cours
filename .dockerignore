@@ -1,0 +1,17 @@
+# Ne jamais embarquer les photos des cours dans l'image
+sources/
+node_modules/
+dist/
+.astro/
+.git/
+.gitignore
+.claude/
+.vscode/
+.idea/
+*.md
+!README.md
+Dockerfile
+.dockerignore
+.env
+.env.*
+npm-debug.log*

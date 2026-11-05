@@ -1,0 +1,27 @@
+# Dépendances et build
+node_modules/
+dist/
+.astro/
+
+# Photos des cours (sources de transcription, non versionnées)
+sources/
+
+# Environnement
+.env
+.env.*
+!.env.example
+
+# Journaux
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Systèmes / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+.claude

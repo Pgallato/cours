@@ -1,0 +1,12 @@
+---
+import Bloc from './Bloc.astro';
+interface Props {
+    titre?: string
+}
+const {titre = 'Fiche formules'} = Astro.props;
+---
+<Bloc variante="formules" type="À retenir" titre={titre}>
+    <dl class="formules-liste">
+        <slot/>
+    </dl>
+</Bloc>

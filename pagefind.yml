@@ -1,0 +1,7 @@
+# Configuration de l'indexation (lancée par « npm run build »)
+site: dist
+# Formules KaTeX exclues de l'index : leur texte (MathML + TeX) rendrait les extraits illisibles.
+# On cherche donc par les mots du cours (« espérance », « sans mémoire »…), pas par formule.
+exclude_selectors:
+  - ".katex"
+force_language: fr

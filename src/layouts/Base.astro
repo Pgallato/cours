@@ -1,0 +1,160 @@
+---
+import '../styles/global.css';
+import Icone from '../components/Icone.astro';
+import Recherche from '../components/layout/Recherche.astro';
+
+interface Props {
+    titre: string;
+    description?: string;
+    /** Teinte d'accent (OKLCH) — celle du cours courant. */
+    teinte?: number;
+}
+const {titre, description = 'Fiches de révision de première année d’école d’ingénieur.', teinte} = Astro.props;
+const titreComplet = titre === 'Carnet' ? 'Carnet — révisions' : `${titre} · Carnet`;
+---
+
+<!doctype html>
+<html lang="fr" style={teinte !== undefined ? `--h: ${teinte}` : undefined}>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{titreComplet}</title>
+    <meta name="description" content={description}/>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+    <meta name="theme-color" content="#fbf8f2" media="(prefers-color-scheme: light)"/>
+    <meta name="theme-color" content="#171a22" media="(prefers-color-scheme: dark)"/>
+    <script is:inline>
+        // Avant le premier rendu : thème choisi (localStorage) sinon thème du système.
+        (function () {
+            var choix = null;
+            try {
+                choix = localStorage.getItem('carnet:theme');
+            } catch (e) {
+            }
+            var sombre = choix ? choix === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.dataset.theme = sombre ? 'dark' : 'light';
+            document.documentElement.dataset.themeChoix = choix || 'auto';
+        })();
+    </script>
+</head>
+<body class="flex min-h-dvh flex-col">
+<a
+        href="#contenu"
+        class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-paper focus:px-3 focus:py-2 focus:shadow"
+>Aller au contenu</a
+>
+
+<header
+        data-site
+        class="sticky top-0 z-30 border-b border-line bg-paper/85 backdrop-blur-md supports-[backdrop-filter]:bg-paper/75"
+>
+    <div class="mx-auto flex h-14 max-w-[90rem] items-center gap-3 px-4 sm:px-6">
+        <slot name="avant-logo"/>
+        <a href="/" class="group flex items-center gap-2.5 rounded-md" aria-label="Carnet, accueil">
+          <span
+                  aria-hidden="true"
+                  class="grid size-8 place-items-center rounded-lg bg-accent font-display text-lg font-bold italic text-paper shadow-sm transition-transform group-hover:-rotate-6"
+          >c</span
+          >
+            <span class="font-display text-xl font-semibold tracking-tight">Carnet</span>
+        </a>
+        <slot name="fil"/>
+        <div class="ml-auto flex items-center gap-2">
+            <button
+                    type="button"
+                    data-ouvrir-recherche
+                    class="bouton rounded-full! !py-1.5 text-ink-3"
+                    aria-label="Rechercher (Ctrl+K)"
+            >
+                <Icone nom="recherche" taille={16}/>
+                <span class="hidden sm:inline">Rechercher</span>
+                <kbd class="hidden sm:inline" data-raccourci>Ctrl K</kbd>
+            </button>
+            <button type="button" id="bascule-theme" class="bouton rounded-full! !p-2" aria-label="Changer de thème">
+                <span class="theme-ico theme-ico--light"><Icone nom="soleil" taille={18}/></span>
+                <span class="theme-ico theme-ico--dark"><Icone nom="lune" taille={18}/></span>
+                <span class="theme-ico theme-ico--auto"><Icone nom="ecran" taille={18}/></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<main id="contenu" class="flex-1">
+    <slot/>
+</main>
+
+<footer data-site class="no-print mt-16 border-t border-line">
+    <div
+            class="mx-auto flex max-w-[90rem] flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-ink-3 sm:px-6"
+    >
+        <p>Carnet — fiches de révision, ING1. Progression enregistrée uniquement sur cet appareil.</p>
+        <p class="flex items-center gap-2"><kbd>/</kbd> ou <kbd>Ctrl K</kbd> pour rechercher</p>
+    </div>
+</footer>
+
+<Recherche/>
+
+<style>
+    .theme-ico {
+        display: none;
+    }
+
+    :global(html[data-theme-choix='light']) .theme-ico--light,
+    :global(html[data-theme-choix='dark']) .theme-ico--dark,
+    :global(html[data-theme-choix='auto']) .theme-ico--auto {
+        display: inline-flex;
+    }
+</style>
+
+<script>
+    // Bascule à trois états : auto (système) → clair → sombre → auto
+    const racine = document.documentElement;
+    const bouton = document.getElementById('bascule-theme')!;
+    const media = matchMedia('(prefers-color-scheme: dark)');
+    const libelles = {auto: 'automatique (système)', light: 'clair', dark: 'sombre'} as const;
+    type Choix = keyof typeof libelles;
+
+    function appliquer(choix: Choix) {
+        racine.dataset.themeChoix = choix;
+        racine.dataset.theme = choix === 'auto' ? (media.matches ? 'dark' : 'light') : choix;
+        bouton.setAttribute('aria-label', `Thème : ${libelles[choix]}. Changer de thème`);
+        bouton.title = `Thème ${libelles[choix]}`;
+    }
+
+    appliquer((racine.dataset.themeChoix as Choix) ?? 'auto');
+
+    bouton.addEventListener('click', () => {
+        const ordre: Choix[] = ['auto', 'light', 'dark'];
+        const suivant = ordre[(ordre.indexOf(racine.dataset.themeChoix as Choix) + 1) % 3];
+        try {
+            if (suivant === 'auto') localStorage.removeItem('carnet:theme');
+            else localStorage.setItem('carnet:theme', suivant);
+        } catch {
+        }
+        appliquer(suivant);
+    });
+    media.addEventListener('change', () => {
+        if (racine.dataset.themeChoix === 'auto') appliquer('auto');
+    });
+
+    // Raccourci affiché selon la plateforme
+    if (/Mac|iPhone|iPad/.test(navigator.userAgent)) {
+        document.querySelectorAll('[data-raccourci]').forEach((k) => (k.textContent = '⌘ K'));
+    }
+
+    // Impression : déplier corrections et calculs
+    addEventListener('beforeprint', () => {
+        document.querySelectorAll<HTMLDetailsElement>('details.depliable:not([open])').forEach((d) => {
+            d.open = true;
+            d.dataset.ouvertPourImpression = '';
+        });
+    });
+    addEventListener('afterprint', () => {
+        document.querySelectorAll<HTMLDetailsElement>('[data-ouvert-pour-impression]').forEach((d) => {
+            d.open = false;
+            delete d.dataset.ouvertPourImpression;
+        });
+    });
+</script>
+</body>
+</html>

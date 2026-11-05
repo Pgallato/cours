@@ -1,0 +1,751 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces/index.css';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/400-italic.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import 'katex/dist/katex.min.css';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ------------------------------------------------------------------
+   Identité « Carnet » : papier chaud, encre bleue, réglure Seyès.
+   Toutes les couleurs passent par ces jetons (clair / sombre).
+   ------------------------------------------------------------------ */
+:root {
+    --h: 262; /* teinte d'accent, surchargée par cours */
+    --paper: oklch(98.4% 0.009 85);
+    --paper-2: oklch(96.2% 0.013 85);
+    --paper-3: oklch(93% 0.016 85);
+    --ink: oklch(23% 0.03 265);
+    --ink-2: oklch(40% 0.03 265);
+    --ink-3: oklch(52% 0.025 265);
+    --line: oklch(88% 0.018 255);
+    --line-strong: oklch(80% 0.03 255);
+    --margin: oklch(66% 0.14 22);
+    --accent: oklch(47% 0.17 var(--h));
+    --accent-soft: oklch(94% 0.035 var(--h));
+    --accent-ink: oklch(38% 0.15 var(--h));
+    --focus: oklch(55% 0.2 262);
+    --shadow: 0 1px 0 oklch(0% 0 0 / 0.04), 0 8px 24px -12px oklch(30% 0.05 260 / 0.18);
+    --font-display: 'Fraunces Variable', 'Iowan Old Style', Georgia, serif;
+    --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    color-scheme: light;
+}
+
+[data-theme='dark'] {
+    --paper: oklch(18.5% 0.014 262);
+    --paper-2: oklch(22% 0.017 262);
+    --paper-3: oklch(26.5% 0.02 262);
+    --ink: oklch(93% 0.012 85);
+    --ink-2: oklch(80% 0.015 85);
+    --ink-3: oklch(68% 0.015 260);
+    --line: oklch(30% 0.02 262);
+    --line-strong: oklch(38% 0.025 262);
+    --margin: oklch(62% 0.13 22);
+    --accent: oklch(78% 0.12 var(--h));
+    --accent-soft: oklch(28% 0.05 var(--h));
+    --accent-ink: oklch(84% 0.1 var(--h));
+    --focus: oklch(78% 0.15 262);
+    --shadow: 0 1px 0 oklch(0% 0 0 / 0.2), 0 10px 30px -14px oklch(0% 0 0 / 0.6);
+    color-scheme: dark;
+}
+
+@theme inline {
+    --color-paper: var(--paper);
+    --color-paper-2: var(--paper-2);
+    --color-paper-3: var(--paper-3);
+    --color-ink: var(--ink);
+    --color-ink-2: var(--ink-2);
+    --color-ink-3: var(--ink-3);
+    --color-line: var(--line);
+    --color-line-strong: var(--line-strong);
+    --color-accent: var(--accent);
+    --color-accent-soft: var(--accent-soft);
+    --color-accent-ink: var(--accent-ink);
+    --color-margin: var(--margin);
+    --font-display: var(--font-display);
+    --font-body: var(--font-body);
+    --font-mono: var(--font-mono);
+}
+
+@layer base {
+    html {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: var(--font-body);
+        font-size: 106.25%; /* 17px */
+        line-height: 1.65;
+        -webkit-text-size-adjust: 100%;
+        text-rendering: optimizeLegibility;
+        scroll-padding-top: 5rem;
+    }
+
+    body {
+        background: var(--paper);
+        min-height: 100dvh;
+    }
+
+    ::selection {
+        background: oklch(from var(--accent) l c h / 0.25);
+    }
+
+    :focus-visible {
+        outline: 2.5px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+    a {
+        color: inherit;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: var(--font-display);
+        font-optical-sizing: auto;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+        text-wrap: balance;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+/* Réglure Seyès discrète, réservée aux zones « cahier » */
+.seyes {
+    background-image: linear-gradient(to right, transparent calc(2.25rem - 1px), var(--margin) calc(2.25rem - 1px), var(--margin) 2.25rem, transparent 2.25rem),
+    repeating-linear-gradient(to bottom, transparent 0 calc(2rem - 1px), var(--line) calc(2rem - 1px) 2rem),
+    repeating-linear-gradient(to right, transparent 0 calc(2rem - 1px), oklch(from var(--line) l c h / 0.55) calc(2rem - 1px) 2rem);
+    background-color: var(--paper-2);
+}
+
+.grille {
+    background-image: repeating-linear-gradient(to bottom, transparent 0 calc(1.25rem - 1px), oklch(from var(--line) l c h / 0.7) calc(1.25rem - 1px) 1.25rem),
+    repeating-linear-gradient(to right, transparent 0 calc(1.25rem - 1px), oklch(from var(--line) l c h / 0.7) calc(1.25rem - 1px) 1.25rem);
+}
+
+/* Lien souligné façon surligneur */
+.lien {
+    text-decoration: underline;
+    text-decoration-color: oklch(from var(--accent) l c h / 0.45);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+}
+
+.lien:hover {
+    text-decoration-color: var(--accent);
+}
+
+.etiquette {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 0.2em 0.65em;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+}
+
+.bouton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.6rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.bouton:hover {
+    background: var(--paper-2);
+    border-color: var(--accent);
+}
+
+.bouton[aria-pressed='true'] {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+}
+
+.bouton-plein {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper);
+}
+
+.bouton-plein:hover {
+    background: var(--accent-ink);
+    color: var(--paper);
+}
+
+kbd {
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    border: 1px solid var(--line-strong);
+    border-bottom-width: 2px;
+    border-radius: 0.3rem;
+    padding: 0.05em 0.4em;
+    background: var(--paper);
+    color: var(--ink-2);
+}
+
+/* ------------------------------------------------------------------
+   Contenu de cours (prose)
+   ------------------------------------------------------------------ */
+.prose-cours {
+    font-size: 1rem;
+    max-width: 44rem;
+}
+
+.prose-cours > * + * {
+    margin-top: 1.1em;
+}
+
+.prose-cours h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-top: 2.6em;
+    padding-top: 0.6em;
+    border-top: 1px dashed var(--line-strong);
+    scroll-margin-top: 5rem;
+}
+
+.prose-cours h2:first-child {
+    margin-top: 0;
+    border-top: 0;
+    padding-top: 0;
+}
+
+.prose-cours h3 {
+    font-size: 1.22rem;
+    font-weight: 600;
+    margin-top: 2em;
+    scroll-margin-top: 5rem;
+}
+
+.prose-cours h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-top: 1.6em;
+}
+
+.prose-cours a {
+    color: var(--accent-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.prose-cours strong {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.prose-cours ul,
+.prose-cours ol {
+    padding-left: 1.4em;
+}
+
+.prose-cours ul {
+    list-style: none;
+}
+
+.prose-cours ul > li {
+    position: relative;
+}
+
+.prose-cours ul > li::before {
+    content: '';
+    position: absolute;
+    left: -1em;
+    top: 0.72em;
+    width: 0.4em;
+    height: 0.4em;
+    border-radius: 2px;
+    background: var(--accent);
+    transform: rotate(45deg);
+}
+
+.prose-cours ol {
+    list-style: decimal;
+}
+
+.prose-cours ol > li::marker {
+    color: var(--accent-ink);
+    font-weight: 600;
+}
+
+.prose-cours li + li {
+    margin-top: 0.35em;
+}
+
+.prose-cours code:not(pre code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 0.1em 0.35em;
+    border-radius: 0.3rem;
+    background: var(--paper-3);
+}
+
+.prose-cours blockquote {
+    border-left: 3px solid var(--line-strong);
+    padding-left: 1em;
+    color: var(--ink-2);
+    font-style: italic;
+}
+
+.prose-cours hr {
+    border: 0;
+    border-top: 1px dashed var(--line-strong);
+    margin: 2.5em 0;
+}
+
+/* Tableaux : défilement horizontal sur mobile */
+.prose-cours table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.95rem;
+    width: max-content;
+}
+
+.prose-cours th,
+.prose-cours td {
+    border: 1px solid var(--line-strong);
+    padding: 0.4em 0.85em;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.prose-cours th {
+    background: var(--paper-2);
+    font-weight: 600;
+}
+
+.prose-cours tbody tr > :first-child,
+.prose-cours thead tr > :first-child {
+    background: var(--paper-2);
+    font-weight: 600;
+}
+
+/* Formules */
+.katex {
+    font-size: 1.08em;
+}
+
+.katex-display {
+    scrollbar-width: thin;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.35em 0.25em;
+    margin: 0.9em 0;
+}
+
+.katex-display > .katex {
+    white-space: nowrap;
+}
+
+/* Figures SVG du cours */
+.figure-cours {
+    margin: 1.5em 0;
+}
+
+.figure-cours svg {
+    display: block;
+    width: 100%;
+    max-width: 28rem;
+    height: auto;
+    margin-inline: auto;
+}
+
+.figure-cours figcaption {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    margin-top: 0.5em;
+}
+
+/* ------------------------------------------------------------------
+   Blocs pédagogiques
+   ------------------------------------------------------------------ */
+.bloc {
+    --bh: 262;
+    --b-accent: oklch(50% 0.15 var(--bh));
+    --b-ink: oklch(40% 0.13 var(--bh));
+    --b-bg: oklch(97% 0.02 var(--bh));
+    --b-border: oklch(86% 0.05 var(--bh));
+    position: relative;
+    border: 1px solid var(--b-border);
+    border-left: 4px solid var(--b-accent);
+    border-radius: 0.4rem 0.75rem 0.75rem 0.4rem;
+    background: var(--b-bg);
+    padding: 0.9rem 1.15rem 1rem;
+    margin: 1.6em 0;
+}
+
+[data-theme='dark'] .bloc {
+    --b-accent: oklch(72% 0.12 var(--bh));
+    --b-ink: oklch(84% 0.09 var(--bh));
+    --b-bg: oklch(23% 0.03 var(--bh));
+    --b-border: oklch(34% 0.05 var(--bh));
+}
+
+.bloc > .bloc-tete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.6rem;
+    margin-bottom: 0.4rem;
+}
+
+.bloc-type {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--b-ink);
+}
+
+.bloc-titre {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--ink);
+}
+
+.bloc-corps > * + * {
+    margin-top: 0.75em;
+}
+
+.bloc-corps > :first-child {
+    margin-top: 0;
+}
+
+.bloc-corps .katex-display {
+    margin: 0.6em 0;
+}
+
+.bloc--definition {
+    --bh: 262;
+}
+
+.bloc--theoreme {
+    --bh: 305;
+}
+
+.bloc--propriete {
+    --bh: 195;
+}
+
+.bloc--remarque {
+    --bh: 85;
+    --b-accent: oklch(62% 0.06 85);
+    --b-bg: var(--paper-2);
+    --b-border: var(--line);
+}
+
+[data-theme='dark'] .bloc--remarque {
+    --b-bg: var(--paper-2);
+    --b-border: var(--line);
+}
+
+.bloc--piege {
+    --bh: 35;
+}
+
+.bloc--exemple {
+    --bh: 150;
+}
+
+.bloc--exercice {
+    --bh: 65;
+}
+
+.bloc--formules {
+    --bh: var(--h);
+    border-left-width: 1px;
+    border-radius: 0.75rem;
+    padding: 0;
+    overflow: hidden;
+}
+
+.bloc--formules > .bloc-tete {
+    padding: 0.7rem 1.15rem;
+    margin: 0;
+    border-bottom: 1px solid var(--b-border);
+    background: oklch(from var(--b-accent) l c h / 0.08);
+}
+
+.bloc--formules > .bloc-corps {
+    padding: 0.6rem 1.15rem 1rem;
+    background-color: var(--paper);
+}
+
+/* Fiche formules : chaque item = libellé + formule */
+.formules-liste {
+    display: grid;
+    gap: 0;
+}
+
+.formule-ligne {
+    display: grid;
+    grid-template-columns: minmax(8rem, 13rem) 1fr;
+    gap: 0.25rem 1rem;
+    align-items: center;
+    padding: 0.55rem 0;
+    border-bottom: 1px dashed var(--line);
+}
+
+.formule-ligne:last-child {
+    border-bottom: 0;
+}
+
+.formule-ligne > dt {
+    font-size: 0.88rem;
+    color: var(--ink-2);
+    font-weight: 500;
+}
+
+.formule-ligne > dd {
+    min-width: 0;
+    overflow-x: auto;
+}
+
+.formule-ligne .katex-display {
+    margin: 0;
+    text-align: left;
+}
+
+.formule-ligne .katex-display > .katex {
+    text-align: left;
+}
+
+@media (max-width: 34rem) {
+    .formule-ligne {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Correction / calcul détaillé dépliables */
+.depliable {
+    margin-top: 0.85rem;
+    border-top: 1px dashed var(--b-border);
+    padding-top: 0.65rem;
+}
+
+.depliable > summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--b-ink);
+    border-radius: 0.4rem;
+    padding: 0.15rem 0.2rem;
+}
+
+.depliable > summary::-webkit-details-marker {
+    display: none;
+}
+
+.depliable > summary::before {
+    content: '';
+    width: 0.55rem;
+    height: 0.55rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform 0.18s;
+}
+
+.depliable[open] > summary::before {
+    transform: rotate(45deg);
+}
+
+.depliable > .depliable-corps {
+    margin-top: 0.6rem;
+}
+
+.depliable > .depliable-corps > * + * {
+    margin-top: 0.7em;
+}
+
+/* Animations */
+.anim {
+    margin: 1.8em 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 0.9rem;
+    background: var(--paper);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.anim-tete {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-2);
+}
+
+.anim-scene {
+    padding: 0.75rem 1rem 1rem;
+}
+
+.anim-scene svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: pan-y;
+}
+
+.anim-controles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.4rem;
+    margin-top: 0.75rem;
+    font-size: 0.88rem;
+}
+
+.anim-controles label {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 9.5rem;
+    flex: 1 1 9.5rem;
+    color: var(--ink-2);
+}
+
+.anim-controles output {
+    font-family: var(--font-mono);
+    color: var(--ink);
+    font-weight: 500;
+}
+
+.anim-controles input[type='range'] {
+    accent-color: var(--accent);
+    width: 100%;
+}
+
+.anim-lecture {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    margin-top: 0.6rem;
+    min-height: 1.5em;
+}
+
+.anim-lecture strong {
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-weight: 500;
+}
+
+.anim svg text {
+    font-family: var(--font-body);
+    fill: var(--ink-3);
+    font-size: 11px;
+}
+
+/* Pagefind : surlignage des résultats */
+mark {
+    background: oklch(from var(--accent) l c h / 0.2);
+    color: inherit;
+    border-radius: 0.2em;
+    padding: 0 0.1em;
+}
+
+/* ------------------------------------------------------------------
+   Impression : contenu seul, corrections dépliées, encre noire
+   ------------------------------------------------------------------ */
+@media print {
+    :root,
+    [data-theme='dark'] {
+        --paper: #fff;
+        --paper-2: #fff;
+        --paper-3: #f3f3f3;
+        --ink: #000;
+        --ink-2: #222;
+        --ink-3: #444;
+        --line: #bbb;
+        --line-strong: #888;
+        color-scheme: light;
+    }
+
+    html {
+        font-size: 11pt;
+    }
+
+    .no-print,
+    header[data-site],
+    footer[data-site],
+    nav[aria-label],
+    .anim-controles {
+        display: none !important;
+    }
+
+    .layout-chapitre {
+        display: block !important;
+    }
+
+    .prose-cours {
+        max-width: none;
+    }
+
+    .bloc,
+    .anim,
+    .formule-ligne,
+    .katex-display,
+    table {
+        break-inside: avoid;
+    }
+
+    .bloc {
+        background: #fff !important;
+        box-shadow: none;
+    }
+
+    h2,
+    h3 {
+        break-after: avoid;
+    }
+
+    details.depliable > .depliable-corps {
+        display: block !important;
+    }
+
+    a {
+        text-decoration: none;
+    }
+}

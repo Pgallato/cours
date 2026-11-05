@@ -1,0 +1,14 @@
+---
+/** Bloc dépliable (fermé par défaut) : correction d'exercice ou calcul détaillé. */
+interface Props {
+    titre?: string;
+    ouvert?: boolean
+}
+const {titre = 'Voir la correction', ouvert = false} = Astro.props;
+---
+<details class="depliable" open={ouvert}>
+    <summary>{titre}</summary>
+    <div class="depliable-corps">
+        <slot/>
+    </div>
+</details>

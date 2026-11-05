@@ -1,0 +1,12 @@
+---
+/** Une ligne de la fiche <Formulas> : libellé + formule. */
+interface Props {
+    label: string
+}
+---
+<div class="formule-ligne">
+    <dt>{Astro.props.label}</dt>
+    <dd>
+        <slot/>
+    </dd>
+</div>

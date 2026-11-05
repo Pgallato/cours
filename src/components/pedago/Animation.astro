@@ -1,0 +1,30 @@
+---
+/**
+    * Petite visualisation interactive. Exemple MDX :
+    *   <Animation type="binomiale-poisson" titre="Binomiale vs Poisson" params={{ n: 40, p: 0.05 }} />
+    * Types disponibles : voir src/scripts/animations/index.ts
+    */
+interface Props {
+    type: string;
+    titre?: string;
+    params?: Record<string, unknown>;
+}
+const {type, titre = 'Visualisation interactive', params = {}} = Astro.props;
+---
+
+<figure class="anim" data-animation={type} data-params={JSON.stringify(params)} data-pagefind-ignore>
+    <figcaption class="anim-tete">
+        <span class="etiquette">Interactif</span>
+        <span class="font-display font-semibold">{titre}</span>
+    </figcaption>
+    <div class="anim-scene">
+        <p class="text-sm text-ink-3">Chargement de l'animation… (JavaScript requis)</p>
+        <slot/>
+    </div>
+</figure>
+
+<script>
+    import {monterTout} from '../../scripts/animations';
+
+    monterTout();
+</script>

@@ -1,0 +1,22 @@
+---
+/** Bloc pédagogique générique : les composants Definition, Theorem… l'habillent. */
+interface Props {
+    variante: 'definition' | 'theoreme' | 'propriete' | 'remarque' | 'piege' | 'exemple' | 'exercice' | 'formules';
+    type: string;
+    titre?: string;
+    balise?: 'section' | 'aside' | 'div';
+    role?: astroHTML.JSX.AriaRole;
+}
+const {variante, type, titre, balise: Balise = 'section', role} = Astro.props;
+---
+
+<Balise class={`bloc bloc--${variante}`} role={role} aria-label={titre ? `${type} : ${titre}` : type}>
+    <div class="bloc-tete">
+        <span class="bloc-type">{type}</span>
+        {titre && <span class="bloc-titre">{titre}</span>}
+        <slot name="tete"/>
+    </div>
+    <div class="bloc-corps">
+        <slot/>
+    </div>
+</Balise>

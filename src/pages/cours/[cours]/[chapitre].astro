@@ -1,0 +1,378 @@
+---
+import {render} from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Icone from '../../../components/Icone.astro';
+import {composantsPedago} from '~/components/pedago';
+import {tousLesCours, type Chapitre, type CoursComplet} from '~/lib/cours.ts';
+
+export async function getStaticPaths() {
+    const cours = await tousLesCours();
+    return cours.flatMap((c) =>
+        c.chapitres.map((ch, i) => ({
+            params: {cours: c.id, chapitre: ch.slug},
+            props: {cours: c, chapitre: ch, precedent: c.chapitres[i - 1], suivant: c.chapitres[i + 1], index: i},
+        })),
+    );
+}
+
+interface Props {
+    cours: CoursComplet;
+    chapitre: Chapitre;
+    precedent?: Chapitre;
+    suivant?: Chapitre;
+    index: number;
+}
+const {cours, chapitre, precedent, suivant, index} = Astro.props;
+const {Content, headings} = await render(chapitre.entry);
+const sections = headings.filter((h) => h.depth === 2);
+const sommaire = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const matiere = chapitre.entry.data.matiere ?? cours.matiere;
+const semestre = chapitre.entry.data.semestre ?? cours.semestre;
+const ref = {
+    cle: chapitre.cle,
+    url: chapitre.url,
+    titre: chapitre.titre,
+    coursId: cours.id,
+    coursTitre: cours.titre,
+};
+---
+
+<Base titre={`${chapitre.titre} — ${cours.titre}`} description={chapitre.resume} teinte={cours.teinte}>
+    <button
+            slot="avant-logo"
+            type="button"
+            class="bouton p-2! lg:hidden!"
+            data-ouvrir-plan
+            aria-controls="plan-cours"
+            aria-expanded="false"
+            aria-label="Ouvrir le plan du cours"
+    >
+        <Icone nom="menu"/>
+    </button>
+
+    <div class="layout-chapitre mx-auto grid max-w-360 gap-8 px-4 sm:px-6 lg:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[17rem_minmax(0,1fr)_14rem]">
+        <!-- Plan du cours : colonne fixe sur grand écran, tiroir sur mobile -->
+        <div class="plan-fond fixed inset-0 z-40 bg-ink/40 lg:hidden" data-fermer-plan hidden></div>
+        <nav
+                id="plan-cours"
+                aria-label="Plan du cours"
+                class="plan fixed inset-y-0 left-0 z-50 w-[min(20rem,86vw)] -translate-x-full overflow-y-auto border-r border-line bg-paper px-4 py-5 transition-[translate] lg:sticky lg:top-14 lg:z-0 lg:h-[calc(100dvh-3.5rem)] lg:w-auto lg:translate-x-0 lg:border-r-0 lg:bg-transparent lg:px-0 lg:py-8"
+        >
+            <div class="mb-4 flex items-start justify-between gap-2">
+                <a href={cours.url} class="group block">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-accent-ink">{cours.matiere}
+                        · {cours.semestre}</span>
+                    <span class="mt-0.5 block font-display text-lg font-semibold leading-snug group-hover:underline">{cours.titre}</span>
+                </a>
+                <button type="button" class="bouton p-1.5! lg:hidden!" data-fermer-plan aria-label="Fermer le plan">
+                    <Icone nom="fermer" taille={16}/>
+                </button>
+            </div>
+            <div class="mb-4 h-1.5 overflow-hidden rounded-full bg-paper-3" aria-hidden="true">
+                <div class="h-full w-0 rounded-full bg-accent transition-[width]" data-barre-cours></div>
+            </div>
+            <ol class="space-y-0.5 text-[0.92rem]">
+                {
+                    cours.chapitres.map((ch, i) => {
+                        const actif = ch.cle === chapitre.cle;
+                        return (
+                                <li>
+                                    <a
+                                            href={ch.url}
+                                            aria-current={actif ? 'page' : undefined}
+                                            data-cle-chapitre={ch.cle}
+                                            class:list={[
+                                                'plan-lien flex items-start gap-2.5 rounded-lg px-2.5 py-2 hover:bg-paper-2',
+                                                actif && 'bg-accent-soft font-semibold text-accent-ink hover:bg-accent-soft',
+                                            ]}
+                                    >
+                  <span class="plan-num mt-px grid size-5 shrink-0 place-items-center rounded-full border border-line-strong font-mono text-[0.68rem]">
+                    <span class="plan-chiffre">{i + 1}</span>
+                    <Icone nom="coche" taille={12} class="plan-coche hidden"/>
+                  </span>
+                                        <span>{ch.titre}</span>
+                                    </a>
+                                    {actif && sections.length > 0 && (
+                                            <ol class="mb-2 ml-[1.4rem] mt-1 border-l border-line pl-3 text-[0.85rem] text-ink-2">
+                                                {sections.map((h) => (
+                                                        <li>
+                                                            <a href={`#${h.slug}`}
+                                                               class="block rounded px-1.5 py-1 hover:text-ink"
+                                                               data-plan-section>
+                                                                {h.text}
+                                                            </a>
+                                                        </li>
+                                                ))}
+                                            </ol>
+                                    )}
+                                </li>
+                        );
+                    })
+                }
+            </ol>
+        </nav>
+
+        <!-- Contenu -->
+        <article class="min-w-0 py-8" data-pagefind-body
+                 data-pagefind-meta={`cours:${cours.titre} › Chapitre ${index + 1}`}>
+            <nav aria-label="Fil d'Ariane" class="mb-5 text-sm text-ink-3" data-pagefind-ignore>
+                <ol class="flex flex-wrap items-center gap-1.5">
+                    <li><a href="/" class="hover:text-ink hover:underline">Accueil</a></li>
+                    <li aria-hidden="true">
+                        <Icone nom="droite" taille={12}/>
+                    </li>
+                    <li><a href={cours.url} class="hover:text-ink hover:underline">{cours.titre}</a></li>
+                    <li aria-hidden="true">
+                        <Icone nom="droite" taille={12}/>
+                    </li>
+                    <li aria-current="page" class="text-ink-2">Chapitre {index + 1}</li>
+                </ol>
+            </nav>
+
+            <header class="mb-10 max-w-176">
+                <div class="mb-3 flex flex-wrap items-center gap-2" data-pagefind-ignore>
+                    <span class="etiquette" data-pagefind-filter="matiere">{matiere}</span>
+                    <span class="etiquette bg-paper-3! text-ink-2!" data-pagefind-filter="semestre">{semestre}</span>
+                    <span class="inline-flex items-center gap-1 text-sm text-ink-3">
+            <Icone nom="horloge" taille={15}/>
+                        {chapitre.duree} min
+          </span>
+                </div>
+                <p class="font-display text-lg italic text-accent-ink" data-pagefind-ignore>Chapitre {index + 1}</p>
+                <h1 class="mt-1 text-[clamp(2rem,5vw,2.9rem)] font-semibold"
+                    data-pagefind-meta="title">{chapitre.titre}</h1>
+                <p class="mt-3 text-lg text-ink-2">{chapitre.resume}</p>
+                <div class="no-print mt-5 flex flex-wrap gap-2" data-pagefind-ignore>
+                    <button type="button" class="bouton" data-bouton-vu aria-pressed="false">
+                        <Icone nom="coche" taille={16}/>
+                        <span>Marquer comme vu</span>
+                    </button>
+                    <button type="button" class="bouton" data-bouton-favori aria-pressed="false">
+                        <Icone nom="etoile" taille={16}/>
+                        <span>Favori</span>
+                    </button>
+                    <button type="button" class="bouton" onclick="window.print()">
+                        <Icone nom="imprimer" taille={16}/>
+                        <span>Imprimer</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="prose-cours">
+                <Content components={composantsPedago}/>
+            </div>
+
+            <footer class="no-print mt-14 max-w-176" data-pagefind-ignore>
+                <div class="seyes mb-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line py-4 pl-12 pr-4">
+                    <p class="font-display text-lg">Chapitre terminé ?</p>
+                    <button type="button" class="bouton bouton-plein" data-bouton-vu aria-pressed="false">
+                        <Icone nom="coche" taille={16}/>
+                        <span>Marquer comme vu</span>
+                    </button>
+                </div>
+                <nav aria-label="Chapitres précédent et suivant" class="grid gap-3 sm:grid-cols-2">
+                    {
+                        precedent ? (
+                                <a href={precedent.url} rel="prev"
+                                   class="group rounded-xl border border-line p-4 hover:border-accent">
+                                    <span class="flex items-center gap-1 text-sm text-ink-3"><Icone nom="gauche"
+                                                                                                    taille={14}/> Chapitre précédent</span>
+                                    <span class="mt-1 block font-display font-semibold group-hover:text-accent-ink">{precedent.titre}</span>
+                                </a>
+                        ) : (
+                                <a href={cours.url} class="group rounded-xl border border-line p-4 hover:border-accent">
+                                    <span class="flex items-center gap-1 text-sm text-ink-3"><Icone nom="gauche"
+                                                                                                    taille={14}/> Retour</span>
+                                    <span class="mt-1 block font-display font-semibold group-hover:text-accent-ink">Sommaire du cours</span>
+                                </a>
+                        )
+                    }
+                    {
+                        suivant ? (
+                                <a href={suivant.url} rel="next"
+                                   class="group rounded-xl border border-line p-4 text-right hover:border-accent">
+                                    <span class="flex items-center justify-end gap-1 text-sm text-ink-3">Chapitre suivant <Icone
+                                            nom="droite" taille={14}/></span>
+                                    <span class="mt-1 block font-display font-semibold group-hover:text-accent-ink">{suivant.titre}</span>
+                                </a>
+                        ) : (
+                                <a href={cours.url}
+                                   class="group rounded-xl border border-line p-4 text-right hover:border-accent">
+                                    <span class="flex items-center justify-end gap-1 text-sm text-ink-3">Fin du cours <Icone
+                                            nom="droite" taille={14}/></span>
+                                    <span class="mt-1 block font-display font-semibold group-hover:text-accent-ink">Sommaire du cours</span>
+                                </a>
+                        )
+                    }
+                </nav>
+            </footer>
+        </article>
+
+        <!-- Sommaire de la page -->
+        <aside class="no-print hidden xl:block" aria-label="Sur cette page">
+            <div class="sticky top-14 max-h-[calc(100dvh-3.5rem)] overflow-y-auto py-8">
+                <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-3">Sur cette page</p>
+                <ol class="space-y-1 border-l border-line text-sm">
+                    {
+                        sommaire.map((h) => (
+                                <li>
+                                    <a
+                                            href={`#${h.slug}`}
+                                            data-sommaire={h.slug}
+                                            class:list={['sommaire-lien -ml-px block border-l-2 border-transparent py-1 text-ink-3 hover:text-ink', h.depth === 3 ? 'pl-6' : 'pl-3']}
+                                    >
+                                        {h.text}
+                                    </a>
+                                </li>
+                        ))
+                    }
+                </ol>
+            </div>
+        </aside>
+    </div>
+
+    <script is:inline type="application/json" id="ref-chapitre"
+            set:html={JSON.stringify({...ref, cles: cours.chapitres.map((c) => c.cle)})}/>
+</Base>
+
+<style>
+    .plan[data-ouvert] {
+        translate: 0 0; /* annule -translate-x-full (Tailwind v4 utilise la propriété translate) */
+    }
+
+    @media (max-width: 63.99rem) {
+        /* tiroir fermé : hors de la navigation clavier */
+        .plan:not([data-ouvert]) {
+            visibility: hidden;
+            transition: translate 0.2s, visibility 0s 0.2s;
+        }
+    }
+
+    :global([data-vu]) .plan-coche {
+        display: block;
+    }
+
+    :global([data-vu]) .plan-chiffre {
+        display: none;
+    }
+
+    :global([data-vu]) > .plan-num {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--paper);
+    }
+
+    .sommaire-lien[aria-current='true'] {
+        border-color: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 500;
+    }
+</style>
+
+<script>
+    import {
+        basculerFavori,
+        compterVus,
+        definirVu,
+        enregistrerPosition,
+        estFavori,
+        estVu,
+        type RefChapitre
+    } from '~/scripts/suivi.ts';
+
+    const ref = JSON.parse(document.getElementById('ref-chapitre')!.textContent!) as RefChapitre & { cles: string[] };
+
+    /* --- Vu / favori --- */
+    const boutonsVu = document.querySelectorAll<HTMLButtonElement>('[data-bouton-vu]');
+    const boutonFav = document.querySelector<HTMLButtonElement>('[data-bouton-favori]')!;
+    const barre = document.querySelector<HTMLElement>('[data-barre-cours]')!;
+
+    function rafraichir() {
+        const vu = estVu(ref.cle);
+        boutonsVu.forEach((b) => {
+            b.setAttribute('aria-pressed', String(vu));
+            b.querySelector('span')!.textContent = vu ? 'Vu ✓' : 'Marquer comme vu';
+        });
+        const fav = estFavori(ref.cle);
+        boutonFav.setAttribute('aria-pressed', String(fav));
+        boutonFav.querySelector('span')!.textContent = fav ? 'En favori' : 'Favori';
+        document.querySelectorAll<HTMLElement>('[data-cle-chapitre]').forEach((a) => {
+            a.toggleAttribute('data-vu', estVu(a.dataset.cleChapitre!));
+        });
+        barre.style.width = `${(100 * compterVus(ref.cles)) / ref.cles.length}%`;
+    }
+
+    boutonsVu.forEach((b) => b.addEventListener('click', () => definirVu(ref.cle, !estVu(ref.cle))));
+    boutonFav.addEventListener('click', () => basculerFavori(ref));
+    document.addEventListener('suivi:change', rafraichir);
+    rafraichir();
+
+    /* --- Tiroir du plan (mobile) --- */
+    const plan = document.getElementById('plan-cours')!;
+    const fond = document.querySelector<HTMLElement>('.plan-fond')!;
+    const ouvrirBtn = document.querySelector<HTMLButtonElement>('[data-ouvrir-plan]')!;
+
+    function basculerPlan(ouvert: boolean) {
+        plan.toggleAttribute('data-ouvert', ouvert);
+        fond.hidden = !ouvert;
+        ouvrirBtn.setAttribute('aria-expanded', String(ouvert));
+        document.body.style.overflow = ouvert ? 'hidden' : '';
+        if (ouvert) plan.querySelector<HTMLElement>('a[aria-current], a')?.focus();
+        else ouvrirBtn.focus({preventScroll: true});
+    }
+
+    ouvrirBtn.addEventListener('click', () => basculerPlan(true));
+    document.querySelectorAll('[data-fermer-plan]').forEach((el) => el.addEventListener('click', () => basculerPlan(false)));
+    plan.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('a') && plan.hasAttribute('data-ouvert')) basculerPlan(false);
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && plan.hasAttribute('data-ouvert')) basculerPlan(false);
+    });
+
+    /* --- Section courante : sommaire actif + reprise de lecture --- */
+    const titres = [...document.querySelectorAll<HTMLElement>('.prose-cours h2[id], .prose-cours h3[id]')];
+    let courante: string | undefined;
+
+    function marquer(id: string | undefined) {
+        if (id === courante) return;
+        courante = id;
+        document.querySelectorAll('[data-sommaire]').forEach((a) => a.setAttribute('aria-current', String(a.getAttribute('data-sommaire') === id)));
+    }
+
+    function surDefilement() {
+        let id: string | undefined;
+        for (const t of titres) {
+            if (t.getBoundingClientRect().top < 140) id = t.id;
+            else break;
+        }
+        marquer(id);
+    }
+
+    let attente = 0;
+    addEventListener(
+        'scroll',
+        () => {
+            cancelAnimationFrame(attente);
+            attente = requestAnimationFrame(surDefilement);
+        },
+        {passive: true},
+    );
+    surDefilement();
+
+    // Mémorise la position au plus tard quand on quitte la page
+    const sauver = () => {
+        // section h2 englobante pour la reprise
+        const h2 = [...document.querySelectorAll<HTMLElement>('.prose-cours h2[id]')].filter((t) => t.getBoundingClientRect().top < 140).pop();
+        enregistrerPosition({
+            cle: ref.cle,
+            url: ref.url,
+            titre: ref.titre,
+            coursId: ref.coursId,
+            coursTitre: ref.coursTitre
+        }, h2?.id);
+    };
+    sauver();
+    addEventListener('pagehide', sauver);
+    document.addEventListener('visibilitychange', () => document.visibilityState === 'hidden' && sauver());
+</script>

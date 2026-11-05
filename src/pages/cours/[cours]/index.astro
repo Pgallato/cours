@@ -1,0 +1,139 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Icone from '../../../components/Icone.astro';
+import {tousLesCours, type CoursComplet} from '~/lib/cours.ts';
+
+export async function getStaticPaths() {
+    const cours = await tousLesCours();
+    return cours.map((c) => ({params: {cours: c.id}, props: {cours: c}}));
+}
+
+interface Props {
+    cours: CoursComplet;
+}
+const {cours} = Astro.props;
+const premier = cours.chapitres[0];
+---
+
+<Base titre={cours.titre} description={cours.description} teinte={cours.teinte}>
+    <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+        <nav aria-label="Fil d'Ariane" class="mb-6 text-sm text-ink-3">
+            <ol class="flex flex-wrap items-center gap-1.5">
+                <li><a href="/" class="hover:text-ink hover:underline">Accueil</a></li>
+                <li aria-hidden="true">
+                    <Icone nom="droite" taille={12}/>
+                </li>
+                <li aria-current="page" class="text-ink-2">{cours.titre}</li>
+            </ol>
+        </nav>
+
+        <header class="seyes relative overflow-hidden rounded-2xl border border-line py-8 pl-14 pr-6 sm:pl-16"
+                data-pagefind-body>
+            <div class="flex flex-wrap gap-2">
+                <span class="etiquette">{cours.matiere}</span>
+                <span class="etiquette bg-paper! text-ink-2!">{cours.semestre}</span>
+            </div>
+            <h1 class="mt-3 text-[clamp(2rem,6vw,3.2rem)] font-semibold" data-pagefind-meta="title">{cours.titre}</h1>
+            <p class="mt-3 max-w-2xl text-lg text-ink-2">{cours.description}</p>
+            <p class="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink-3">
+                <span>{cours.chapitres.length} chapitres</span>
+                <span>≈ {cours.dureeTotale} min de lecture</span>
+                {cours.entry.data.enseignant && <span>{cours.entry.data.enseignant}</span>}
+            </p>
+            <div class="no-print mt-6 flex flex-wrap items-center gap-3" data-pagefind-ignore>
+                {
+                    premier && (
+                                <a href={premier.url} class="bouton bouton-plein" data-reprendre={cours.id}>
+                                    <Icone nom="reprendre" taille={16}/>
+                                    <span>Commencer</span>
+                                </a>
+                    )
+                }
+                <div class="flex min-w-48 flex-1 items-center gap-3 sm:max-w-xs">
+                    <div class="h-2 flex-1 overflow-hidden rounded-full bg-paper-3">
+                        <div class="h-full w-0 rounded-full bg-accent transition-[width]" data-barre={cours.id}></div>
+                    </div>
+                    <span class="text-sm tabular-nums text-ink-3"
+                          data-compte={cours.id}>0/{cours.chapitres.length}</span>
+                </div>
+            </div>
+        </header>
+
+        <h2 class="mb-4 mt-12 text-2xl font-semibold">Chapitres</h2>
+        <ol class="grid gap-3">
+            {
+                cours.chapitres.map((ch, i) => (
+                        <li>
+                            <a
+                                    href={ch.url}
+                                    data-cle-chapitre={ch.cle}
+                                    class="chapitre-carte group grid grid-cols-[auto_1fr] gap-x-4 rounded-xl border border-line bg-paper p-4 transition-colors hover:border-accent sm:p-5"
+                            >
+              <span class="num grid size-10 place-items-center rounded-full border border-line-strong font-display text-lg font-semibold">
+                <span class="chiffre">{i + 1}</span>
+                <Icone nom="coche" taille={18} class="coche hidden"/>
+              </span>
+                                <span>
+                <span class="block font-display text-xl font-semibold group-hover:text-accent-ink">{ch.titre}</span>
+                <span class="mt-1 block text-ink-2">{ch.resume}</span>
+                <span class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-3">
+                  <span class="inline-flex items-center gap-1">
+                    <Icone nom="horloge" taille={14}/>
+                      {ch.duree} min
+                  </span>
+                    {ch.tags.map((t) => (
+                            <span class="rounded bg-paper-3 px-1.5 text-xs">{t}</span>
+                    ))}
+                    <span class="statut ml-auto hidden text-xs font-semibold uppercase tracking-wider text-accent-ink">Vu</span>
+                </span>
+              </span>
+                            </a>
+                        </li>
+                ))
+            }
+        </ol>
+    </div>
+
+    <script is:inline type="application/json" id="cles-cours"
+            set:html={JSON.stringify(cours.chapitres.map((c) => c.cle))}/>
+</Base>
+
+<style>
+    [data-vu] .num {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--paper);
+    }
+
+    [data-vu] .chiffre {
+        display: none;
+    }
+
+    [data-vu] :global(.coche),
+    [data-vu] .statut {
+        display: block;
+    }
+</style>
+
+<script>
+    import {compterVus, estVu, positionCours, urlReprise} from '~/scripts/suivi.ts';
+
+    const cles = JSON.parse(document.getElementById('cles-cours')!.textContent!) as string[];
+
+    function rafraichir() {
+        document.querySelectorAll<HTMLElement>('[data-cle-chapitre]').forEach((a) => a.toggleAttribute('data-vu', estVu(a.dataset.cleChapitre!)));
+        const n = compterVus(cles);
+        document.querySelectorAll<HTMLElement>('[data-barre]').forEach((b) => (b.style.width = `${(100 * n) / cles.length}%`));
+        document.querySelectorAll<HTMLElement>('[data-compte]').forEach((s) => (s.textContent = `${n}/${cles.length} vus`));
+        document.querySelectorAll<HTMLAnchorElement>('[data-reprendre]').forEach((a) => {
+            const pos = positionCours(a.dataset.reprendre!);
+            if (pos) {
+                a.href = urlReprise(pos);
+                a.querySelector('span')!.textContent = `Reprendre : ${pos.titre}`;
+            }
+        });
+    }
+
+    document.addEventListener('suivi:change', rafraichir);
+    rafraichir();
+</script>

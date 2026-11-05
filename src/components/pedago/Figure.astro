@@ -1,0 +1,14 @@
+---
+/** Figure du cours (SVG inline en enfant) avec légende facultative. */
+interface Props {
+    legende?: string;
+    page?: number
+}
+const {legende, page} = Astro.props;
+---
+<figure class="figure-cours">
+    <slot/>
+    {(legende || page) && (
+            <figcaption>{legende}{page && <span class="opacity-70"> (notes p. {page})</span>}</figcaption>
+    )}
+</figure>

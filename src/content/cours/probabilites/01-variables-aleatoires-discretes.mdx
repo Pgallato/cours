@@ -1,0 +1,189 @@
+---
+titre: Variables aléatoires discrètes
+resume: Définition d'une variable aléatoire, loi de probabilité, fonction de répartition, espérance, variance et écart type, illustrés sur les pannes d'un parc informatique.
+tags: [variable aléatoire, loi, espérance, variance]
+sources: [1, 2]
+---
+
+## Variable aléatoire
+
+<Definition titre="Variable aléatoire">
+    On considère un univers $\Omega$. On appelle **variable aléatoire** l'application définie par
+
+    $$
+    X : \begin{array}{rcl} \Omega & \longrightarrow & \mathbb{R} \\ \omega & \longmapsto & X(\omega) \end{array}
+    $$
+</Definition>
+
+<Example titre="Dé à 6 faces">
+    $\Omega = \{1, 2, 3, 4, 5, 6\}$. Je définis la variable aléatoire $X$ telle que
+
+    $$
+    X(\omega) = \begin{cases} 0 & \text{si } \omega \text{ pair} \\ 1 & \text{si } \omega \text{ impair} \end{cases}
+    $$
+
+    $$
+    X(2) = X(4) = X(6) = 0 \qquad(1) = X(3) = X(5) = 1
+    $$
+</Example>
+
+<Definition titre="Variable aléatoire discrète">
+    Une VA est **discrète** quand il y en a un nombre fini ou dénombrable [de valeurs possibles].
+</Definition>
+
+## Loi de probabilité
+
+<Definition titre="Loi de probabilité">
+    Une **loi de probabilité** associe une probabilité à chaque valeur de $X$.
+</Definition>
+
+<Example titre="Dé à 6 faces (suite)">
+    $$
+    \begin{cases} P(X = 0) = \dfrac{1}{2} \\[6pt] P(X = 1) = \dfrac{1}{2} \end{cases}
+    $$
+</Example>
+
+<Property>
+    $$
+    \sum_i(X = x_i) = 1 \qquad\qquad 0 \le(X = x_i) \le 1
+    $$
+</Property>
+
+<Example titre="Pannes d'ordinateurs">
+    $X$ : nombre de pannes par ordinateur d'un parc'entreprise.
+
+    | $X$    | 0    | 1    | 2    | 3   | 4   |
+    |--------|------|------|------|-----|-----|
+    | $P(X)$ | 65 % | 18 % | 12 % | 4 % | 1 % |
+
+    ↳ C'est la **loi de probabilité** de $X$.
+</Example>
+
+## Fonction de répartition
+
+<Definition titre="Fonction de répartition">
+    La fonction de répartition « cumule » les probabilités de la loi de probabilité.
+
+    $$
+    \begin{aligned}
+    F(x_i) &= P(X \le) \\
+    &= \sum_{j=0}^{i} P(X = x_j)
+    \end{aligned}
+    $$
+</Definition>
+
+<Example titre="Pannes d'ordinateurs (suite)">
+    À lire avec le tableau précédent :
+
+    | $x_i$    | 0    | 1              | 2              | 3             | 4              |
+    |----------|------|----------------|----------------|---------------|----------------|
+    | $F(x_i)$ | 65 % | 65 + 18 = 83 % | 83 + 12 = 95 % | 95 + 4 = 99 % | 99 + 1 = 100 % |
+</Example>
+
+<Animation
+type="loi-discrete"
+titre="Bâtons de la loi et escalier de F"
+params={{valeurs: [0, 1, 2, 3, 4], probas: [0.65, 0.18, 0.12, 0.04, 0.01]}}
+/>
+
+## Espérance
+
+<Definition titre="Espérance">
+    « Ce qu'on espère obtenir », « une moyenne théorique ».
+
+    $$
+    E(X) = \sum_i x_i \, P(X = x_i)
+    $$
+</Definition>
+
+<Example titre="Pannes d'ordinateurs : espérance">
+    $$
+    \begin{aligned}
+    E(X) &= 0 \times 65\% + 1 \times 18\% + 2 \times 12\% + 3 \times 4\% + 4 \times 1\% \\
+    E(X) &= 0{,}58
+    \end{aligned}
+    $$
+
+    <Solution titre="Détail du calcul">
+        $$
+        E(X) = 0 + 0{,}18 + 0{,}24 + 0{,}12 + 0{,}04 = 0{,}58
+        $$
+    </Solution>
+</Example>
+
+## Variance
+
+<Definition titre="Variance">
+    Représentation de ce qui varie autour de $E(X)$.
+
+    $$
+    \begin{aligned}
+    \operatorname{Var}(X) &= E(X^2) - \big(E(X)\big)^2 \\
+    &= E\Big(\big(X - E(X)\big)^2\Big)
+    \end{aligned}
+    $$
+</Definition>
+
+<Example titre="Pannes d'ordinateurs : variance">
+    | $X^2$    | 0    | 1    | 4    | 9   | 16  |
+    |----------|------|------|------|-----|-----|
+    | $P(X^2)$ | 65 % | 18 % | 12 % | 4 % | 1 % |
+
+    $$
+    \operatorname{Var}(X) = 0{,}8436
+    $$
+
+    <Solution titre="Détail du calcul">
+        $$
+        E(X^2) = 0 \times 0{,}65 + 1 \times 0{,}18 + 4 \times 0{,}12 + 9 \times 0{,}04 + 16 \times 0{,}01 = 1{,}18
+        $$
+
+        $$
+        \operatorname{Var}(X) = E(X^2) - \big(E(X)\big)^2 = 1{,}18 - 0{,}58^2 = 1{,}18 - 0{,}3364 = 0{,}8436
+        $$
+    </Solution>
+</Example>
+
+## Écart type
+
+<Definition titre="Écart type">
+    $$
+    \sigma(X) = \sqrt{\operatorname{Var}(X)}
+    $$
+</Definition>
+
+<Example titre="Pannes d'ordinateurs : écart type">
+    $$
+    \sigma(X) = \sqrt{0{,}8436} \approx 0{,}9185
+    $$
+</Example>
+
+## Fiche récapitulative
+
+<Formulas titre="Variables aléatoires discrètes">
+    <Formula label="Normalisation">
+        $$
+        \sum_i(X = x_i) = 1, \quad 0 \le(X = x_i) \le 1
+        $$
+    </Formula>
+    <Formula label="Fonction de répartition">
+        $$
+        F(x_i) = P(X \le) = \sum_{j=0}^{i} P(X = x_j)
+        $$
+    </Formula>
+    <Formula label="Espérance">
+        $$
+        E(X) = \sum_i x_i \, P(X = x_i)
+        $$
+    </Formula>
+    <Formula label="Variance">
+        $$
+        \operatorname{Var}(X) = E(X^2) - \big(E(X)\big)^2 = E\Big(\big(X - E(X)\big)^2\Big)
+        $$
+    </Formula>
+    <Formula label="Écart type">
+        $$
+        \sigma(X) = \sqrt{\operatorname{Var}(X)}
+        $$
+    </Formula>
+</Formulas>

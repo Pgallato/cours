@@ -1,0 +1,243 @@
+---
+import Base from '../layouts/Base.astro';
+import Icone from '../components/Icone.astro';
+import {normaliser, tousLesCours} from '../lib/cours';
+
+const cours = await tousLesCours();
+const matieres = [...new Set(cours.map((c) => c.matiere))].sort((a, b) => a.localeCompare(b, 'fr'));
+const semestres = [...new Set(cours.map((c) => c.semestre))].sort((a, b) => a.localeCompare(b, 'fr'));
+const nbChapitres = cours.reduce((s, c) => s + c.chapitres.length, 0);
+---
+
+<Base titre="Carnet">
+    <section class="border-b border-line">
+        <div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1.4fr_1fr] md:items-end md:py-16">
+            <div>
+                <p class="font-display text-lg italic text-accent-ink">Première année · école d’ingénieur</p>
+                <h1 class="mt-2 text-[clamp(2.4rem,7vw,4.2rem)] font-semibold leading-[1.05]">
+                    Le carnet de <span class="relative whitespace-nowrap"
+                ><span class="relative z-10">révisions</span><span
+                        class="absolute inset-x-0 bottom-1 z-0 h-3 rounded-sm bg-accent/20"
+                        aria-hidden="true"></span></span
+                >
+                </h1>
+                <p class="mt-4 max-w-xl text-lg text-ink-2">
+                    Cours remis au propre, chapitre par chapitre : définitions, théorèmes, exemples détaillés, exercices
+                    corrigés et
+                    fiches de formules.
+                </p>
+                <div class="mt-6 flex flex-wrap gap-3">
+                    <button type="button" data-ouvrir-recherche class="bouton bouton-plein">
+                        <Icone nom="recherche" taille={16}/>
+                        Chercher une notion <kbd class="!border-paper/40 !bg-transparent !text-paper/80" data-raccourci>Ctrl
+                        K</kbd>
+                    </button>
+                </div>
+            </div>
+            <dl class="seyes grid grid-cols-2 gap-4 rounded-2xl border border-line py-5 pl-12 pr-5 text-center sm:pl-14">
+                <div>
+                    <dt class="text-sm text-ink-3">Cours</dt>
+                    <dd class="font-display text-4xl font-semibold">{cours.length}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-ink-3">Chapitres</dt>
+                    <dd class="font-display text-4xl font-semibold">{nbChapitres}</dd>
+                </div>
+                <div class="col-span-2">
+                    <dt class="text-sm text-ink-3">Chapitres vus</dt>
+                    <dd class="font-display text-2xl font-semibold"><span data-total-vus>0</span> / {nbChapitres}</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
+
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+        <!-- Reprise + favoris (remplis côté client depuis localStorage) -->
+        <section id="reprise" class="mt-8 hidden" aria-labelledby="reprise-titre">
+            <a
+                    data-lien-reprise
+                    href="/"
+                    class="group flex items-center gap-4 rounded-2xl border border-accent/40 bg-accent-soft p-4 transition-colors hover:border-accent sm:p-5"
+            >
+        <span class="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-paper">
+          <Icone nom="reprendre" taille={20}/>
+        </span>
+                <span class="min-w-0">
+          <span id="reprise-titre" class="block text-sm text-accent-ink">Reprendre là où tu t’es arrêté</span>
+          <span class="block truncate font-display text-lg font-semibold" data-titre-reprise></span>
+          <span class="block text-sm text-ink-3" data-cours-reprise></span>
+        </span>
+                <Icone nom="droite" class="ml-auto shrink-0 transition-transform group-hover:translate-x-1"/>
+            </a>
+        </section>
+
+        <section id="favoris" class="mt-8 hidden" aria-labelledby="favoris-titre">
+            <h2 id="favoris-titre" class="mb-3 flex items-center gap-2 text-xl font-semibold">
+                <Icone nom="etoile" class="text-accent"/>
+                Favoris
+            </h2>
+            <ul class="flex flex-wrap gap-2" data-liste-favoris></ul>
+        </section>
+
+        <section class="mt-12" aria-labelledby="catalogue-titre">
+            <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+                <h2 id="catalogue-titre" class="text-3xl font-semibold">Catalogue</h2>
+                <div class="flex flex-wrap gap-x-5 gap-y-3 text-sm" role="group" aria-label="Filtres">
+                    <fieldset class="flex flex-wrap items-center gap-1.5">
+                        <legend class="sr-only">Matière</legend>
+                        <span class="mr-1 text-ink-3">Matière</span>
+                        <button type="button" class="bouton !rounded-full !py-1" aria-pressed="true"
+                                data-filtre="matiere" data-valeur="">Toutes
+                        </button>
+                        {
+                            matieres.map((m) => (
+                                    <button type="button" class="bouton !rounded-full !py-1" aria-pressed="false"
+                                            data-filtre="matiere" data-valeur={normaliser(m)}>
+                                        {m}
+                                    </button>
+                            ))
+                        }
+                    </fieldset>
+                    <fieldset class="flex flex-wrap items-center gap-1.5">
+                        <legend class="sr-only">Semestre</legend>
+                        <span class="mr-1 text-ink-3">Semestre</span>
+                        <button type="button" class="bouton !rounded-full !py-1" aria-pressed="true"
+                                data-filtre="semestre" data-valeur="">Tous
+                        </button>
+                        {
+                            semestres.map((s) => (
+                                    <button type="button" class="bouton !rounded-full !py-1" aria-pressed="false"
+                                            data-filtre="semestre" data-valeur={normaliser(s)}>
+                                        {s}
+                                    </button>
+                            ))
+                        }
+                    </fieldset>
+                </div>
+            </div>
+
+            <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-grille-cours>
+                {
+                    cours.map((c) => (
+                            <li
+                                    data-matiere={normaliser(c.matiere)}
+                                    data-semestre={normaliser(c.semestre)}
+                                    data-cours={c.id}
+                                    data-cles={JSON.stringify(c.chapitres.map((ch) => ch.cle))}
+                                    style={`--h: ${c.teinte}`}
+                            >
+                                <article
+                                        class="carte group relative flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-[var(--shadow)] transition-[border-color,transform] hover:-translate-y-0.5 hover:border-accent">
+                                    <div class="seyes relative h-24 border-b border-line">
+                  <span class="absolute left-12 top-4 font-display text-5xl font-semibold italic text-accent/80"
+                        aria-hidden="true">
+                    {c.titre.trim().charAt(0)}
+                  </span>
+                                        <span class="absolute right-4 top-4 flex gap-1.5">
+                    <span class="etiquette">{c.matiere}</span>
+                    <span class="etiquette !bg-paper !text-ink-2">{c.semestre}</span>
+                  </span>
+                                    </div>
+                                    <div class="flex flex-1 flex-col p-5">
+                                        <h3 class="text-xl font-semibold">
+                                            <a href={c.url} class="after:absolute after:inset-0 after:content-['']">
+                                                {c.titre}
+                                            </a>
+                                        </h3>
+                                        <p class="mt-2 line-clamp-3 text-[0.95rem] text-ink-2">{c.description}</p>
+                                        <p class="mt-3 flex gap-4 text-sm text-ink-3">
+                    <span class="inline-flex items-center gap-1">
+                      <Icone nom="livre" taille={15}/>
+                        {c.chapitres.length} chapitres
+                    </span>
+                                            <span class="inline-flex items-center gap-1">
+                      <Icone nom="horloge" taille={15}/>
+                                                {c.dureeTotale} min
+                    </span>
+                                        </p>
+                                        <div class="mt-auto pt-5">
+                                            <div class="flex items-center justify-between text-xs text-ink-3">
+                                                <span>Avancement</span>
+                                                <span class="tabular-nums" data-compte>0 / {c.chapitres.length}</span>
+                                            </div>
+                                            <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-paper-3"
+                                                 role="progressbar" aria-label={`Avancement ${c.titre}`}
+                                                 aria-valuemin="0" aria-valuemax={c.chapitres.length} aria-valuenow="0"
+                                                 data-progression>
+                                                <div class="h-full w-0 rounded-full bg-accent transition-[width]"
+                                                     data-barre/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </li>
+                    ))
+                }
+            </ul>
+            <p class="mt-6 hidden text-ink-3" data-aucun>Aucun cours ne correspond à ces filtres.</p>
+        </section>
+    </div>
+</Base>
+
+<script>
+    import {compterVus, lire, urlReprise} from '../scripts/suivi';
+
+    /* --- Filtres --- */
+    const filtres = {matiere: '', semestre: ''};
+    const cartes = [...document.querySelectorAll<HTMLElement>('[data-grille-cours] > li')];
+    document.querySelectorAll<HTMLButtonElement>('[data-filtre]').forEach((b) =>
+        b.addEventListener('click', () => {
+            const cle = b.dataset.filtre as keyof typeof filtres;
+            filtres[cle] = b.dataset.valeur!;
+            document.querySelectorAll<HTMLButtonElement>(`[data-filtre="${cle}"]`).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+            let visibles = 0;
+            for (const c of cartes) {
+                const ok = (!filtres.matiere || c.dataset.matiere === filtres.matiere) && (!filtres.semestre || c.dataset.semestre === filtres.semestre);
+                c.hidden = !ok;
+                if (ok) visibles++;
+            }
+            document.querySelector<HTMLElement>('[data-aucun]')!.classList.toggle('hidden', visibles > 0);
+        }),
+    );
+
+    /* --- Suivi : avancement, reprise, favoris --- */
+    function echapper(s: string) {
+        return s.replace(/[&<>"]/g, (c) => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'})[c]!);
+    }
+
+    function rafraichir() {
+        const etat = lire();
+        let total = 0;
+        for (const c of cartes) {
+            const cles = JSON.parse(c.dataset.cles!) as string[];
+            const n = compterVus(cles);
+            total += n;
+            c.querySelector<HTMLElement>('[data-barre]')!.style.width = `${(100 * n) / (cles.length || 1)}%`;
+            c.querySelector('[data-compte]')!.textContent = `${n} / ${cles.length}`;
+            c.querySelector('[data-progression]')!.setAttribute('aria-valuenow', String(n));
+        }
+        document.querySelector('[data-total-vus]')!.textContent = String(total);
+
+        const d = etat.derniere;
+        const reprise = document.getElementById('reprise')!;
+        reprise.classList.toggle('hidden', !d);
+        if (d) {
+            reprise.querySelector<HTMLAnchorElement>('[data-lien-reprise]')!.href = urlReprise(d);
+            reprise.querySelector('[data-titre-reprise]')!.textContent = d.titre;
+            reprise.querySelector('[data-cours-reprise]')!.textContent = d.coursTitre;
+        }
+
+        const favs = Object.values(etat.favoris).sort((a, b) => b.ajoute - a.ajoute);
+        const blocFav = document.getElementById('favoris')!;
+        blocFav.classList.toggle('hidden', favs.length === 0);
+        blocFav.querySelector('[data-liste-favoris]')!.innerHTML = favs
+            .map(
+                (f) => `<li><a href="${echapper(f.url)}" class="bouton !rounded-full">
+          <span class="font-medium">${echapper(f.titre)}</span><span class="text-ink-3 text-xs">${echapper(f.coursTitre)}</span></a></li>`,
+            )
+            .join('');
+    }
+
+    document.addEventListener('suivi:change', rafraichir);
+    rafraichir();
+</script>

@@ -1,0 +1,18 @@
+---
+import Bloc from './Bloc.astro';
+interface Props {
+    titre?: string;
+    /** Difficulté de 1 à 3 */
+    niveau?: 1 | 2 | 3;
+}
+const {titre, niveau} = Astro.props;
+---
+<Bloc variante="exercice" type="Exercice" titre={titre}>
+    {niveau && (
+            <span slot="tete" class="ml-auto text-xs tracking-widest text-ink-3"
+                  aria-label={`Difficulté ${niveau} sur 3`} title={`Difficulté ${niveau}/3`}>
+      {'●'.repeat(niveau)}{'○'.repeat(3 - niveau)}
+    </span>
+    )}
+    <slot/>
+</Bloc>

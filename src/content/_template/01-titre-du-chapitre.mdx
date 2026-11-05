@@ -1,0 +1,96 @@
+---
+# Le nom du fichier donne l'URL et l'ordre : « 01-titre-du-chapitre.mdx » → /cours/<dossier>/titre-du-chapitre/
+titre: Titre du chapitre
+resume: Une phrase qui résume le chapitre (catalogue, recherche, balise description).
+tags: [notion 1, notion 2]
+sources: [1, 2]          # numéros des pages photographiées (traçabilité)
+# duree: 12              # facultatif : minutes de lecture (calculé sinon)
+# ordre: 1               # facultatif : sinon le préfixe numérique du fichier
+---
+
+{/* Aucun import nécessaire : tous les composants ci-dessous sont disponibles partout. */}
+{/* Chaque « ## » est une section : elle apparaît dans le plan latéral et le sommaire. */}
+
+## Première section
+
+Texte normal avec une formule en ligne $E = mc^2$ et une formule centrée :
+
+$$
+\int_0^1 x^2 \, dx = \frac{1}{3}
+$$
+
+<Definition titre="Nom de la notion">
+    Énoncé de la définition. On peut y mettre des formules $f : \mathbb{R} \to \mathbb{R}$.
+</Definition>
+
+<Theorem titre="Nom du théorème">
+    Énoncé du théorème.
+</Theorem>
+
+<Property titre="Nom de la propriété">
+    Énoncé de la propriété.
+</Property>
+
+<Remark>
+    Une remarque, une astuce, une précision.
+</Remark>
+
+<Warning titre="Erreur classique">
+    Le piège à éviter le jour de l'examen.
+</Warning>
+
+## Deuxième section
+
+<Example titre="Titre de l'exemple">
+    Énoncé de l'exemple puis le calcul détaillé :
+
+    $$
+    \begin{aligned}
+    A &= 2 + 3 \\
+    &= 5
+    \end{aligned}
+    $$
+
+    <Solution titre="Détail du calcul">
+        Étapes intermédiaires, repliées par défaut.
+    </Solution>
+</Example>
+
+<Exercise titre="Exercice 1" niveau={2}>
+    Énoncé de l'exercice.
+
+    <Solution>
+        Correction détaillée (masquée tant qu'on ne clique pas).
+    </Solution>
+</Exercise>
+
+<Figure legende="Légende de la figure" page={3}>
+    <svg viewBox="0 0 200 100" role="img" aria-label="Description de la figure">
+        <line x1="10" y1="90" x2="190" y2="90" stroke="currentColor" />
+        <path d="M10 90 Q 100 0 190 90" fill="none" stroke="var(--accent)" stroke-width="2" />
+    </svg>
+</Figure>
+
+<Todo page={4}>
+    Figure trop complexe pour être redessinée : description de ce qu'elle montre.
+</Todo>
+
+{/* TODO: illisible, page 4 — passage à vérifier */}
+
+<Animation type="densite" titre="Titre de l'animation" params={{loi: 'normale'}} />
+{/* Types disponibles : loi-discrete, binomiale-poisson, densite (voir src/scripts/animations/) */}
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Formule 1">
+        $$
+        a^2 + b^2 = c^2
+        $$
+    </Formula>
+    <Formula label="Formule 2">
+        $$
+        e^{i\pi} + 1 = 0
+        $$
+    </Formula>
+</Formulas>

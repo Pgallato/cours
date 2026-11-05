@@ -1,0 +1,192 @@
+---
+titre: Lois discrètes usuelles
+resume: Les lois à connaître pour les variables aléatoires discrètes (VAD) — uniforme, Bernoulli, binomiale, géométrique et Poisson — avec l'approximation de la binomiale par Poisson.
+tags: [uniforme, Bernoulli, binomiale, géométrique, Poisson]
+sources: [4, 5, 6]
+---
+
+Lois discrètes usuelles, avec les VAD (variables aléatoires discrètes).
+
+## Loi uniforme discrète
+
+<Definition titre="Loi uniforme discrète">
+    $$
+    \Omega = \{1, 2, 3, \dots, n\}
+    $$
+
+    Équiprobabilité :
+
+    $$
+    P(X = k) = \frac{1}{n}
+    $$
+
+    On note $X \sim \mathcal{U}(\{1, 2, 3, \dots, n\})$ (autre notation : $X \hookrightarrow \mathcal{U}(\{\dots\})$).
+</Definition>
+
+<Property titre="Espérance et variance">
+    $$
+    E(X) = \frac{n + 1}{2}
+    $$
+
+    $n$ : dernier élément, $1$ : premier élément ; la division par 2 donne le milieu (l'espérance).
+
+    $$
+    \operatorname{Var}(X) = \frac{n^2 - 1}{12}
+    $$
+
+    → résultat de $\operatorname{Var}(X) = E(X^2) - \big(E(X)\big)^2$.
+</Property>
+
+## Loi de Bernoulli
+
+<Definition titre="Loi de Bernoulli">
+    2 résultats : succès ou échec.
+
+    $$
+    X = \begin{cases} 1 & \text{succès} \\ 0 & \text{échec} \end{cases}
+    \qquad\qquad
+    \begin{aligned} P(X = 1) &= p \\ P(X = 0) &= 1 - p \end{aligned}
+    $$
+
+    $p$ est la probabilité de succès. On note $X \sim \mathcal{B}(p)$.
+</Definition>
+
+<Property titre="Espérance et variance">
+    $$
+    E(X) = p \qquad\qquad \operatorname{Var}(X) = p(1 - p)
+    $$
+</Property>
+
+## Loi binomiale
+
+<Definition titre="Loi binomiale">
+    On répète $n$ fois une expérience de Bernoulli :
+
+    - succès ou échec ;
+    - expériences indépendantes ;
+    - probabilité de succès toujours identique.
+
+    Variable $X$ = nombre de succès parmi les $n$.
+
+    $$
+    X \sim \mathcal{B}(n, p)
+    \qquad\qquad
+    P(X = k) = \binom{n}{k} p^k (1 - p)^{n - k}
+$$
+</Definition>
+
+<Property titre="Espérance et variance">
+    $$
+    E(X) = np \qquad\qquad \operatorname{Var}(X) = np(1 - p)
+    $$
+</Property>
+
+## Loi géométrique
+
+<Definition titre="Loi géométrique">
+    On répète des expériences de Bernoulli ; $p$ = probabilité de succès de chaque expérience de Bernoulli.
+
+    $X$ = rang du premier succès, $X \in \{1, 2, 3, \dots\}$.
+
+    On note $X \sim \mathcal{G}(p)$ :
+
+    $$
+    P(X = k) = (1 - p)^{k - 1} \, p
+$$
+</Definition>
+
+<Property titre="Espérance et variance">
+    $$
+    E(X) = \frac{1}{p} \qquad\qquad \operatorname{Var}(X) = \frac{1 - p}{p ^ 2}
+    $$
+</Property>
+
+<Theorem type="À retenir" titre="Loi « sans mémoire »">
+    $$
+    P(X > m + n \mid X > m) = P(X > n)
+    $$
+</Theorem>
+
+## Loi de Poisson
+
+<Definition titre="Loi de Poisson">
+    On utilise cette loi pour des expériences de Bernoulli (en grand nombre) dans une durée ou une zone donnée.
+
+    Loi de Poisson → paramètre $\lambda$, qui est la moyenne dans la durée ou sur la zone.
+
+    $X$ = nombre de succès (de requêtes) dans la durée / zone.
+
+    $$
+    X \sim \mathcal{P}(\lambda)
+    \qquad\qquad
+    P(X = k) = e^{-\lambda} \, \frac{\lambda^k}{k!}
+    $$
+</Definition>
+
+<Example titre="Serveur web">
+    Un serveur reçoit en moyenne 30 requêtes par seconde : $\lambda = 30$.
+</Example>
+
+<Property titre="Espérance et variance">
+    $$
+    E(X) = \lambda \qquad\qquad \operatorname{Var}(X) = \lambda
+    $$
+</Property>
+
+### Approximation de la binomiale par Poisson
+
+<Theorem titre="Théorème de convergence">
+    Si on suit une loi binomiale $\mathcal{B}(n, p)$ avec $n$ grand et $p$ petit, alors on peut approximer avec une loi
+    de Poisson $\mathcal{P}(\lambda)$, avec
+
+    $$
+    \boxed{\lambda = np}
+    $$
+
+    si :
+
+    $$
+    \begin{cases} n \ge 30 \\ p \le 0{,}1 \\ np \le 15 \end{cases}
+    $$
+</Theorem>
+
+<Animation
+type="binomiale-poisson"
+titre="Binomiale ou Poisson ? Joue sur n et p"
+params={{n: 40, p: 0.05}}
+/>
+
+## Fiche récapitulative
+
+<Formulas titre="Lois discrètes usuelles">
+    <Formula label="Uniforme 𝒰({1,…,n})">
+        $$
+        P(X = k) = \frac{1}{n}, \quad(X) = \frac{n + 1}{2}, \quad \operatorname{Var}(X) = \frac{n^2 - 1}{12}
+        $$
+    </Formula>
+    <Formula label="Bernoulli 𝓑(p)">
+        $$
+        P(X = 1) = p, \quad(X) = p, \quad \operatorname{Var}(X) = p(1-p)
+        $$
+    </Formula>
+    <Formula label="Binomiale 𝓑(n, p)">
+        $$
+        P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad E(X) = np, \quad \operatorname{Var}(X) = np(1-p)
+$$
+    </Formula>
+    <Formula label="Géométrique 𝒢(p)">
+        $$
+        P(X = k) = (1-p)^{k-1} p, \quad E(X) = \frac{1}{p}, \quad \operatorname{Var}(X) = \frac{1-p}{p^2}
+$$
+    </Formula>
+    <Formula label="Poisson 𝒫(λ)">
+        $$
+        P(X = k) = e^{-\lambda} \frac{\lambda^k}{k!}, \quad(X) = \operatorname{Var}(X) = \lambda
+        $$
+    </Formula>
+    <Formula label="Approximation">
+        $$
+        \mathcal{B}(n, p) \approx \mathcal{P}(np) \text{ si } n \ge 30,\ p \le 0{,}1,\ np \le 15
+        $$
+    </Formula>
+</Formulas>

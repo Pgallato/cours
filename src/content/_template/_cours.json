@@ -1,0 +1,8 @@
+{
+  "titre": "Titre du cours",
+  "matiere": "Physique",
+  "semestre": "S2",
+  "description": "Une ou deux phrases qui résument le cours (affichées sur la carte du catalogue).",
+  "enseignant": "Nom de l'enseignant (facultatif)",
+  "brouillon": true
+}

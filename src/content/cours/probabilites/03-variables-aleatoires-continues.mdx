@@ -1,0 +1,151 @@
+---
+titre: Variables aléatoires continues
+resume: Variables aléatoires réelles (VAR) — densité de probabilité, fonction de répartition, calcul de probabilités par intégrales, espérance, variance et écart type.
+tags: [densité, fonction de répartition, intégrale]
+sources: [9, 10]
+---
+
+## Variable aléatoire réelle
+
+<Definition titre="VA réelle ou continue (VAR)">
+    Une VA qui peut prendre toutes les valeurs d'un intervalle'appelle **VA réelle** ou **VA continue** (VAR).
+</Definition>
+
+## Densité de probabilité
+
+<Definition titre="Densité de probabilité">
+    Une VAR peut être associée à une **densité de probabilité** → une fonction qu'on désigne souvent par $f$.
+
+    3 conditions sur $f$ :
+
+    - $\displaystyle\int_{-\infty}^{+\infty} f(x)\,dx = 1$ ;
+    - $f$ continue, sauf éventuellement en quelques points ;
+    - $f$ positive.
+</Definition>
+
+## Fonction de répartition
+
+<Definition titre="Fonction de répartition">
+    Définie par
+
+    $$
+    F(x) = \int_{-\infty}^{x} f(t)\,dt
+    $$
+</Definition>
+
+<Property>
+    $F$ commence obligatoirement à 0 et finit à 1 :
+
+    $$
+    \lim_{x \to -\infty} F(x) = 0 \qquad\qquad \lim_{x \to +\infty} F(x) = 1
+    $$
+
+    - $F$ dérivable donc continue, et $F' = f$ ;
+    - $F$ croissante.
+</Property>
+
+### Calculer une probabilité
+
+<Property titre="Probabilité sur un intervalle">
+    La probabilité que $X$ soit « entre $a$ et $b$ » :
+
+    $$
+    P(a < X < b) = \int_{a}^{b} f(t)\,dt = F(b) - F(a)
+    $$
+</Property>
+
+<Remark>
+    Demander $P(X = a)$ n'a pas de sens : pour une VA continue, cette probabilité vaut toujours 0.
+
+    $$
+    P(X = a) = \int_{a}^{a} f(t)\,dt = 0
+    $$
+
+    C'est pourquoi on calcule toujours la probabilité'un **intervalle**, et que $P(a < X < b) = P(a \le X \le)$.
+</Remark>
+
+<Property titre="Probabilité d'être inférieur à c">
+    La probabilité que $X$ soit $
+< c$ :
+
+    $$
+    P(X < c) = \int_{-\infty}^{c} f(t)\,dt = F(c)
+    $$
+</Property>
+
+<Animation
+type="densite"
+titre="L'aire sous la densité est une probabilité"
+params={{loi: 'toutes'}}
+/>
+
+## Espérance
+
+<Definition titre="Espérance">
+    $$
+    E(X) = \int_{-\infty}^{+\infty} x \, f(x)\,dx
+    $$
+
+    sous réserve de la convergence de l'intégrale.
+</Definition>
+
+## Variance
+
+<Definition titre="Variance">
+    $$
+    \operatorname{Var}(X) = E(X^2) - \big(E(X)\big)^2
+    $$
+
+    $$
+    \Rightarrow \operatorname{Var}(X) = \int_{-\infty}^{+\infty} x^2(x)\,dx - \left( \int_{-\infty}^{+\infty} x \,
+    f(x)\,dx \right)^2
+    $$
+</Definition>
+
+## Écart type
+
+<Definition titre="Écart type">
+    $$
+    \sigma(X) = \sqrt{\operatorname{Var}(X)}
+    $$
+</Definition>
+
+## Fiche récapitulative
+
+<Formulas titre="Variables aléatoires continues">
+    <Formula label="Densité">
+        $$
+        f \ge 0, \quad \int_{-\infty}^{+\infty} f(x)\,dx = 1
+        $$
+    </Formula>
+    <Formula label="Fonction de répartition">
+        $$
+        F(x) = \int_{-\infty}^{x} f(t)\,dt, \quad F' = f
+        $$
+    </Formula>
+    <Formula label="Probabilité d'un intervalle">
+        $$
+        P(a < X < b) = \int_{a}^{b} f(t)\,dt = F(b) - F(a)
+        $$
+    </Formula>
+    <Formula label="Valeur ponctuelle">
+        $$
+        P(X = a) = 0
+        $$
+    </Formula>
+    <Formula label="Espérance">
+        $$
+        E(X) = \int_{-\infty}^{+\infty} x \, f(x)\,dx
+        $$
+    </Formula>
+    <Formula label="Variance">
+        $$
+        \operatorname{Var}(X) = \int_{-\infty}^{+\infty} x^2(x)\,dx - \big(E(X)\big)^2
+        $$
+    </Formula>
+    <Formula label="Écart type">
+        $$
+        \sigma(X) = \sqrt{\operatorname{Var}(X)}
+        $$
+    </Formula>
+</Formulas>

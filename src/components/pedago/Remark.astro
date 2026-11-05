@@ -1,0 +1,9 @@
+---
+import Bloc from './Bloc.astro';
+interface Props {
+    titre?: string
+}
+---
+<Bloc variante="remarque" type="Remarque" titre={Astro.props.titre} balise="aside">
+    <slot/>
+</Bloc>
