@@ -37,6 +37,21 @@ Lois discrètes usuelles, avec les VAD (variables aléatoires discrètes).
     → résultat de $\operatorname{Var}(X) = E(X^2) - \big(E(X)\big)^2$.
 </Property>
 
+{/* AJOUT : exemple (dé) */}
+
+<Example titre="Le dé à 6 faces">
+    Le résultat d'un dé équilibré suit $\mathcal{U}(\{1, \dots, 6\})$ avec $n = 6$ :
+
+    $$
+    E(X) = \frac{6 + 1}{2} = 3{,}5 \qquad\quad
+    \operatorname{Var}(X) = \frac{6^2 - 1}{12} = \frac{35}{12} \approx 2{,}92 \qquad\quad
+    \sigma(X) \approx 1{,}71
+    $$
+
+    L'espérance $3{,}5$ est bien « au milieu » des faces, sans être une valeur que le dé peut donner.
+</Example>
+
+
 ## Loi de Bernoulli
 
 <Definition titre="Loi de Bernoulli">
@@ -81,6 +96,37 @@ $$
     $$
 </Property>
 
+{/* AJOUT : intuition (lien avec Bernoulli) */}
+
+<Remark titre="Intuition">
+    Une loi de Bernoulli est le cas particulier $n = 1$ : $\mathcal{B}(1, p)$. Une binomiale $\mathcal{B}(n, p)$ compte les succès de $n$ épreuves de Bernoulli indépendantes, d'où l'espérance $np$ : $n$ épreuves, chacune réussissant « en moyenne $p$ fois ».
+</Remark>
+
+{/* AJOUT : exemple résolu (QCM) */}
+
+<Example titre="QCM répondu au hasard">
+    Un QCM comporte 10 questions à 4 propositions dont une seule est juste ; on répond au hasard. Le nombre $X$ de bonnes réponses suit $\mathcal{B}(10,\, 0{,}25)$ : 10 épreuves indépendantes, chacune réussie avec la même probabilité $p = 0{,}25$.
+
+    Probabilité d'avoir exactement 3 bonnes réponses, et au moins une ?
+
+    <Solution titre="Détail du calcul">
+        $$
+        P(X = 3) = \binom{10}{3}\, 0{,}25^3\, 0{,}75^7 = 120 \times 0{,}25^3 \times 0{,}75^7 \approx 0{,}2503
+        $$
+
+        « Au moins une » est le contraire de « aucune » :
+
+        $$
+        P(X \ge 1) = 1 - P(X = 0) = 1 - 0{,}75^{10} \approx 0{,}9437
+        $$
+
+        $$
+        E(X) = 10 \times 0{,}25 = 2{,}5 \qquad\quad \operatorname{Var}(X) = 10 \times 0{,}25 \times 0{,}75 = 1{,}875
+        $$
+    </Solution>
+</Example>
+
+
 ## Loi géométrique
 
 <Definition titre="Loi géométrique">
@@ -106,6 +152,37 @@ $$
     P(X > m + n \mid X > m) = P(X > n)
     $$
 </Theorem>
+
+{/* AJOUT : piège (rang du premier succès) */}
+
+<Warning titre="Le succès est compté">
+    $X$ est le **rang** du premier succès, succès compris : si le succès arrive dès la première expérience, $X = 1$ (et non $0$), de probabilité $P(X = 1) = p$. Donc $X \ge 1$, et $E(X) = \dfrac{1}{p} \ge 1$.
+</Warning>
+
+{/* AJOUT : exemple résolu (dé jusqu'au premier 6) */}
+
+<Example titre="Lancer un dé jusqu'à obtenir un 6">
+    $X$ = rang du premier 6 : $X \sim \mathcal{G}\!\left(\dfrac{1}{6}\right)$. Probabilité que le premier 6 sorte au 3ᵉ lancer ? Nombre moyen de lancers ? Sachant que 6 lancers n'ont donné aucun 6, probabilité d'en attendre encore plus de 6 ?
+
+    <Solution titre="Détail du calcul">
+        $$
+        P(X = 3) = \left(\frac{5}{6}\right)^{2} \frac{1}{6} = \frac{25}{216} \approx 0{,}116
+        $$
+
+        $$
+        E(X) = \frac{1}{1/6} = 6 \qquad\quad \operatorname{Var}(X) = \frac{5/6}{(1/6)^2} = 30
+        $$
+
+        $X > n$ signifie « aucun succès aux $n$ premiers lancers », de probabilité $\left(\dfrac{5}{6}\right)^n$. Avec la loi sans mémoire :
+
+        $$
+        P(X > 12 \mid X > 6) = P(X > 6) = \left(\frac{5}{6}\right)^{6} \approx 0{,}335
+        $$
+
+        Les 6 lancers sans succès ne changent rien : le dé « n'a pas de mémoire ».
+    </Solution>
+</Example>
+
 
 ## Loi de Poisson
 
@@ -133,6 +210,39 @@ $$
     $$
 </Property>
 
+{/* AJOUT : exemple résolu (serveur web) */}
+
+<Example titre="Serveur web : changer de durée">
+    Le serveur reçoit en moyenne 30 requêtes par seconde. Probabilité de ne recevoir **aucune** requête pendant 0,1 s ? **au plus 2** ?
+
+    <Solution titre="Détail du calcul">
+        Le paramètre est la moyenne **dans la durée considérée** : sur 0,1 s, $\lambda = 30 \times 0{,}1 = 3$, donc $X \sim \mathcal{P}(3)$.
+
+        $$
+        P(X = 0) = e^{-3} \approx 0{,}0498
+        $$
+
+        $$
+        P(X \le 2) = e^{-3}\left(1 + 3 + \frac{3^2}{2}\right) = 8{,}5\, e^{-3} \approx 0{,}4232
+        $$
+    </Solution>
+</Example>
+
+{/* AJOUT : méthode (choix de la loi) */}
+
+<Theorem type="Méthode" titre="Quelle loi choisir ?">
+    Se demander **ce que l'on compte** :
+
+    1. toutes les issues sont équiprobables → uniforme ;
+    2. une seule expérience à deux issues → Bernoulli $\mathcal{B}(p)$ ;
+    3. le nombre de succès sur $n$ expériences indépendantes, $n$ fixé → binomiale $\mathcal{B}(n, p)$ ;
+    4. le rang du premier succès, $n$ non fixé → géométrique $\mathcal{G}(p)$ ;
+    5. le nombre d'événements dans une durée ou une zone, la moyenne $\lambda$ étant connue → Poisson $\mathcal{P}(\lambda)$.
+
+    Exemples : nombre de piles sur 10 lancers → $\mathcal{B}(10, \frac{1}{2})$ ; nombre de lancers jusqu'au premier pile → $\mathcal{G}(\frac{1}{2})$ ; nombre d'appels reçus en une heure, à raison de 12 par heure en moyenne → $\mathcal{P}(12)$.
+</Theorem>
+
+
 ### Approximation de la binomiale par Poisson
 
 <Theorem titre="Théorème de convergence">
@@ -150,11 +260,73 @@ $$
     $$
 </Theorem>
 
+{/* AJOUT : exemple numérique (qualité de l'approximation) */}
+
+<Example titre="Binomiale ou Poisson ?">
+    Sur une chaîne, 3 % des pièces sont défectueuses ; on en prélève 100 : $X \sim \mathcal{B}(100,\, 0{,}03)$. Les conditions sont vérifiées ($n = 100 \ge 30$, $p = 0{,}03 \le 0{,}1$, $np = 3 \le 15$), on approche donc par $\mathcal{P}(3)$.
+
+    | $k$                         | 0      | 1      | 2      | 3      | 4      | 5      |
+    |-----------------------------|--------|--------|--------|--------|--------|--------|
+    | $P(X = k)$ exact (binomiale) | 0,0476 | 0,1471 | 0,2252 | 0,2275 | 0,1706 | 0,1013 |
+    | $P(X = k)$ avec $\mathcal{P}(3)$ | 0,0498 | 0,1494 | 0,2240 | 0,2240 | 0,1680 | 0,1008 |
+
+    L'écart reste de l'ordre de $0{,}002$ à $0{,}003$ : l'approximation est excellente, et Poisson évite de calculer des coefficients binomiaux.
+</Example>
+
+
 <Animation
 type="binomiale-poisson"
 titre="Binomiale ou Poisson ? Joue sur n et p"
 params={{n: 40, p: 0.05}}
 />
+
+{/* AJOUT : exercices */}
+
+## Exercices d'application
+
+<Exercise titre="Lot de composants" niveau={1}>
+    Dans une grande production, 2 % des composants sont défectueux. On en prélève 50 de façon indépendante ; $X$ est le nombre de composants défectueux.
+
+    1. Quelle est la loi exacte de $X$ ?
+    2. Justifier qu'on peut l'approcher par une loi de Poisson et donner son paramètre.
+    3. Avec cette approximation, calculer $P(X = 0)$ et $P(X \ge 2)$.
+
+    <Solution>
+        1. $X \sim \mathcal{B}(50,\, 0{,}02)$.
+        2. $n = 50 \ge 30$, $p = 0{,}02 \le 0{,}1$ et $np = 1 \le 15$ : on approche par $\mathcal{P}(\lambda)$ avec $\lambda = np = 1$.
+        3. $P(X = 0) = e^{-1} \approx 0{,}368$. Pour « au moins 2 » on passe au contraire :
+
+        $$
+        P(X \ge 2) = 1 - P(X = 0) - P(X = 1) = 1 - e^{-1} - e^{-1} = 1 - 2e^{-1} \approx 0{,}264
+        $$
+
+        Pour comparaison, la loi exacte donne $0{,}364$ et $0{,}264$.
+    </Solution>
+</Exercise>
+
+<Exercise titre="Pièce truquée" niveau={2}>
+    Une pièce truquée tombe sur « face » avec la probabilité $p = 0{,}3$. On la lance jusqu'à obtenir « face » ; $X$ est le rang de ce lancer.
+
+    1. Donner la loi de $X$, son espérance et sa variance.
+    2. Calculer $P(X = 4)$ et $P(X > 5)$.
+    3. On a déjà lancé 4 fois sans obtenir « face ». Quelle est la probabilité de devoir lancer plus de 3 fois encore ?
+
+    <Solution>
+        1. $X \sim \mathcal{G}(0{,}3)$, donc
+
+        $$
+        E(X) = \frac{1}{0{,}3} = \frac{10}{3} \approx 3{,}33 \qquad\quad \operatorname{Var}(X) = \frac{0{,}7}{0{,}3^2} = \frac{70}{9} \approx 7{,}78
+        $$
+
+        2. $P(X = 4) = 0{,}7^3 \times 0{,}3 = 0{,}1029$. L'événement $X > 5$ signifie « pas de face aux 5 premiers lancers » : $P(X > 5) = 0{,}7^5 \approx 0{,}168$.
+
+        3. Loi sans mémoire :
+
+        $$
+        P(X > 7 \mid X > 4) = P(X > 3) = 0{,}7^3 = 0{,}343
+        $$
+    </Solution>
+</Exercise>
 
 ## Fiche récapitulative
 

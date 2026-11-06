@@ -30,6 +30,25 @@ sources: [10, 11, 12]
     $$
 </Property>
 
+{/* AJOUT : exemple (attente du bus) */}
+
+<Example titre="Attente d'un bus">
+    Un bus passe toutes les 10 minutes et l'on arrive à un instant quelconque : l'attente $X$ (en minutes) suit $\mathcal{U}(0, 10)$, de densité $f(x) = \dfrac{1}{10}$ sur $[0, 10]$.
+
+    $$
+    P(X < 3) = \frac{3 - 0}{10} = 0{,}3 \qquad
+    P(2 < X < 5) = \frac{5 - 2}{10} = 0{,}3 \qquad
+    P(X > 8) = \frac{10 - 8}{10} = 0{,}2
+    $$
+
+    $$
+    E(X) = \frac{10 + 0}{2} = 5 \text{ min} \qquad
+    \operatorname{Var}(X) = \frac{10^2}{12} = \frac{25}{3} \approx 8{,}33 \qquad
+    \sigma(X) \approx 2{,}89 \text{ min}
+    $$
+</Example>
+
+
 ## Loi exponentielle
 
 <Definition titre="Loi exponentielle">
@@ -120,6 +139,21 @@ $\forall x \ge 0$, alors
     $$
 </Property>
 
+{/* AJOUT : intuition (λ est un taux) */}
+
+<Remark titre="Intuition">
+    $\lambda$ est un **taux** (événements attendus par unité de temps) et $\dfrac{1}{\lambda}$ une **durée moyenne**. Plus $\lambda$ est grand, plus la densité est concentrée près de $0$ : les attentes sont courtes. Une panne toutes les 2000 h en moyenne correspond à $\lambda = \dfrac{1}{2000}$ par heure.
+
+    Lien avec le [chapitre 02](/cours/probabilites/lois-discretes-usuelles/) : si les événements arrivent au rythme $\lambda$, la loi de Poisson compte combien il y en a dans une durée, tandis que la loi exponentielle mesure le temps d'attente avant le suivant. L'absence de mémoire est d'ailleurs le pendant continu de celle de la loi géométrique.
+</Remark>
+
+{/* AJOUT : piège (unités de λ) */}
+
+<Warning titre="λ n'est pas la durée moyenne">
+    Si la durée de vie moyenne est de 2000 h, alors $\lambda = \dfrac{1}{2000} = 0{,}0005$ par heure, et non $2000$. Le temps $t$ dans $e^{-\lambda t}$ doit être exprimé dans la même unité que celle de $\lambda$.
+</Warning>
+
+
 <Theorem type="À retenir" titre="Loi sans mémoire">
     $$
     \begin{aligned}
@@ -130,6 +164,31 @@ $\forall x \ge 0$, alors
     \end{aligned}
     $$
 </Theorem>
+
+{/* AJOUT : exemple résolu (durée de vie) */}
+
+<Example titre="Durée de vie d'un disque dur">
+    La durée de vie $X$ (en heures) d'un disque suit $\mathcal{E}(\lambda)$ avec une moyenne de 2000 h, donc $\lambda = 0{,}0005$ h⁻¹. Calculer $P(X \le 1000)$, $P(X \ge 3000)$, puis la probabilité qu'un disque qui a déjà fonctionné 2000 h tienne encore 1000 h.
+
+    <Solution titre="Détail du calcul">
+        $$
+        P(X \le 1000) = F(1000) = 1 - e^{-0{,}0005 \times 1000} = 1 - e^{-0{,}5} \approx 0{,}393
+        $$
+
+        $$
+        P(X \ge 3000) = e^{-0{,}0005 \times 3000} = e^{-1{,}5} \approx 0{,}223
+        $$
+
+        Par la loi sans mémoire :
+
+        $$
+        P(X \ge 3000 \mid X \ge 2000) = P(X \ge 1000) = e^{-0{,}5} \approx 0{,}607
+        $$
+
+        Un disque qui a tenu 2000 h a autant de chances de tenir 1000 h de plus qu'un disque neuf de tenir 1000 h : l'usure passée n'intervient pas dans ce modèle.
+    </Solution>
+</Example>
+
 
 <Animation
 type="densite"
@@ -189,6 +248,13 @@ params={{loi: 'exponentielle', c: 0.5, d: 2}}
     $$
 </Property>
 
+{/* AJOUT : piège (σ ou σ²) */}
+
+<Warning titre="σ ou σ² ?">
+    Dans la notation $\mathcal{N}(\mu, \sigma)$ du cours, le second paramètre est l'**écart type** $\sigma$, pas la variance. Si l'énoncé donne une variance de $25$, alors $\sigma = 5$ : c'est $\sigma$ qu'on utilise pour centrer-réduire et qu'on saisit à la calculatrice.
+</Warning>
+
+
 ### Fonction de répartition
 
 <Definition titre="Fonction de répartition">
@@ -214,6 +280,44 @@ params={{loi: 'exponentielle', c: 0.5, d: 2}}
 
     est la VAR centrée réduite, qui se comporte comme $T \sim \mathcal{N}(0, 1)$.
 </Property>
+
+{/* AJOUT : figure (centrer-réduire) */}
+
+<Figure legende="Une même cloche, deux graduations : en t (loi N(0, 1)) et en x (ici μ = 170 et σ = 10). La valeur x = 185 correspond à t = 1,5 et l'aire grisée est la même dans les deux échelles">
+    <svg viewBox="0 0 330 200" role="img" aria-label="Courbe en cloche de la loi normale centrée réduite avec deux graduations : t de moins 2 à 2 et x de 150 à 190 pour mu égal 170 et sigma égal 10. L'aire de t égal 0 à t égal 1,5, c'est-à-dire de x égal 170 à x égal 185, est grisée">
+        <defs>
+            <marker id="ajn-fl" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0 0 L8 4 L0 8 z" fill="currentColor" fill-opacity="0.55"/>
+            </marker>
+        </defs>
+        <line x1="5" y1="150" x2="318" y2="150" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#ajn-fl)" />
+        <path d="M160.0 150 L160.0 40.0 L165.0 40.5 L170.0 42.2 L175.0 44.8 L180.0 48.5 L185.0 52.9 L190.0 58.1 L195.0 63.9 L200.0 70.1 L205.0 76.6 L210.0 83.3 L215.0 89.9 L220.0 96.5 L225.0 102.7 L230.0 108.7 L235.0 114.3 L235.0 150 Z" fill="var(--accent)" fill-opacity="0.25" stroke="none" />
+        <path d="M10.0 148.8 L20.0 147.8 L30.0 146.3 L40.0 143.8 L50.0 140.2 L60.0 135.1 L70.0 128.2 L80.0 119.4 L90.0 108.7 L100.0 96.5 L110.0 83.3 L120.0 70.1 L130.0 58.1 L140.0 48.5 L150.0 42.2 L160.0 40.0 L170.0 42.2 L180.0 48.5 L190.0 58.1 L200.0 70.1 L210.0 83.3 L220.0 96.5 L230.0 108.7 L240.0 119.4 L250.0 128.2 L260.0 135.1 L270.0 140.2 L280.0 143.8 L290.0 146.3 L300.0 147.8 L310.0 148.8" fill="none" stroke="var(--accent)" stroke-width="2.4" />
+        <line x1="160" y1="40" x2="160" y2="150" stroke="currentColor" stroke-opacity="0.5" stroke-dasharray="4 4" />
+        <line x1="235" y1="114.3" x2="235" y2="150" stroke="var(--accent)" stroke-width="1.5" />
+        <line x1="60" y1="150" x2="60" y2="155" stroke="currentColor" stroke-opacity="0.6" />
+        <line x1="110" y1="150" x2="110" y2="155" stroke="currentColor" stroke-opacity="0.6" />
+        <line x1="160" y1="150" x2="160" y2="155" stroke="currentColor" stroke-opacity="0.6" />
+        <line x1="210" y1="150" x2="210" y2="155" stroke="currentColor" stroke-opacity="0.6" />
+        <line x1="260" y1="150" x2="260" y2="155" stroke="currentColor" stroke-opacity="0.6" />
+        <text x="60" y="168" font-size="11" fill="currentColor" text-anchor="middle">−2</text>
+        <text x="110" y="168" font-size="11" fill="currentColor" text-anchor="middle">−1</text>
+        <text x="160" y="168" font-size="11" fill="currentColor" text-anchor="middle">0</text>
+        <text x="210" y="168" font-size="11" fill="currentColor" text-anchor="middle">1</text>
+        <text x="260" y="168" font-size="11" fill="currentColor" text-anchor="middle">2</text>
+        <text x="235" y="168" font-size="11" fill="var(--accent)" text-anchor="middle">1,5</text>
+        <text x="322" y="168" font-size="12" font-style="italic" fill="currentColor" text-anchor="end">t</text>
+        <text x="60" y="186" font-size="11" fill="currentColor" text-anchor="middle">150</text>
+        <text x="110" y="186" font-size="11" fill="currentColor" text-anchor="middle">160</text>
+        <text x="160" y="186" font-size="11" fill="currentColor" text-anchor="middle">170</text>
+        <text x="210" y="186" font-size="11" fill="currentColor" text-anchor="middle">180</text>
+        <text x="260" y="186" font-size="11" fill="currentColor" text-anchor="middle">190</text>
+        <text x="235" y="186" font-size="11" fill="var(--accent)" text-anchor="middle">185</text>
+        <text x="322" y="186" font-size="12" font-style="italic" fill="currentColor" text-anchor="end">x</text>
+        <text x="245" y="98" font-size="11" fill="var(--accent)">même aire</text>
+    </svg>
+</Figure>
+
 
 <Figure legende="Densité de la loi normale centrée réduite 𝒩(0, 1), maximum 1/√(2π) en 0" page={12}>
     <svg viewBox="0 0 300 150" role="img"
@@ -243,11 +347,113 @@ params={{loi: 'exponentielle', c: 0.5, d: 2}}
     $$
 </Property>
 
+{/* AJOUT : méthode */}
+
+<Theorem type="Méthode" titre="Calculer une probabilité avec une loi normale">
+    1. Identifier $\mu$ et $\sigma$ (l'écart type).
+    2. Centrer-réduire les bornes : $t = \dfrac{x - \mu}{\sigma}$.
+    3. Exprimer la probabilité avec $\Phi$ : $P(X \le b) = \Phi(t_b)$, $P(X \ge a) = 1 - \Phi(t_a)$, $P(a \le X \le b) = \Phi(t_b) - \Phi(t_a)$.
+    4. Lire $\Phi$ dans la table.
+</Theorem>
+
+{/* AJOUT : exemple résolu (tailles) */}
+
+<Example titre="Tailles d'une population">
+    La taille $X$ (en cm) suit $\mathcal{N}(170,\, 10)$. Calculer $P(X \le 180)$, $P(170 \le X \le 185)$ et $P(X \ge 190)$.
+
+    <Solution titre="Détail du calcul">
+        Ici $\mu = 170$ et $\sigma = 10$ : les bornes $180$, $185$ et $190$ deviennent $t = 1$, $1{,}5$ et $2$.
+
+        $$
+        P(X \le 180) = \Phi(1) \approx 0{,}8413
+        $$
+
+        $$
+        P(170 \le X \le 185) = \Phi(1{,}5) - \Phi(0) \approx 0{,}9332 - 0{,}5 = 0{,}4332
+        $$
+
+        $$
+        P(X \ge 190) = 1 - \Phi(2) \approx 1 - 0{,}9772 = 0{,}0228
+        $$
+    </Solution>
+</Example>
+
+
 <Animation
 type="densite"
 titre="Loi normale : fais varier μ et σ"
 params={{loi: 'normale', c: -1, d: 1}}
 />
+
+{/* AJOUT : exercices */}
+
+## Exercices d'application
+
+<Exercise titre="Loi uniforme" niveau={1}>
+    Soit $X \sim \mathcal{U}(2, 6)$.
+
+    1. Donner $f$ et $F$.
+    2. Calculer $P(3 < X < 5)$.
+    3. Calculer $E(X)$, $\operatorname{Var}(X)$ et $\sigma(X)$.
+
+    <Solution>
+        1. $f(x) = \dfrac{1}{6 - 2} = \dfrac{1}{4}$ sur $[2, 6]$ et $F(x) = \dfrac{x - 2}{4}$.
+
+        2. $P(3 < X < 5) = \dfrac{5 - 3}{4} = 0{,}5$.
+
+        3. $E(X) = \dfrac{6 + 2}{2} = 4$, $\operatorname{Var}(X) = \dfrac{(2 - 6)^2}{12} = \dfrac{4}{3}$ et $\sigma(X) = \dfrac{2}{\sqrt{3}} \approx 1{,}155$.
+    </Solution>
+</Exercise>
+
+<Exercise titre="Appels à un standard" niveau={2}>
+    Le temps $X$ (en minutes) entre deux appels à un standard suit une loi exponentielle de moyenne 5 min.
+
+    1. Donner le paramètre $\lambda$.
+    2. Calculer $P(X > 5)$ et $P(2 \le X \le 6)$.
+    3. Aucun appel n'est arrivé depuis 10 min. Quelle est la probabilité que l'attente totale dépasse 15 min ?
+    4. Déterminer $t$ tel que $P(X \le t) = 0{,}9$.
+
+    <Solution>
+        1. $\lambda = \dfrac{1}{5} = 0{,}2$ min⁻¹.
+
+        2. $P(X > 5) = e^{-0{,}2 \times 5} = e^{-1} \approx 0{,}368$ et
+
+        $$
+        P(2 \le X \le 6) = e^{-0{,}4} - e^{-1{,}2} \approx 0{,}670 - 0{,}301 = 0{,}369
+        $$
+
+        3. Loi sans mémoire : $P(X \ge 15 \mid X \ge 10) = P(X \ge 5) = e^{-1} \approx 0{,}368$.
+
+        4. $F(t) = 1 - e^{-0{,}2\,t} = 0{,}9$ donne $e^{-0{,}2\,t} = 0{,}1$, soit
+
+        $$
+        t = \frac{\ln 10}{0{,}2} \approx 11{,}5 \text{ min}
+        $$
+    </Solution>
+</Exercise>
+
+<Exercise titre="Paquets de farine" niveau={2}>
+    La masse $X$ (en g) d'un paquet suit une loi normale d'espérance $500$ et de **variance** $16$.
+
+    1. Quel est l'écart type ?
+    2. Calculer $P(X \le 506)$ et $P(X \ge 504)$.
+    3. Calculer $P(500 \le X \le 508)$.
+    4. Trouver la masse $s$ telle que $P(X \le s) = 0{,}9772$.
+
+    <Solution>
+        1. $\sigma = \sqrt{16} = 4$ g.
+
+        2. $P(X \le 506) = \Phi\!\left(\dfrac{506 - 500}{4}\right) = \Phi(1{,}5) \approx 0{,}9332$ et
+
+        $$
+        P(X \ge 504) = 1 - \Phi\!\left(\frac{504 - 500}{4}\right) = 1 - \Phi(1) \approx 1 - 0{,}8413 = 0{,}1587
+        $$
+
+        3. $P(500 \le X \le 508) = \Phi(2) - \Phi(0) \approx 0{,}9772 - 0{,}5 = 0{,}4772$.
+
+        4. La table donne $\Phi(2) \approx 0{,}9772$, donc $\dfrac{s - 500}{4} = 2$, soit $s = 508$ g.
+    </Solution>
+</Exercise>
 
 ## Fiche récapitulative
 

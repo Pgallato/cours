@@ -27,6 +27,17 @@ sources: [1, 2]
     $$
 </Example>
 
+{/* AJOUT : intuition */}
+
+<Remark titre="Intuition">
+    Une variable aléatoire ne « contient » pas de hasard : c'est une règle qui traduit chaque issue en un **nombre**. Dans l'exemple du dé, on ne retient plus que « pair ou impair » : plusieurs issues différentes ($2$, $4$ et $6$) donnent la même valeur de $X$. Calculer une probabilité sur $X$, c'est regrouper les issues qui donnent cette valeur :
+
+    $$
+    P(X = 0) = P(\{2, 4, 6\}) = \frac{3}{6} = \frac{1}{2}
+    $$
+</Remark>
+
+
 <Definition titre="Variable aléatoire discrète">
     Une VA est **discrète** quand il y en a un nombre fini ou dénombrable [de valeurs possibles].
 </Definition>
@@ -86,6 +97,29 @@ titre="Bâtons de la loi et escalier de F"
 params={{valeurs: [0, 1, 2, 3, 4], probas: [0.65, 0.18, 0.12, 0.04, 0.01]}}
 />
 
+{/* AJOUT : exemple résolu (lire F) */}
+
+<Example titre="Pannes d'ordinateurs : utiliser F">
+    Quelle est la probabilité qu'un ordinateur du parc ait **au moins 2 pannes** ? Entre 1 et 3 pannes (bornes comprises) ?
+
+    <Solution titre="Détail du calcul">
+        « Au moins 2 » est le contraire de « au plus 1 » :
+
+        $$
+        P(X \ge 2) = 1 - P(X \le 1) = 1 - F(1) = 1 - 0{,}83 = 0{,}17
+        $$
+
+        « Entre 1 et 3, bornes comprises » : on garde la valeur $1$, donc on retranche $F(0)$ et non $F(1)$.
+
+        $$
+        P(1 \le X \le 3) = F(3) - F(0) = 0{,}99 - 0{,}65 = 0{,}34
+        $$
+
+        Vérification directe : $18 + 12 + 4 = 34\ \%$.
+    </Solution>
+</Example>
+
+
 ## Espérance
 
 <Definition titre="Espérance">
@@ -110,6 +144,13 @@ params={{valeurs: [0, 1, 2, 3, 4], probas: [0.65, 0.18, 0.12, 0.04, 0.01]}}
         $$
     </Solution>
 </Example>
+
+{/* AJOUT : intuition */}
+
+<Remark titre="Intuition">
+    Sur un très grand parc, la moyenne du nombre de pannes par ordinateur se rapproche de $E(X)$. C'est le « centre de gravité » des bâtons de la loi : chaque valeur pèse proportionnellement à sa probabilité. Ce n'est pas forcément une valeur possible : aucun ordinateur n'a $0{,}58$ panne, c'est une moyenne.
+</Remark>
+
 
 ## Variance
 
@@ -144,6 +185,13 @@ params={{valeurs: [0, 1, 2, 3, 4], probas: [0.65, 0.18, 0.12, 0.04, 0.01]}}
     </Solution>
 </Example>
 
+{/* AJOUT : piège (carré) */}
+
+<Warning titre="Où met-on le carré ?">
+    $E(X^2)$ et $\big(E(X)\big)^2$ sont deux nombres différents : dans le premier on élève **les valeurs** au carré avant de faire la moyenne, dans le second **la moyenne** elle-même. Ici $E(X^2) = 1{,}18$ alors que $\big(E(X)\big)^2 = 0{,}3364$. Comme une variance est toujours positive ou nulle, $E(X^2) \ge \big(E(X)\big)^2$ : un résultat négatif signale une erreur de calcul.
+</Warning>
+
+
 ## Écart type
 
 <Definition titre="Écart type">
@@ -157,6 +205,48 @@ params={{valeurs: [0, 1, 2, 3, 4], probas: [0.65, 0.18, 0.12, 0.04, 0.01]}}
     \sigma(X) = \sqrt{0{,}8436} \approx 0{,}9185
     $$
 </Example>
+
+{/* AJOUT : intuition (unité de l'écart type) */}
+
+<Remark titre="Intuition">
+    La variance est en « pannes² » : peu parlante. L'écart type revient à l'unité de $X$ : ici environ $0{,}92$ panne, c'est l'ordre de grandeur de l'écart d'un ordinateur à la moyenne de $0{,}58$ panne.
+</Remark>
+
+
+{/* AJOUT : exercices */}
+
+## Exercices d'application
+
+<Exercise titre="Un jeu de dé" niveau={2}>
+    On lance un dé équilibré à 6 faces. On gagne 5 € si l'on obtient 6, 1 € si l'on obtient 5, et on perd 1 € dans tous les autres cas. $X$ désigne le gain algébrique (en euros).
+
+    1. Donner la loi de $X$ et vérifier qu'elle est bien normalisée.
+    2. Donner la fonction de répartition de $X$.
+    3. Calculer $E(X)$ et interpréter le résultat.
+    4. Calculer $\operatorname{Var}(X)$ et $\sigma(X)$.
+
+    <Solution>
+        1. $X$ prend les valeurs $-1$, $1$ et $5$ :
+
+        | $x_i$        | $-1$          | $1$           | $5$           |
+        |--------------|---------------|---------------|---------------|
+        | $P(X = x_i)$ | $\dfrac{4}{6}$ | $\dfrac{1}{6}$ | $\dfrac{1}{6}$ |
+
+        et $\dfrac{4}{6} + \dfrac{1}{6} + \dfrac{1}{6} = 1$.
+
+        2. $F(-1) = \dfrac{2}{3}$, $F(1) = \dfrac{5}{6}$, $F(5) = 1$.
+
+        3. $E(X) = -1 \times \dfrac{4}{6} + 1 \times \dfrac{1}{6} + 5 \times \dfrac{1}{6} = \dfrac{2}{6} = \dfrac{1}{3} \approx 0{,}33$ €. En moyenne, on gagne environ $0{,}33$ € par partie : le jeu est favorable au joueur.
+
+        4. $E(X^2) = 1 \times \dfrac{4}{6} + 1 \times \dfrac{1}{6} + 25 \times \dfrac{1}{6} = 5$, donc
+
+        $$
+        \operatorname{Var}(X) = 5 - \left(\frac{1}{3}\right)^2 = \frac{44}{9} \approx 4{,}89
+        \qquad\qquad
+        \sigma(X) \approx 2{,}21 \text{ €}
+        $$
+    </Solution>
+</Exercise>
 
 ## Fiche récapitulative
 
