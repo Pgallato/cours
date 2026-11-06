@@ -50,6 +50,8 @@ Ne jamais modifier pages/lib/composants pour ajouter du contenu. Procédure :
 
 Procédure complète d'ajout : skill **`/nouveau-cours <dossier>`** (`.claude/skills/nouveau-cours/SKILL.md`). Sources possibles : photos de notes, PDF, diapos (PPTX/ODP), Word… mélangés et pas forcément numérotés ; outils : `pdftotext`/`pdftoppm` (poppler) et `soffice --headless --convert-to pdf`. Les photos du cours de probabilités sont à la racine de `sources/` (historique) ; les suivants vont dans un sous-dossier par cours.
 
+Enrichir un cours déjà publié (exemples, explications, schémas, exercices, sans repasser par `sources/`) : skill **`/ameliorer-cours <dossier> [chapitre]`** (`.claude/skills/ameliorer-cours/SKILL.md`). Le texte transcrit reste intact ; chaque ajout est précédé de `{/* AJOUT : <nature> */}` (`grep -rn AJOUT src/content/cours/<cours>`).
+
 - Ordre : numérotation interne (page des notes, n° de diapo, pagination PDF) sinon ordre logique du contenu ; des numéros peuvent manquer. Provenance notée par une référence courte : `4` (page de notes) ou `"cours.pdf p. 3"`, `"slides.pptx #12"` — dans `sources`, `FOND ?`, `TODO`, `<Figure page>`, `<Todo page>`.
 - **Transcription fidèle.** Ne rien inventer (ni énoncé, ni question). Erreur de fond repérée → la laisser telle quelle, ajouter `{/* FOND ? … Signalé, non corrigé. */}` juste avant, et la signaler à l'utilisateur. Corriger seulement après son accord.
 - Passage illisible/ambigu : `{/* TODO: illisible, <référence> */}` ; énoncé ou figure manquant : `<Todo page={…}>…</Todo>` (visible). Contradiction entre deux sources = point `FOND ?`. Lister les TODO en fin de travail.
