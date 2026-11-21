@@ -1,0 +1,583 @@
+---
+titre: Généralités et concepts élémentaires
+resume: Réseau, norme, standard et protocole ; client-serveur ; modèle OSI en théorie et en pratique ; encapsulation, diffusion et commutation, unicast, broadcast et multicast ; organismes de normalisation ; topologies et classification des réseaux par taille.
+tags: [réseau, norme, protocole, modèle OSI, encapsulation, commutation, unicast, broadcast, multicast, topologie, LAN, WAN]
+sources: ["reseaux.pdf p. 4–62"]
+---
+
+## Les concepts élémentaires
+
+<Definition titre="Réseau">
+    Ensemble des liaisons entre les équipements numériques.
+</Definition>
+
+D'autres réseaux : routier, sanguin, social…
+
+Sont concernés : ordinateurs, switches, modems…
+
+<Definition titre="Norme">
+    Harmonisation de pratiques dans un domaine particulier régies par une organisation.
+</Definition>
+
+- Portée d'une norme : pays, continent, technologie…
+- Emploi : Système International ; lois + constitutions + décrets… ; linguistique…
+
+<Definition titre="Standard">
+    Ensemble de recommandations suivies par un groupe de personnes.
+</Definition>
+
+- Standards courants : PC, PostScript, écartement des voies…
+- Hypothèses de débat : avantage, souplesse d'évolution ? Inconvénient, frein à l'innovation ? Supériorité norme vs standard ?
+
+<Remark titre="Norme vs. standard">
+    - Pas de différence sémantique en anglais.
+    - Standard généralement piloté par des organisations privées.
+</Remark>
+
+<Definition titre="Protocole">
+    Règles à respecter pour communiquer entre deux systèmes.
+</Definition>
+
+Dans ce cours : Internet Protocol (IP), Transmission Control Protocol (TCP), Internet Group Management Protocol (IGMP), HyperText Coffee Pot Control Protocol (HTCPCP)…
+
+### Émission vs. réception
+
+<Definition titre="Émission et réception">
+    « L'émission » c'est envoyer de la donnée… « la réception » c'est recevoir de la donnée. (Merci Captain Obvious !)
+</Definition>
+
+Comme dans la vraie vie ! Quand quelqu'un parle, si on veut l'écouter, on ne parle pas par-dessus ! La plupart du temps, il s'agit d'un dialogue, où émission et réception alternent.
+
+### Client vs. serveur
+
+<Theorem type="Premier principe fondamental">
+    Les réseaux informatiques sont de type **client - serveur**.
+</Theorem>
+
+Subtilité : une machine peut être à la fois client et serveur ! Mieux encore : un client émet et reçoit ! Tout comme un serveur !
+
+<Theorem type="Second principe fondamental">
+    Le réseau relie des **hôtes** entre eux.
+</Theorem>
+
+### Portée locale vs. portée globale
+
+Selon les informations demandées, les échanges peuvent :
+
+- rester sur le même espace interne (dont la définition peut varier selon le contexte) ;
+- circuler depuis et vers le monde dit « extérieur ».
+
+## Le modèle OSI : théorie
+
+{/* AJOUT : phrase d'introduction (la diapositive ne contient que la figure) */}
+
+Le modèle **Open Systems Interconnection** (OSI) découpe la communication en 7 couches.
+
+<Figure legende="Le modèle OSI - théorie" page="reseaux.pdf p. 13">
+<svg viewBox="0 0 300 230" role="img" aria-label="Les sept couches du modèle OSI : couche 1 Physique, 2 Liaison, 3 Réseau, 4 Transport, 5 Session, 6 Présentation, 7 Application ; les couches 1 à 4 communiquent avec leurs voisines">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7">
+<rect x="40" y="6" width="80" height="24" rx="3" />
+<rect x="40" y="36" width="80" height="24" rx="3" />
+<rect x="40" y="66" width="80" height="24" rx="3" />
+<rect x="40" y="96" width="80" height="24" rx="3" />
+<rect x="40" y="126" width="80" height="24" rx="3" />
+<rect x="40" y="156" width="80" height="24" rx="3" />
+<rect x="40" y="186" width="80" height="24" rx="3" />
+<rect x="180" y="6" width="100" height="24" rx="3" stroke="var(--accent)" />
+<rect x="180" y="36" width="100" height="24" rx="3" stroke="var(--accent)" />
+<rect x="180" y="66" width="100" height="24" rx="3" stroke="var(--accent)" />
+<rect x="180" y="96" width="100" height="24" rx="3" stroke="var(--accent)" />
+<rect x="180" y="126" width="100" height="24" rx="3" stroke="var(--accent)" />
+<rect x="180" y="156" width="100" height="24" rx="3" stroke="var(--accent)" />
+<rect x="180" y="186" width="100" height="24" rx="3" stroke="var(--accent)" />
+<path d="M120 18 H176 M120 48 H176 M120 78 H176 M120 108 H176 M120 138 H176 M120 168 H176 M120 198 H176" />
+<path d="M40 108 C 26 114, 26 132, 40 138 M40 138 C 26 144, 26 162, 40 168 M40 168 C 26 174, 26 192, 40 198" />
+</g>
+<g fill="currentColor"><path d="M176 18 l-6 -3 v6 z M176 48 l-6 -3 v6 z M176 78 l-6 -3 v6 z M176 108 l-6 -3 v6 z M176 138 l-6 -3 v6 z M176 168 l-6 -3 v6 z M176 198 l-6 -3 v6 z" /></g>
+<g font-size="11" text-anchor="middle" fill="currentColor">
+<text x="80" y="22">Couche 7</text><text x="80" y="52">Couche 6</text><text x="80" y="82">Couche 5</text><text x="80" y="112">Couche 4</text><text x="80" y="142">Couche 3</text><text x="80" y="172">Couche 2</text><text x="80" y="202">Couche 1</text>
+<text x="230" y="22">Application</text><text x="230" y="52">Présentation</text><text x="230" y="82">Session</text><text x="230" y="112">Transport</text><text x="230" y="142">Réseau</text><text x="230" y="172">Liaison</text><text x="230" y="202">Physique</text>
+</g>
+</svg>
+</Figure>
+
+### Couche 1 : Physique
+
+<Definition titre="La couche Physique">
+    Définit les signaux et le support de communication. On y trouve bien évidemment tout le matériel.
+</Definition>
+
+<Theorem type="Important">
+    Unité de mesure : **bit / symbole**. Portée : **locale**.
+</Theorem>
+
+### Couche 2 : Liaison de données
+
+<Definition titre="La couche Liaison de Données">
+    Définit l'organisation des bits de données sur la couche physique.
+</Definition>
+
+Principales notions apportées :
+
+- assemble des bits par octet (éventuellement) ;
+- bande d'appel, séquence de début, de fin… ;
+- contrôle de cohérence.
+
+<Theorem type="Important">
+    Unité de mesure : **trame**. Portée : **locale**.
+</Theorem>
+
+### Couche 3 : Réseau
+
+<Definition titre="La couche Réseau">
+    Acheminer de l'information, éventuellement via des nœuds de transfert.
+</Definition>
+
+Principales notions apportées : contrôle de flux, routage, adressage, avec ou sans connexion.
+
+<Theorem type="Important">
+    Unité de mesure : **paquet**. Portée : **locale / globale**.
+</Theorem>
+
+### Couche 4 : Transport
+
+<Definition titre="La couche Transport">
+    Transporter l'information de « l'utilisateur ».
+</Definition>
+
+Principales notions apportées : qualité de service, contrôle de congestion.
+
+<Theorem type="Important">
+    Unité de mesure : **segment / datagramme**. Portée : **locale / globale**.
+</Theorem>
+
+### Couche 5 : Session
+
+<Definition titre="La couche Session">
+    Établir, maintenir, exploiter et libérer une connexion.
+</Definition>
+
+Principales notions apportées : synchronisation ; interruption et redémarrage ; remise en correspondance des sessions établies.
+
+<Theorem type="Important">
+    N'est plus strictement dans le périmètre de la communication.
+</Theorem>
+
+### Couche 6 : Présentation
+
+<Definition titre="La couche Présentation">
+    Décrit la **syntaxe** d'une communication.
+</Definition>
+
+Exemples de services offerts : encodage / décodage, compression / décompression, chiffrement / déchiffrement.
+
+### Couche 7 : Application
+
+<Definition titre="La couche Application">
+    Décrit la **sémantique** d'une communication.
+</Definition>
+
+C'est l'extrémité de la communication, donc la raison d'être de toutes les couches qui se trouvent en dessous ! En connaissez-vous ? À votre imagination !
+
+Bon… mais ça c'est en théorie !
+
+## Le modèle OSI appliqué dans la réalité
+
+Exemples de protocoles et technologies rangés par couche :
+
+| Couche | Exemples |
+| --- | --- |
+| Application | HTTP, NTP, SSH, SIP, DHCP, BGP, SNMP |
+| Présentation | TLS, MIME, HTML, XML, Unicode |
+| Session | (TCP), DTLS, NetBIOS, RPC, SOCKS |
+| Transport | TCP, UDP, RTP, QUIC, DCCP |
+| Réseau | IPv4, IPv6, ICMPv4, ICMPv6, RIP, OSPF, IGMP |
+| Liaison | GPON, Ethernet, PPP, MPLS, WLAN, STP, ATM |
+| Physique | xDSL, xBaseT, EIA485, NRZ, xQAM, OFDM |
+
+## Encapsulation
+
+{/* AJOUT : description de la figure d'encapsulation (diapositive sans texte) */}
+
+À l'émission, chaque niveau ajoute ses informations autour du message $M$ reçu du niveau supérieur : en-tête $H_3$ ; puis $H_2$ et $E_2$ ; puis $H_1$ et $E_1$. Le message complet $H_1\,H_2\,H_3\,M\,E_2\,E_1$ est transmis, puis à la réception chaque niveau retire ce qu'il avait ajouté, jusqu'à retrouver $M$.
+
+<Animation type="encapsulation" titre="Encapsulation puis décapsulation d'un message (reseaux.pdf p. 25)">
+    1. $M$ → 2. $H_3\,M$ → 3. $H_2\,H_3\,M\,E_2$ → 4. $H_1\,H_2\,H_3\,M\,E_2\,E_1$ → transmission → décapsulation dans l'ordre inverse.
+</Animation>
+
+## Autres concepts élémentaires
+
+### Diffusion vs. commutation
+
+<Definition titre="Diffusion">
+    Tous les hôtes reçoivent l'information émise par l'un d'entre eux.
+
+    Exemples : télévision hertzienne, WiFi, Ethernet Bus, GPON…
+</Definition>
+
+<Definition titre="Répéteur">
+    Dispositif qui réémet un signal (donc le rediffuse).
+
+    Exemples : répéteur radio, hub Ethernet…
+</Definition>
+
+<Definition titre="Commutation">
+    Chaque hôte reçoit le trafic qui l'intéresse (lorsque possible).
+
+    Exemples : Ethernet commuté, téléphonie…
+</Definition>
+
+<Animation type="hub-switch" titre="Diffusion (hub) ou commutation (switch) ?" params={{mode: 'hub'}} />
+
+### À qui le tour ?
+
+<Definition titre="Tour de parole">
+    Le tour de « parole » dans un réseau peut se faire de 3 manières :
+
+    - **Simplex** : un seul sens de communication d'un émetteur vers un récepteur ;
+    - **Half-duplex** : alternance entre émetteur et récepteur ;
+    - **Full-duplex** : émission et réception simultanée.
+</Definition>
+
+### Commutation de circuits
+
+{/* AJOUT : phrase d'explication (diapositive sans texte) */}
+
+Un circuit est établi de bout en bout à travers les commutateurs : chaque communication suit son propre chemin réservé.
+
+<Figure legende="Commutation de circuits : deux circuits (bleu et rouge) établis à travers quatre commutateurs" page="reseaux.pdf p. 28">
+<svg viewBox="0 0 400 190" role="img" aria-label="Quatre commutateurs à six ports ; un circuit bleu traverse les trois commutateurs du haut, un circuit rouge passe par le premier puis descend vers le commutateur du bas">
+<g fill="none" stroke="currentColor" stroke-opacity="0.6">
+<rect x="20" y="10" width="80" height="70" rx="3" /><rect x="150" y="10" width="80" height="70" rx="3" /><rect x="280" y="10" width="80" height="70" rx="3" /><rect x="150" y="105" width="80" height="70" rx="3" />
+<circle cx="35" cy="25" r="6" /><circle cx="35" cy="45" r="6" /><circle cx="35" cy="65" r="6" /><circle cx="85" cy="25" r="6" /><circle cx="85" cy="45" r="6" /><circle cx="85" cy="65" r="6" />
+<circle cx="165" cy="25" r="6" /><circle cx="165" cy="45" r="6" /><circle cx="165" cy="65" r="6" /><circle cx="215" cy="25" r="6" /><circle cx="215" cy="45" r="6" /><circle cx="215" cy="65" r="6" />
+<circle cx="295" cy="25" r="6" /><circle cx="295" cy="45" r="6" /><circle cx="295" cy="65" r="6" /><circle cx="345" cy="25" r="6" /><circle cx="345" cy="45" r="6" /><circle cx="345" cy="65" r="6" />
+<circle cx="165" cy="120" r="6" /><circle cx="165" cy="140" r="6" /><circle cx="165" cy="160" r="6" /><circle cx="215" cy="120" r="6" /><circle cx="215" cy="140" r="6" /><circle cx="215" cy="160" r="6" />
+<path d="M85 45 H165 M215 25 H295 M215 120 L295 65" stroke-opacity="0.35" />
+</g>
+<path d="M0 65 H35 L85 25 H165 L215 45 H390" fill="none" stroke="var(--accent)" stroke-width="2" />
+<path d="M0 45 H35 L85 65 L165 160 L215 140 H250" fill="none" stroke="var(--margin)" stroke-width="2" />
+</svg>
+</Figure>
+
+### Commutation de paquets
+
+{/* AJOUT : phrase d'explication (diapositive sans texte) */}
+
+Les données sont découpées en paquets ; le commutateur (switch) aiguille chaque paquet vers sa destination.
+
+<Figure legende="Commutation de paquets : les paquets de A (rouge) et de C (bleu) passent par le switch vers D" page="reseaux.pdf p. 29">
+<svg viewBox="0 0 400 150" role="img" aria-label="Stations A et B à gauche, C et D à droite, reliées à un switch central ; des paquets de A et de C transitent par le switch vers D">
+<g fill="none" stroke="currentColor" stroke-opacity="0.6">
+<rect x="10" y="12" width="56" height="22" rx="3" /><rect x="10" y="112" width="56" height="22" rx="3" /><rect x="334" y="12" width="56" height="22" rx="3" /><rect x="334" y="112" width="56" height="22" rx="3" /><rect x="165" y="62" width="70" height="22" rx="3" />
+<path d="M66 23 L165 73 M66 123 L165 73 M334 23 L235 73 M334 123 L235 73" />
+</g>
+<g font-size="12" text-anchor="middle" fill="currentColor"><text x="38" y="27">A</text><text x="38" y="127">B</text><text x="362" y="27">C</text><text x="362" y="127">D</text><text x="200" y="77">Switch</text></g>
+<rect x="95" y="28" width="9" height="9" fill="var(--margin)" /><path d="M106 42 L140 56" stroke="var(--margin)" /><path d="M140 56 l-6 0 l3 -5 z" fill="var(--margin)" />
+<rect x="296" y="28" width="9" height="9" fill="var(--accent)" /><path d="M292 42 L258 56" stroke="var(--accent)" /><path d="M258 56 l6 0 l-3 -5 z" fill="var(--accent)" />
+<rect x="250" y="86" width="9" height="9" fill="var(--accent)" /><rect x="276" y="88" width="9" height="9" fill="var(--margin)" /><path d="M262 100 L318 118" stroke="var(--margin)" /><path d="M318 118 l-6 1 l2 -5 z" fill="var(--margin)" />
+</svg>
+</Figure>
+
+### Multiplexage / démultiplexage
+
+<Definition titre="Multiplexage">
+    Partage d'un moyen (ici de communication) entre plusieurs utilisateurs.
+</Definition>
+
+Plusieurs techniques existent :
+
+- **temporel** : la ressource est divisée en fentes à taille fixe, dont une ou plusieurs sont allouées à une communication ;
+- **bande passante** : tant que le support est libre, des données peuvent circuler ;
+- **fréquence** : le support exploite plusieurs fréquences, sur lesquelles on peut ensuite faire du multiplexage temporel et/ou de l'allocation de fréquence.
+
+{/* CORRIGÉ (reseaux.pdf p. 30 : la diapositive indiquait un canal D à 16 kbps (valeur du BRI)). */}
+
+<Example titre="Réseaux Numériques à Intégration de Services (RNIS ; ISDN)">
+    PRI : 30 x 64 kbps données (B) + 1 x 64 kbps signaux (D).
+</Example>
+
+### Unicast, broadcast, multicast
+
+<Definition titre="Unicast">
+    Transmission de données d'un point vers un autre. C'est donc le peer-to-peer ! (Merci Captain Obvious !)
+</Definition>
+
+<Definition titre="Broadcast">
+    Transmission de données à tous ceux qui sont à l'écoute.
+
+    Exemples : enseignant dans une salle, radio et télé classique…
+</Definition>
+
+<Definition titre="Multicast">
+    Transmission de données à certains destinataires seulement.
+
+    Exemple : information de dernière minute comme un changement de salle uniquement pour un groupe d'étudiants.
+</Definition>
+
+<Warning titre="Attention">
+    « Recevoir » ne signifie pas forcément « être concerné ».
+</Warning>
+
+<Figure legende="Unicast (A vers D), broadcast (A vers tous), multicast (A vers B et E)" page="reseaux.pdf p. 32, 34, 36">
+<svg viewBox="0 0 420 150" role="img" aria-label="Trois schémas en étoile autour d'un point de jonction : en unicast seul D reçoit, en broadcast B, C, D et E reçoivent, en multicast seuls B et E reçoivent">
+<g font-size="11" text-anchor="middle" fill="currentColor"><text x="70" y="146">Unicast</text><text x="210" y="146">Broadcast</text><text x="350" y="146">Multicast</text></g>
+<g fill="none" stroke="currentColor" stroke-opacity="0.45">
+<path d="M60 70 L95 20 M60 70 L115 50 M60 70 L115 90 M60 70 L95 120" />
+<path d="M340 70 L375 50 M340 70 L375 90" />
+</g>
+<g fill="none" stroke="var(--margin)" stroke-width="2">
+<path d="M15 70 H60 L115 90" />
+<path d="M155 70 H200 L235 20 M200 70 L255 50 M200 70 L255 90 M200 70 L235 120" />
+<path d="M295 70 H340 L375 20 M340 70 L375 120" />
+</g>
+<g fill="currentColor" fill-opacity="0.45"><circle cx="95" cy="20" r="6" /><circle cx="115" cy="50" r="6" /><circle cx="95" cy="120" r="6" /><circle cx="375" cy="50" r="6" /><circle cx="375" cy="90" r="6" /></g>
+<g fill="var(--margin)"><circle cx="15" cy="70" r="6" /><circle cx="115" cy="90" r="6" /><circle cx="155" cy="70" r="6" /><circle cx="235" cy="20" r="6" /><circle cx="255" cy="50" r="6" /><circle cx="255" cy="90" r="6" /><circle cx="235" cy="120" r="6" /><circle cx="295" cy="70" r="6" /><circle cx="375" cy="20" r="6" /><circle cx="375" cy="120" r="6" /></g>
+<g font-size="10" font-style="italic" fill="currentColor"><text x="10" y="88">A</text><text x="104" y="16">B</text><text x="124" y="54">C</text><text x="124" y="94">D</text><text x="104" y="128">E</text>
+<text x="150" y="88">A</text><text x="244" y="16">B</text><text x="264" y="54">C</text><text x="264" y="94">D</text><text x="244" y="128">E</text>
+<text x="290" y="88">A</text><text x="384" y="16">B</text><text x="384" y="54">C</text><text x="384" y="94">D</text><text x="384" y="128">E</text></g>
+</svg>
+</Figure>
+
+### Switching vs. routing
+
+En réseau, il est très important de différencier les deux !
+
+<Definition titre="Switching">
+    Généralement de niveau 2, donc adhérente au support. Le paquet IP ou la trame Ethernet ne sont **pas** modifiés.
+</Definition>
+
+<Definition titre="Routing">
+    Généralement de niveau 3 ou plus, implique une décapsulation et une encapsulation (changement de support), voire une modification des données (par exemple : NAT).
+</Definition>
+
+### Contrôle d'intégrité
+
+<Definition titre="Contrôle d'intégrité">
+    Ajout d'une somme de contrôle pour détecter les erreurs de transmission.
+</Definition>
+
+Quelques notions autour de l'intégrité : bit de parité, somme de contrôle, détection d'erreur, auto-correction d'erreur.
+
+## Les organismes de normalisation
+
+<Definition titre="IEEE">
+    **Institute of Electrical and Electronics Engineers.** Missions principales : publications scientifiques ; promotion de l'ingénierie en électricité, électronique, informatique… ; établissement de normes internationales.
+
+    Exemples : 802 (LAN), 1003 (POSIX), 1394 (FireWire), 1474 (CTBC).
+</Definition>
+
+<Definition titre="IETF">
+    **Internet Engineering Task Force** ; « filiale » de l'Internet Society (ISoc). Fonctionnement :
+
+    - mission : établir des standards pour un Internet ouvert ;
+    - organisme informel : fonctionne avec des groupes de travail ;
+    - apport par contribution, généralement sur mailing-list ;
+    - décision par consensus ;
+    - établit les **Request For Comments** (RFC).
+
+    Exemples de RFC fondamentales : 765 (FTP), 768 (UDP), 791 (IP), 792 (ICMP), 821 (SMTP), 822 (Mail), 1034 et 1035 (DNS), 2460 (IPv6), 2549 (IPoAC).
+</Definition>
+
+<Definition titre="ANSI">
+    **American National Standards Institute** ; équivalent américain de l'Agence Française de Normalisation (AFNOR).
+
+    Exemples de normes initialement ANSI : langage C, ASCII, SCSI, ATA.
+</Definition>
+
+<Definition titre="ISO">
+    **International Organization for Standardization.** Objectif : produire des normes internationales dans les domaines industriels et commerciaux.
+
+    Exemples de normes ISO : 1000 (unités SI), 7498 (modèle réseau), 9001 (assurance qualité), 9660 (CD), 9899 (langage C), 27000 (sécurité de l'information).
+</Definition>
+
+<Definition titre="OASIS">
+    **Organization for the Advancement of Structured Information Standards.** Consortium constitué de grandes entreprises et d'organisations importantes.
+
+    Exemples de normes OASIS : OpenDocument, SAML, AMQP, ebXML et UBL.
+</Definition>
+
+<Definition titre="W3C">
+    **World Wide Web Consortium.** Fondé par Tim Berners-Lee ; chargé de promouvoir la compatibilité des technologies du Web.
+
+    Exemples de normes W3C : HTML, XML, CSS, PNG, SVG, SOAP.
+</Definition>
+
+<Definition titre="ITU (UIT)">
+    **International Telecommunication Union.** Agence appartenant à l'ONU ; la plus ancienne organisation chargée des télécoms.
+
+    Exemples de normes UIT : V.24 (RS232), V.90 (modem dit « 56k »), X.25 (réseaux par paquets), X.400 (courriers électroniques), X.500 (annuaires).
+</Definition>
+
+<Definition titre="3GPP">
+    **3rd Generation Partnership Project.** Coopération internationale entre organismes de normalisation en télécommunications.
+
+    Exemples de spécifications proposées par le 3GPP : GSM (2G), UMTS (3G), LTE (4G), 5G NR.
+</Definition>
+
+## Les différentes topologies
+
+### Topologie en bus
+
+Usage : répandue dans les systèmes embarqués et systèmes industriels.
+
+<Figure legende="Topologie en bus" page="reseaux.pdf p. 49">
+<svg viewBox="0 0 260 110" role="img" aria-label="Cinq stations A à E branchées sur une même ligne horizontale">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><path d="M10 55 H250 M50 55 V30 M110 55 V30 M170 55 V30 M80 55 V80 M140 55 V80" /></g>
+<g fill="currentColor"><circle cx="50" cy="26" r="6" /><circle cx="110" cy="26" r="6" /><circle cx="170" cy="26" r="6" /><circle cx="80" cy="84" r="6" /><circle cx="140" cy="84" r="6" /></g>
+<g font-size="11" font-style="italic" text-anchor="middle" fill="currentColor"><text x="50" y="13">A</text><text x="110" y="13">B</text><text x="170" y="13">C</text><text x="80" y="104">D</text><text x="140" y="104">E</text></g>
+</svg>
+</Figure>
+
+### Topologie en étoile
+
+Usage : répandue dans les réseaux locaux.
+
+<Figure legende="Topologie en étoile" page="reseaux.pdf p. 50">
+<svg viewBox="0 0 260 110" role="img" aria-label="Cinq stations A à E reliées chacune à un équipement central">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><path d="M60 26 L110 55 M130 26 V55 M200 26 L150 55 M80 84 L115 60 M180 84 L145 60" /></g>
+<rect x="95" y="50" width="70" height="10" fill="currentColor" />
+<g fill="currentColor"><circle cx="60" cy="26" r="6" /><circle cx="130" cy="26" r="6" /><circle cx="200" cy="26" r="6" /><circle cx="80" cy="84" r="6" /><circle cx="180" cy="84" r="6" /></g>
+<g font-size="11" font-style="italic" text-anchor="middle" fill="currentColor"><text x="60" y="13">A</text><text x="130" y="13">B</text><text x="200" y="13">C</text><text x="80" y="104">D</text><text x="180" y="104">E</text></g>
+</svg>
+</Figure>
+
+### Topologie en anneau
+
+Usage : parfois utilisée dans les systèmes industriels, a tendance à être remplacée par du bus.
+
+<Figure legende="Topologie en anneau" page="reseaux.pdf p. 51">
+<svg viewBox="0 0 260 150" role="img" aria-label="Cinq stations A, B, C, E, D reliées en boucle, chacune reliée aussi à un anneau central">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><path d="M70 55 L130 25 L190 55 L170 120 L90 120 Z" /><circle cx="130" cy="80" r="26" /><path d="M130 25 V54 M70 55 L106 70 M190 55 L154 70 M90 120 L112 99 M170 120 L148 99" /></g>
+<g fill="currentColor"><circle cx="70" cy="55" r="6" /><circle cx="130" cy="25" r="6" /><circle cx="190" cy="55" r="6" /><circle cx="90" cy="120" r="6" /><circle cx="170" cy="120" r="6" /></g>
+<g font-size="11" font-style="italic" text-anchor="middle" fill="currentColor"><text x="60" y="42">A</text><text x="130" y="13">B</text><text x="200" y="42">C</text><text x="90" y="142">D</text><text x="170" y="142">E</text></g>
+</svg>
+</Figure>
+
+### Topologie en maille
+
+Usage : représente par exemple les interconnexions de réseaux sur Internet.
+
+<Figure legende="Topologie en maille" page="reseaux.pdf p. 52">
+<svg viewBox="0 0 260 150" role="img" aria-label="Cinq stations reliées par plusieurs liens : A-B, A-E, B-C, B-D, C-E, D-E">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><path d="M70 55 L130 25 L190 55 L170 120 L90 120 M70 55 L170 120 M130 25 L90 120" /></g>
+<g fill="currentColor"><circle cx="70" cy="55" r="6" /><circle cx="130" cy="25" r="6" /><circle cx="190" cy="55" r="6" /><circle cx="90" cy="120" r="6" /><circle cx="170" cy="120" r="6" /></g>
+<g font-size="11" font-style="italic" text-anchor="middle" fill="currentColor"><text x="60" y="42">A</text><text x="130" y="13">B</text><text x="200" y="42">C</text><text x="90" y="142">D</text><text x="170" y="142">E</text></g>
+</svg>
+</Figure>
+
+### Topologie hiérarchique
+
+Usage : représente par exemple les interconnexions d'un campus vers le routeur de bordure du site.
+
+<Figure legende="Topologie hiérarchique" page="reseaux.pdf p. 53">
+<svg viewBox="0 0 260 150" role="img" aria-label="Arbre : B à la racine, relié à A et C ; A relié à F et D ; C relié à E et G">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><path d="M130 25 L70 55 M130 25 L190 55 M70 55 L50 110 M70 55 L90 110 M190 55 L170 110 M190 55 L210 110" /></g>
+<g fill="currentColor"><circle cx="130" cy="25" r="6" /><circle cx="70" cy="55" r="6" /><circle cx="190" cy="55" r="6" /><circle cx="50" cy="110" r="6" /><circle cx="90" cy="110" r="6" /><circle cx="170" cy="110" r="6" /><circle cx="210" cy="110" r="6" /></g>
+<g font-size="11" font-style="italic" text-anchor="middle" fill="currentColor"><text x="130" y="13">B</text><text x="70" y="43">A</text><text x="190" y="43">C</text><text x="50" y="132">F</text><text x="90" y="132">D</text><text x="170" y="132">E</text><text x="210" y="132">G</text></g>
+</svg>
+</Figure>
+
+### Topologie linéaire
+
+Usage : utilisée pour des réseaux de proche en proche.
+
+<Figure legende="Topologie linéaire" page="reseaux.pdf p. 54">
+<svg viewBox="0 0 260 60" role="img" aria-label="Cinq stations A, B, C, D, E alignées et reliées de proche en proche">
+<path d="M30 38 H230" stroke="currentColor" stroke-opacity="0.7" />
+<g fill="currentColor"><circle cx="30" cy="38" r="6" /><circle cx="80" cy="38" r="6" /><circle cx="130" cy="38" r="6" /><circle cx="180" cy="38" r="6" /><circle cx="230" cy="38" r="6" /></g>
+<g font-size="11" font-style="italic" text-anchor="middle" fill="currentColor"><text x="30" y="22">A</text><text x="80" y="22">B</text><text x="130" y="22">C</text><text x="180" y="22">D</text><text x="230" y="22">E</text></g>
+</svg>
+</Figure>
+
+### Topologies hybrides
+
+Usage : association de techniques, un LAN Ethernet et un WiFi par exemple.
+
+<Figure legende="Topologie hybride : un bus (A à E) relié à une étoile autour de F (G, H, I)" page="reseaux.pdf p. 55">
+<svg viewBox="0 0 300 120" role="img" aria-label="Bus horizontal portant les stations A à E, prolongé par une étoile centrée sur F qui relie G, H et I">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><path d="M10 60 H280 M40 60 V36 M100 60 V36 M160 60 V36 M70 60 V84 M130 60 V84 M200 60 L230 34 M200 60 L230 84" /></g>
+<g fill="currentColor"><circle cx="40" cy="32" r="6" /><circle cx="100" cy="32" r="6" /><circle cx="160" cy="32" r="6" /><circle cx="70" cy="88" r="6" /><circle cx="130" cy="88" r="6" /><circle cx="200" cy="60" r="6" /><circle cx="232" cy="32" r="6" /><circle cx="232" cy="88" r="6" /><circle cx="280" cy="60" r="6" /></g>
+<g font-size="11" font-style="italic" text-anchor="middle" fill="currentColor"><text x="40" y="19">A</text><text x="100" y="19">B</text><text x="160" y="19">C</text><text x="70" y="110">D</text><text x="130" y="110">E</text><text x="196" y="82">F</text><text x="248" y="92">G</text><text x="290" y="50">H</text><text x="248" y="36">I</text></g>
+</svg>
+</Figure>
+
+### Topologie physique vs. logique
+
+<Warning titre="Attention !">
+    La topologie physique ne représente pas forcément la topologie logique !
+
+    - réseau hiérarchique physiquement mais en bus à cause d'Ethernet ;
+    - anneau TokenRing mais physiquement en étoile avec un concentrateur ;
+    - bus Ethernet mais physiquement en étoile autour d'un commutateur ;
+    - …
+</Warning>
+
+## Classification par taille
+
+Les réseaux se répartissent dans des catégories communément définies : PAN / BAN ; LAN / WLAN ; CAN / MAN / RAN ; WAN / WWAN ; Internet.
+
+<Definition titre="Personal Area Network (PAN)">
+    Réseaux de proximité, généralement de rayon 10 mètres, par exemple :
+
+    - filaire (PAN) : USB, Thunderbolt, Firewire, RS485, CAN, MODBUS ;
+    - sans fil (WPAN) : Bluetooth, ZigBee, LiFi.
+</Definition>
+
+<Definition titre="Local Area Network (LAN)">
+    Réseaux locaux domestiques et d'entreprise.
+
+    - Généralement de niveau « bâtiment » : maison / appartement ; bâtiment (ou groupe de bâtiments voisins) d'entreprise ; plateaux modulaires d'entreprise (ex. : dans les tours de la Défense).
+    - Relient des équipements locaux (ordinateurs, imprimantes…).
+    - Généralement IEEE 802.3 et / ou IEEE 802.11.
+</Definition>
+
+<Definition titre="Campus / Metropolitan Area Network (CAN / MAN)">
+    Réseaux à l'échelle d'une métropole, ou d'un campus universitaire.
+
+    - un MAN relie plusieurs LAN ;
+    - un MAN peut donner accès à un ou plusieurs WAN ;
+    - un MAN laisse une certaine autonomie à chaque LAN… sinon c'est juste un « gros » LAN !
+</Definition>
+
+<Definition titre="Wide Area Network (WAN)">
+    Réseaux étendus au travers d'un pays voire d'un continent.
+</Definition>
+
+<Warning titre="Attention">
+    On n'est pas encore tout à fait sur Internet ! Le WAN reste à l'échelle d'une organisation, par exemple un FAI.
+</Warning>
+
+<Definition titre="L'Internet">
+    Fédération des réseaux de toutes échelles (s'ils sont reliés).
+</Definition>
+
+<Remark titre="Hypothèse">
+    Il faudra peut-être inventer une autre échelle si l'Humain arrive à conquérir l'Univers !
+</Remark>
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Modèle OSI (de 1 à 7)">
+        Physique · Liaison · Réseau · Transport · Session · Présentation · Application
+    </Formula>
+    <Formula label="Unités de mesure">
+        Physique : bit / symbole · Liaison : trame · Réseau : paquet · Transport : segment / datagramme
+    </Formula>
+    <Formula label="Portée">
+        Physique et Liaison : locale · Réseau et Transport : locale / globale
+    </Formula>
+    <Formula label="Tour de parole">
+        Simplex (un sens) · Half-duplex (alternance) · Full-duplex (simultané)
+    </Formula>
+    <Formula label="Destinataires">
+        Unicast (un) · Broadcast (tous) · Multicast (certains)
+    </Formula>
+    <Formula label="Switching vs. routing">
+        Switching : niveau 2, trame non modifiée · Routing : niveau 3 ou plus, décapsulation / encapsulation
+    </Formula>
+    <Formula label="Par taille">
+        PAN / BAN → LAN / WLAN → CAN / MAN / RAN → WAN / WWAN → Internet
+    </Formula>
+</Formulas>

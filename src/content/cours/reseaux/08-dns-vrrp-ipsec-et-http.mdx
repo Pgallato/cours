@@ -1,0 +1,306 @@
+---
+titre: DNS, VRRP, IPSec et HTTP
+resume: Du fichier hosts au DNS ; normes, structure arborescente, TLD et domaines spéciaux, racines alternatives ; types d'enregistrements et SOA ; outils de diagnostic et circulation d'une requête ; clients DNS sous Windows et Linux (systemd-resolved) ; VRRP, IPSec et HTTP.
+tags: [DNS, hosts, TLD, enregistrements, SOA, résolveur, systemd-resolved, VRRP, IPSec, HTTP]
+sources: ["reseaux.pdf p. 250–278"]
+---
+
+## Le protocole DNS
+
+### Au temps de l'ARPANET… étaient les fichiers hosts !
+
+<Remark titre="Point historique">
+    Avant le DNS, pour connaître les noms associés aux adresses, on s'échangeait des fichiers.
+</Remark>
+
+<Example titre="Exemple de fichier /etc/hosts">
+    ```
+    127.0.0.1 localhost
+    127.0.1.1 segonzac.intranet.example.net segonzac
+    ::1 localhost ip6-localhost ip6-loopback
+    ```
+</Example>
+
+Structure du fichier `/etc/hosts` : une adresse IP ; un nom d'hôte principal ; un ou plusieurs alias. Exemple : `127.0.1.1 host.localdomain host`.
+
+### Au temps des universités US
+
+**Problème** :
+
+- un fichier à distribuer à toutes les machines…
+- dans toutes les universités…
+- ça devient pénible, et Stanford invente le **Domain Name System**…
+- … et Berkeley son implémentation **Berkeley Internet Name Domain** (BIND).
+
+### Normalisation du DNS
+
+« RFC rules the world ! »
+
+| RFC | Objet |
+| --- | --- |
+| RFC 608 | fichier hosts |
+| RFC 1034 | protocole DNS (principes) |
+| RFC 1035 | protocole DNS (spécifications techniques) |
+| RFC 1591 | racine et TLD historiques |
+| RFC 6895 | recommandations de l'IANA |
+| RFC 8484 | DNS over HTTPS |
+| RFC 8499 | terminologie du DNS |
+| RFC xxxx | (liste à compléter par dizaines !) |
+
+### La structure du Domain Name System
+
+- Arborescence : on part d'une racine (.).
+- TLD : première hiérarchie.
+- Autres : n-ième hiérarchie.
+
+<Figure legende="Arborescence du DNS : la racine, des TLD (net, org, fr) et des domaines de second niveau" page="reseaux.pdf p. 255">
+<svg viewBox="0 0 300 130" role="img" aria-label="Racine reliée à net, org et fr ; net à freenode, org à matrix, fr à gouv">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><rect x="110" y="4" width="80" height="22" rx="3" /><rect x="20" y="54" width="80" height="22" rx="3" /><rect x="110" y="54" width="80" height="22" rx="3" /><rect x="200" y="54" width="80" height="22" rx="3" /><rect x="20" y="104" width="80" height="22" rx="3" /><rect x="110" y="104" width="80" height="22" rx="3" /><rect x="200" y="104" width="80" height="22" rx="3" /><path d="M150 26 L60 54 M150 26 V54 M150 26 L240 54 M60 76 V104 M150 76 V104 M240 76 V104" /></g>
+<g font-size="11" text-anchor="middle" fill="currentColor"><text x="150" y="19" font-style="italic">Racine</text></g>
+<g font-size="11" text-anchor="middle" fill="currentColor" font-family="var(--font-mono)"><text x="60" y="69">net</text><text x="150" y="69">org</text><text x="240" y="69">fr</text><text x="60" y="119">freenode</text><text x="150" y="119">matrix</text><text x="240" y="119">gouv</text></g>
+</svg>
+</Figure>
+
+### Les Top Level Domains
+
+Quelques exemples :
+
+- domaines historiques (`.net`, `.org`, `.com`…) ;
+- domaines ouverts (`.info`, `.ovh`, `.clothing`…) ;
+- domaines parrainés (`.edu`, `.gov`, `.gouv.fr`, `.travel`…) ;
+- domaines restreints (`.biz`, `.pro`, `.name`…) ;
+- domaines privés (`.leclerc`, `.sncf`, `.axa`…) ;
+- domaines nationaux (`.fr`, `.re`, `.us`, `.de`…).
+
+### Les domaines de premier niveau spéciaux
+
+Bonne question, merci de l'avoir posée ! Lesquels ?
+
+| TLD | Usage |
+| --- | --- |
+| `.invalid` | pour marquer explicitement comme invalide (RFC 6761) |
+| `.arpa` | utilisé pour les zones inverses |
+| `.example` | pour la documentation (RFC 6761) (parfois bloqué !) |
+| `.localhost` | pour les adresses de loopback (RFC 6761) |
+| `.local` | au profit du protocole Zeroconf (RFC 6762) (pas touche !) |
+| `.lan` | réseau local MAIS n'est pas officiel ! |
+| `.onion` | sites du réseau Tor (RFC 7686) (hors DNS classique) |
+| `.test` | pour les laboratoires (RFC 6761) |
+
+### Les Second Level Domains
+
+- Domaines attachés à un domaine de premier niveau.
+- Frontière du domaine privé.
+- Contient autant de sous-domaines que nécessaires…
+- … qui eux-mêmes peuvent contenir des sous-domaines, etc.
+
+### Les racines alternatives
+
+<Definition titre="Racines du DNS">
+    Le *Domain Name System*, implicitement, fait référence à l'ICANN et aux 13 serveurs racine couramment utilisés.
+</Definition>
+
+Il existe d'autres racines :
+
+- **AlterNIC** : était le concurrent d'InterNIC avant la création de l'ICANN. Décédé.
+- **Handshake** : est un système décentralisé fondé sur une blockchain, avec objectif de résilience, et complément au DNS classique.
+- **Namecoin** : est un système décentralisé fondé sur une blockchain, spécifique au TLD `.bit`.
+- **OpenNIC** : est une racine DNS alternative, fondée sur le mécanisme DNS classique, mais sans lien avec les racines de l'ICANN et de l'IANA.
+- **Souverains** : Yeti DNS Project, `.chn`, Russian National Domain Name System.
+
+### Types d'enregistrements
+
+<Definition titre="Resource Records">
+    Le DNS utilise des *Resource Records* pour catégoriser l'information et la distribuer.
+</Definition>
+
+Un enregistrement est un nom qui associe différentes données, par exemple : des adresses IPv4 ; des adresses IPv6 ; des clés SSH ; du texte libre…
+
+Enregistrements les plus courants :
+
+| Type | Contenu |
+| --- | --- |
+| A | adresse IPv4 |
+| AAAA | adresse IPv6 |
+| PTR | nom réel (à partir d'une adresse) |
+| SOA | racine d'une zone autoritaire |
+| CNAME | alias |
+| NS | serveurs de noms autoritaires |
+| MX | relais de courrier |
+| TXT | texte libre |
+| DS | signature de zone (DNSSEC) |
+
+### Start Of Authority (SOA)
+
+<Definition titre="SOA">
+    Indique qu'un serveur fait autorité pour un sous-domaine donné.
+</Definition>
+
+| Champ | Signification |
+| --- | --- |
+| Master NS | serveur maître de zone |
+| Contact | adresse de courriel du gestionnaire du serveur maître |
+| Serial | numéro de version pour la zone |
+| Refresh | écart en secondes pour les mises à jour (secondaires, esclaves) |
+| Retry | délai en secondes entre deux requêtes si la première a échoué |
+| Expire | délai en secondes pour déclarer la zone invalide si le primaire est injoignable |
+| Min. TTL | durée de vie en secondes d'une réponse dans le cache |
+| Neg. TTL | durée de vie en secondes des demandes d'enregistrements inexistants |
+
+### Outils de diagnostic
+
+| Outil | Remarque |
+| --- | --- |
+| `ping` | résolution simple faute de mieux ! |
+| `host` | du paquet bind9-host |
+| `dig` | du paquet bind9-dnsutils (depuis Debian Bullseye) |
+| `nslookup` | obsolète sous Linux ; « bientôt » obsolète sous Windows |
+| `resolvectl` | du client DNS systemd (resolved) |
+| `Resolve-DnsName` | en PowerShell |
+
+### Circulation de la requête
+
+1. Le client se pose une question : `www.free.fr ?` Il envoie sa requête à son serveur de rattachement.
+2. Le résolveur ne connaît pas ce nom ni cette racine. Il demande à un serveur racine qui gère ce TLD.
+3. Le serveur racine le renvoie vers un serveur autoritaire .FR.
+4. Le serveur repose sa question pour le domaine de second niveau.
+5. Une nouvelle autorité est renvoyée, celle de Free.
+6. Le serveur interroge les DNS de Free, désormais connus.
+7. La réponse définitive est enfin obtenue…
+8. … et renvoyée au client.
+
+{/* CORRIGÉ (reseaux.pdf p. 264 : le schéma posait la question « com. ? » à la racine ; corrigé en « fr. ? », ici et dans l'animation). */}
+
+<Animation type="resolution-dns" titre="Circulation d'une requête DNS pour www.free.fr (reseaux.pdf p. 264)">
+    Client → Résolveur : www.free.fr ? ; Résolveur → Racine : fr. ? ; Racine : Goto X.X.X.X ; Résolveur → Autorité .FR : free.fr. ? ; Autorité .FR : Goto Y.Y.Y.Y ; Résolveur → Serveurs Free : www.free.fr. ? ; Serveurs Free : Is Z.Z.Z.Z ; Résolveur → Client : Is Z.Z.Z.Z.
+</Animation>
+
+### Client DNS sous Windows
+
+<Definition titre="Client DNS">
+    Il centralise les requêtes au DNS pour proposer du cache ou parfois un peu « d'intelligence ».
+</Definition>
+
+Sous Windows, un service appelé « Client DNS » permet d'effectuer ces opérations. Sans lui, les résolutions fonctionnent moins bien (voire pas du tout selon les versions). Peut se manipuler avec des CmdLets PowerShell.
+
+### Client DNS historique sous Linux
+
+Les fichiers très historiques de Linux sont interfacés par le « *Name Service Switch* », dont le fameux `/etc/hosts`.
+
+- Le client historique correspond essentiellement (et par raccourci) à NSSwitch.
+- Un cache peut lui être ajouté : NSCD, *Name Service Caching Daemon*.
+- Bascule entre les fichiers (`hosts`, `resolv.conf`) et le DNS (entre autres).
+
+### Client DNS de systemd : systemd-resolved
+
+**Objectif** : éliminer certains mécanismes obsolètes ou plus maintenus activement.
+
+Fonctionnement général :
+
+- il agrège des sources de noms différentes ;
+- il émule un résolveur local ;
+- il fait du cache et de la signature ;
+- il remplace `/etc/resolv.conf` par un lien symbolique.
+
+<Example titre="Exemple de configuration simple et largement utilisé">
+    ```ini
+    [Resolve]
+    DNS=192.168.1.254
+    Cache=yes
+    DNSStubListener=yes
+    ReadEtcHosts=yes
+    ```
+</Example>
+
+## Bonus : le protocole VRRP
+
+<Definition titre="Virtual Router Redundancy Protocol (VRRP)">
+    Affecter une IP « flottante » à plusieurs routeurs ou plusieurs services afin d'avoir un « actif » et un (ou plusieurs) « secours ».
+</Definition>
+
+Fonctionnement :
+
+- les systèmes s'entendent sur la possession d'un jeton qui autorise à utiliser l'adresse IP ;
+- les participants s'annoncent via une adresse de multicast ;
+- les participants s'attribuent une adresse MAC virtuelle ;
+- des paquets ARP gratuits permettent de reprendre le contrôle de l'IP virtuelle en cas de bascule.
+
+## Bonus : le protocole IPSec
+
+<Definition titre="Internet Protocol Security (IPSec)">
+    Signer ou chiffrer les paquets IP.
+</Definition>
+
+**Fonctionnement** : un « contexte de sécurité » (ou association de sécurité) définit le fait de chiffrer le flux pour un ou plusieurs sous-réseaux IP avec une clé donnée.
+
+**Protocoles** : la négociation des clés est généralement effectuée par *Internet Key Exchange* (IKE). Selon les implémentations, l'authentification peut être réalisée par *Extensible Authentication Protocol* (EAP) et ses modules.
+
+## HTTP, le protocole à tout faire (ou pas !)
+
+<Definition titre="HyperText Transfer Protocol (HTTP)">
+    **Principe le plus élémentaire** : transporter des données de différents formats sur le Web.
+
+    **Principe actuel** : transporter des pages Web et leur contenu (voire plus).
+</Definition>
+
+### Fonctionnement
+
+<Example titre="Requête HTTP simple">
+    ```http
+    GET / HTTP/1.1
+    Host: www.perdu.com
+    ```
+</Example>
+
+Quelques verbes / méthodes : `GET`, `POST`, `HEAD`, `PUT`, `DELETE`, `CONNECT`…
+
+- **Mode de fonctionnement** : HTTP est un protocole **sans état**… comme UDP donc !
+- **En-têtes** : les en-têtes, notamment les cookies, permettent de créer un mode connecté, donc de poursuivre une « session » vue de l'application Web… comme TCP donc !
+
+### Utilisation
+
+Il est tellement répandu qu'il a été adapté à de nouveaux usages :
+
+- **WebDAV** : transferts de fichiers montants et descendants (dont CalDAV et CardDAV) ;
+- **WebServices** : flux machine-to-machine (REST, SOAP…) ;
+- **WebSockets** : flux full-duplex entre clients et serveur (dont streaming) ;
+- **WebRTC** : flux peer-to-peer multimédia entre navigateurs (dont RTP) ;
+- **DNS over HTTP (DoH)** : pour contourner la censure DNS.
+
+Il en est devenu difficile à filtrer !
+
+### Dérive potentielle
+
+<Remark titre="Idée de réflexion">
+    À tout mettre dans HTTP, on oublie les couches inférieures et les protocoles existants… et on réinvente la roue… des fois mieux, des fois moins bien…
+</Remark>
+
+<Theorem type="Conseil">
+    Regardez l'existant, il existe sûrement déjà un outil ou un protocole qui fait ce que vous voulez, moyennant une adaptation mineure !
+</Theorem>
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Arborescence DNS">
+        racine (.) → TLD → second niveau → sous-domaines
+    </Formula>
+    <Formula label="Enregistrements">
+        A (IPv4) · AAAA (IPv6) · PTR (inverse) · CNAME (alias) · NS · MX · TXT · SOA
+    </Formula>
+    <Formula label="Résolution">
+        client → résolveur → racine → autorité du TLD → autorité du domaine → réponse
+    </Formula>
+    <Formula label="Outils">
+        dig, host, resolvectl, Resolve-DnsName
+    </Formula>
+    <Formula label="VRRP">
+        IP flottante, un actif + des secours, MAC virtuelle, ARP gratuit
+    </Formula>
+    <Formula label="IPSec">
+        signe ou chiffre IP ; clés par IKE
+    </Formula>
+    <Formula label="HTTP">
+        sans état ; cookies → session ; GET, POST, HEAD, PUT, DELETE, CONNECT
+    </Formula>
+</Formulas>

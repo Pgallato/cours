@@ -1,0 +1,329 @@
+---
+titre: ICMP, IGMP, DHCP et autoconfiguration IPv6
+resume: ICMPv4 (messages, ping, traceroute) ; IGMP et IGMP snooping ; DHCPv4 (acquisition, messages, extensions, IPAM, snooping, relais) ; ICMPv6 (NDP, DAD, PMTUD, MLD) ; SLAAC et techniques d'affectation d'adresses IPv6 ; DHCPv6.
+tags: [ICMP, ping, traceroute, IGMP, DHCP, ICMPv6, NDP, DAD, PMTUD, MLD, SLAAC, EUI-64, DHCPv6]
+sources: ["reseaux.pdf p. 214–249"]
+---
+
+## Le protocole ICMP appliqué à IPv4 (ICMPv4)
+
+<Definition titre="Internet Control Message Protocol (ICMP)">
+    Protocole technique appartenant à la famille IP pour échanger des messages de diagnostic ou remonter certaines erreurs.
+</Definition>
+
+Messages les plus utilisés : Echo Request ; Echo Reply ; Destination Unreachable (certaines « variantes » seulement) ; Time Exceeded.
+
+### Messages ICMPv4
+
+ICMP utilise des **types** de messages (8 bits), eux-mêmes répartis dans des **codes** (8 bits).
+
+<Remark titre="Obsolescence">
+    De nombreux codes ont été créés mais n'ont pas été utilisés, d'autres ont été abandonnés. Ce qui explique que bloquer ICMPv4 a finalement peu d'incidence.
+</Remark>
+
+{/* CORRIGÉ (reseaux.pdf p. 217 : la diapositive écrivait « Time To Leave » et décrivait le type 3 code 3 comme « protocole inatteignable »). */}
+
+| Type | Code | Description |
+| --- | --- | --- |
+| 8 | 0 | Echo Request : demande d'écho |
+| 0 | 0 | Echo Reply : réponse à écho |
+| 11 | 0 | Time To Live Exceeded : trop de routeurs franchis |
+| 11 | 1 | Fragment Reassembly Time Exceeded : expiration d'un fragment |
+| 3 | 0 | Destination Network Unreachable : réseau inatteignable |
+| 3 | 1 | Destination Host Unreachable : hôte introuvable |
+| 3 | 3 | Destination Port Unreachable : port inatteignable |
+| 3 | 4 | Fragmentation Required and DF Set : fragmentation impossible |
+| 5 | 0 | Redirect Datagram to the Host : « routeur pas concerné » |
+
+### Utilitaire ping
+
+<Theorem type="Principe">
+    `ping` émet des messages ICMP `Echo Request` et écoute les messages ICMP `Echo Reply`.
+</Theorem>
+
+Quelques paramètres : adresse destination ; interface de sortie ; adresse source ; délai et intervalle.
+
+<Animation type="echange-sequence" titre="Utilitaire ping (reseaux.pdf p. 218)" params={{scenario: 'ping'}}>
+    Source → Destination : echo-request ; Destination → Source : echo-reply.
+</Animation>
+
+<Warning>
+    Beaucoup de pare-feu bloquent tout ou partie d'ICMP, notamment des échos.
+</Warning>
+
+### Utilitaire traceroute
+
+<Theorem type="Principe">
+    Exploiter des messages ICMP en faisant varier le « temps à vivre sur le réseau » (TTL) par incrément.
+</Theorem>
+
+Chaque routeur décrémente le champ TTL de 1 unité. À zéro, un message ICMP « time exceeded » est émis, et interprété par `traceroute`.
+
+{/* La diapositive (animation aplatie dans la version statique) nomme « R1 » les deux routeurs : le second est noté R2 ici. Le troisième essai (TTL = 3, jusqu'à la destination) est un ajout de l'animation. */}
+
+<Animation type="traceroute" titre="Traceroute : TTL croissant et messages « time exceeded » (reseaux.pdf p. 219)">
+    Echo Request TTL=1 → R1 répond Time Exceeded (TTL=64) ; Echo Request TTL=2 → R1 transmet (TTL=1) → R2 répond Time Exceeded (TTL=64), relayé par R1 (TTL=63).
+</Animation>
+
+## Le protocole IGMP
+
+<Definition titre="Internet Group Management Protocol (IGMP)">
+    IGMP sert à l'établissement de flux multicast sur un réseau local.
+</Definition>
+
+Utilisation :
+
+- abonnement / désabonnement de flux multicast ;
+- multicast pour flux multimédia, notamment IPTV ;
+- multicast technique, dont protocoles de routage dynamique ;
+- …
+
+### IGMP Snooping
+
+<Definition titre="Snooping">
+    Le snooping (ici pour IGMP) permet à un switch administrable de relayer certains trafics en interprétant certains protocoles.
+</Definition>
+
+Utilisation : dans le cas d'un flux multicast, c'est le switch qui peut dupliquer le trafic s'il sait le faire, et seulement sur les ports qui se sont abonnés. Il peut également filtrer les requêtes abusives…
+
+## Le protocole DHCP appliqué à IPv4 (DHCPv4)
+
+<Definition titre="Dynamic Host Configuration Protocol (DHCP)">
+    Allouer dynamiquement des adresses IP et fournir des informations sur la configuration voulue du réseau à un hôte sans connaissance.
+
+    **Extensions** : DHCP est un protocole initialement conçu pour être étendu : chaque information est contenue dans un champ dit « d'extension ».
+</Definition>
+
+### Acquisition d'une adresse via DHCP
+
+Client → serveur : **DHCPDISCOVER** ; serveur → client : **DHCPOFFER** ; client → serveur : **DHCPREQUEST** ; serveur → client : **DHCPACK**.
+
+<Animation type="echange-sequence" titre="Acquisition d'une adresse via DHCP (reseaux.pdf p. 225)" params={{scenario: 'dhcp'}}>
+    DHCPDISCOVER, DHCPOFFER, DHCPREQUEST, DHCPACK.
+</Animation>
+
+### Les principaux messages DHCP
+
+{/* CORRIGÉ (reseaux.pdf p. 226 : la diapositive nommait le message 4 « DHCPNAK »). */}
+
+| Code | Message | Description |
+| --- | --- | --- |
+| 1 | DHCPDISCOVER | Recherche d'un serveur par un client |
+| 2 | DHCPOFFER | Réponse d'un serveur à une requête initiale |
+| 3 | DHCPREQUEST | Réservation d'une adresse |
+| 4 | DHCPDECLINE | Refus de l'adresse par le client (ex. : IP déjà utilisée) |
+| 5 | DHCPACK | Confirmation de la réservation et informations supplémentaires |
+| 6 | DHCPNAK | Rejet de la demande de réservation |
+| 7 | DHCPRELEASE | Restitution de la réservation |
+| 8 | DHCPINFORM | Demande d'informations supplémentaires |
+
+D'autres messages ont été ajoutés ultérieurement.
+
+### Les extensions courantes de DHCP
+
+DHCP peut diffuser diverses informations de configuration comme :
+
+{/* CORRIGÉ (reseaux.pdf p. 227 : la diapositive donnait le code 5 (Name server) pour les serveurs DNS). */}
+
+| Code | Extension | Description |
+| --- | --- | --- |
+| 0 | Pad | Bourrage pour alignement |
+| 1 | Subnet mask | Masque de sous-réseau |
+| 3 | Router | Routeur (par défaut) |
+| 6 | Domain name server | Serveur(s) DNS |
+| 42 | Time server | Serveur(s) NTP |
+| 66 | TFTP server name | Serveur TFTP (« next server ») |
+| 67 | Boot filename | Fichier de démarrage |
+| 252 | Auto proxy config | WPAD (non officiel) |
+
+### IP Address Management (IPAM)
+
+<Definition titre="IPAM">
+    Dans certaines entreprises de taille importante, la gestion centralisée des IP est nécessaire, notamment avec IPv6.
+
+    **Objectif** : aider à planifier l'allocation des adresses, donc d'une partie des informations à utiliser dans le DNS et dans le DHCP.
+</Definition>
+
+### DHCP snooping
+
+Même principe que IGMP snooping ! Sur les switches administrables, un « agent » DHCP est parfois lancé et s'occupe de filtrer le protocole pour éviter des utilisations abusives, ou de la pollution inutile.
+
+### Relais DHCP
+
+<Definition titre="Relais DHCP">
+    Relayer les flux DHCP sur un segment (broadcast / multicast) et les relayer à un serveur distant.
+</Definition>
+
+- Les flux entre le relais et le serveur se font en unicast.
+- Le relais DHCP reconstruit les multicasts et broadcasts nécessaires.
+
+## Le protocole ICMP appliqué à IPv6 (ICMPv6)
+
+<Definition titre="ICMPv6">
+    Similaire à ICMPv4, mais en remaniant les messages afin de le rendre plus pertinent.
+</Definition>
+
+Exemples significatifs de refonte : suppression du protocole ARP ; suppression d'IGMP ; ajout de mécanismes de configuration automatique.
+
+### Neighbor Discovery Protocol (NDP)
+
+<Definition titre="NDP">
+    Remplacer ARP avec un protocole multicast sur IPv6 via ICMP. Après tout, pas besoin d'un protocole dédié : un message ICMP suffit !
+</Definition>
+
+De nouveaux messages apparaissent et sont utilisés par SLAAC (voir après).
+
+| Code | Message | Description |
+| --- | --- | --- |
+| 133 | Router Solicitation (RS) | Découverte de routeurs |
+| 134 | Router Advertisement (RA) | Annonce de routeur |
+| 135 | Neighbor Solicitation (NS) | Découverte de voisin |
+| 136 | Neighbor Advertisement (NA) | Annonce de voisin |
+| 137 | Redirect | Redirection de trafic émise par un routeur |
+
+### Duplicate Address Detection (DAD)
+
+<Definition titre="DAD">
+    Détecter la présence d'une adresse IP en double sur le réseau.
+</Definition>
+
+Fonctionnement :
+
+1. un hôte qui « démarre » envoie un NS ;
+2. si un NA revient, l'adresse est prise, une erreur est renvoyée et l'adresse est libérée ;
+3. après expiration d'un délai (2 secondes ; renvoi d'un NS à 1 s), si pas de retour NA, l'adresse est considérée libre, et est affectée.
+
+Il existe également une version sécurisée : *Secure Neighbor Discovery* (SEND), récente et pas encore supportée par tous les systèmes.
+
+### Path MTU Discovery (PMTUD)
+
+<Remark titre="Rappel">
+    La fragmentation est interdite en IPv6. La MTU minimale est à 1280.
+</Remark>
+
+<Definition titre="PMTUD">
+    Détecter la MTU minimale pour une connexion donnée, et reporter la fragmentation aux extrémités (aux hôtes) pour soulager les routeurs.
+</Definition>
+
+La MTU peut varier à chaque connexion, en plus d'être bridée globalement si besoin.
+
+**Fonctionnement** : la MTU est baissée à chaque réception d'un ICMPv6 type 2 « Packet too big ».
+
+### Multicast Listener Discovery (MLD)
+
+<Definition titre="MLD">
+    Remplacer IGMP par des messages ICMP dédiés.
+</Definition>
+
+| Code | Message | Description |
+| --- | --- | --- |
+| 130 | Query | Vérification présence d'au moins un abonné |
+| 131 | MLDv1 Report | Annonce présence d'un abonné |
+| 143 | MLDv2 Report | Annonce présence d'un abonné |
+| 132 | MLD Done | Retrait d'un abonné |
+
+## Le protocole SLAAC pour IPv6
+
+<Definition titre="State-Less Address Auto-Configuration (SLAAC)">
+    Affecter automatiquement un numéro d'hôte lors de son démarrage en récupérant les informations du réseau via un routeur.
+</Definition>
+
+Au démarrage d'un hôte IPv6 :
+
+1. l'hôte prend une IPv6 Link-Local et joue DAD sur cette adresse ;
+2. l'hôte émet un RS ;
+3. si un routeur est présent, il émet un RA ;
+4. à partir du RA, l'hôte connaît le(s) préfixe(s) de réseau, il peut choisir un numéro d'hôte ;
+5. il ajoute les routes éventuelles indiquées dans le RA.
+
+### Techniques d'affectation d'adresses IPv6
+
+<Definition titre="Affectation statique">
+    Affecter manuellement les adresses. Utile pour les serveurs dont on doit connaître l'adresse.
+</Definition>
+
+<Definition titre="EUI-64">
+    Utiliser l'adresse MAC comme clé unique.
+</Definition>
+
+Construction d'une EUI-64 :
+
+{/* CORRIGÉ (reseaux.pdf p. 241 : la diapositive disait « forcer à 1 le 2e bit du premier octet de poids fort »). */}
+
+1. récupérer l'adresse MAC (48 bits) et la séparer en deux blocs ;
+2. insérer le MAC vendor ID en poids fort ;
+3. insérer FF:FE ;
+4. insérer le MAC serial ID en poids faible ;
+5. inverser le bit U/L (7e bit du premier octet, valeur 0x02) : il passe à 1 pour une adresse MAC universelle.
+
+<Definition titre="Temporary addresses">
+    Générer une adresse aléatoire, par exemple fondée sur le temps. Le résultat dépend de l'implémentation.
+</Definition>
+
+<Definition titre="Cryptographically Generated Addresses (CGA)">
+    Utiliser certaines données via une fonction de hachage pour produire une adresse stable mais non EUI-64.
+</Definition>
+
+Fonctionnement de principe :
+
+- prendre une clé publique ;
+- prendre un aléa ;
+- prendre un compteur de tour ;
+- hacher la clé avec ces paramètres pour obtenir une valeur intermédiaire ;
+- prendre les 64 bits du préfixe et la valeur intermédiaire et les hacher ;
+- prendre les 64 bits de poids faible comme adresse d'hôte.
+
+<Definition titre="Stable Privacy Addresses">
+    Utiliser des paramètres statiques pour constituer une adresse stable, inspiré du principe de CGA.
+</Definition>
+
+Fonctionnement de principe : préfixe de réseau ; nom de l'interface réseau ; secret ; compteur d'adresse en double (à incrémenter en cas de conflit).
+
+## Le protocole DHCP appliqué à IPv6 (DHCPv6)
+
+DHCPv6 en théorie, c'est comme DHCPv4. Bon… mais ça c'est en théorie. Le principe est identique mais les options ont été remaniées.
+
+### Modes d'attribution d'adresse automatique
+
+- **SLAAC** : auto-attribution SLAAC / NDP et détection de passerelle avec RS / RA.
+- **DHCP sans état** : attribution par SLAAC, et demande de complément par DHCP.
+- **DHCP avec état** : DHCPv6 remplace complètement SLAAC et NDP.
+
+### Acquisition via DHCPv6 avec état
+
+Client → serveur : **SOLICIT** ; serveur → client : **ADVERTISE** ; client → serveur : **REQUEST** ; serveur → client : **REPLY**.
+
+<Animation type="echange-sequence" titre="Acquisition via DHCPv6 avec état (reseaux.pdf p. 248)" params={{scenario: 'dhcpv6'}}>
+    SOLICIT, ADVERTISE, REQUEST, REPLY.
+</Animation>
+
+### Particularités de DHCPv6
+
+- **Adresses utilisées** : les messages DHCP utilisent les adresses Link-Local et l'adresse de multicast `ff02::1:2`.
+- **Identifiants d'hôte** : DHCPv4 utilisait (historiquement) les adresses MAC, DHCPv6 utilise les *DHCP Unique IDentifiers* (DUID).
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="ICMP echo">
+        Echo Request (type 8) · Echo Reply (type 0)
+    </Formula>
+    <Formula label="Time Exceeded">
+        type 11 : TTL arrivé à 0 → base de traceroute
+    </Formula>
+    <Formula label="DHCPv4">
+        DISCOVER → OFFER → REQUEST → ACK
+    </Formula>
+    <Formula label="DHCPv6 avec état">
+        SOLICIT → ADVERTISE → REQUEST → REPLY (ff02::1:2, DUID)
+    </Formula>
+    <Formula label="NDP (ICMPv6)">
+        RS 133 · RA 134 · NS 135 · NA 136 · Redirect 137
+    </Formula>
+    <Formula label="Remplacements en IPv6">
+        ARP → NDP · IGMP → MLD · fragmentation → PMTUD
+    </Formula>
+    <Formula label="SLAAC">
+        Link-Local + DAD → RS → RA (préfixe) → numéro d'hôte → routes
+    </Formula>
+</Formulas>

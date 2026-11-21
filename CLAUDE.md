@@ -17,7 +17,7 @@ Site **100 % statique** de fiches de révision. Astro 7 + MDX, Tailwind v4, KaTe
 src/
   content.config.ts         schéma des collections « cours » et « chapitres » (zod)
   content/cours/<cours>/    UN DOSSIER PAR COURS
-    _cours.json             métadonnées (titre, matiere, semestre, description, [teinte, enseignant, brouillon])
+    _cours.json             métadonnées (titre, matiere, semestre, description, [teinte, brouillon])
     NN-titre.mdx            un chapitre par fichier ; NN = ordre, le reste = slug d'URL
   content/_template/        gabarit à copier (hors collection, jamais publié)
   lib/cours.ts              tousLesCours() : assemble cours + chapitres triés, slugs, durées, teinte
@@ -60,7 +60,7 @@ Enrichir un cours déjà publié (exemples, explications, schémas, exercices, s
 - Composants : `Definition`, `Theorem` (prop `type` pour changer l'étiquette, ex. « À retenir »), `Property`, `Remark`, `Warning`, `Example`, `Exercise` (+ `<Solution>` repliée, `niveau={1..3}`), `Solution` (aussi pour « Détail du calcul »), `Formulas` + `Formula label`, `Figure` (SVG inline), `Animation`, `Todo`. Terminer chaque chapitre par `## Fiche récapitulative` avec `<Formulas>`.
 - Figures : redessiner en SVG inline (`currentColor`, `var(--accent)`), `role="img"` + `aria-label` ; ids de `<marker>` uniques par figure.
 - **Pas de contenu mixte texte + balise dans le SVG** (ex. `<text>C<tspan>f</tspan></text>`) : si un formateur (IDE) le coupe sur plusieurs lignes, MDX lit le texte comme un paragraphe Markdown et le build casse (« Expected a closing tag for `<text>` »). Utiliser deux `<text>` séparés (indice décalé en x/y).
-- Animations : au moins une par cours si pertinent. Types existants : `loi-discrete`, `binomiale-poisson`, `densite` (`loi`: normale|exponentielle|uniforme|toutes), `serie-fourier` (`n` : harmoniques impairs du signal carré, Gibbs), `poles-stabilite` (`p` : pôle d'un système discret du 1er ordre). Nouvelle animation = nouveau module dans `src/scripts/animations/` + entrée dans le registre.
+- Animations : au moins une par cours si pertinent. Types existants : `loi-discrete`, `binomiale-poisson`, `densite` (`loi`: normale|exponentielle|uniforme|toutes), `serie-fourier` (`n` : harmoniques impairs du signal carré, Gibbs), `poles-stabilite` (`p` : pôle d'un système discret du 1er ordre), `encapsulation`, `echange-sequence` (`scenario` : poignee-de-main|tcp-ouverture|tcp-echange|tcp-fenetre|tcp-perte|tcp-3ack|tcp-fermeture|tcp-port-ferme|tcp-rst|tls|dhcp|dhcpv6|ping), `traceroute`, `resolution-dns`, `hub-switch` (`mode` : hub|switch), `codage-ligne` (`bits`), `conversion-binaire` (`valeur`), `masque-ip` (`ip`, `prefixe`). Animations pas à pas : lecteur commun `sequenceur.ts` (boutons |◀ ◀ ▶ ▶|, état final affiché au départ, respecte `prefers-reduced-motion`). Nouvelle animation = nouveau module dans `src/scripts/animations/` + entrée dans le registre.
 
 ## PWA (installable + hors ligne)
 

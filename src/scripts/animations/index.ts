@@ -13,6 +13,14 @@ const registre: Record<string, () => Promise<{ default: Monteur }>> = {
     densite: () => import('./densite'),
     'serie-fourier': () => import('./serie-fourier'),
     'poles-stabilite': () => import('./poles-stabilite'),
+    encapsulation: () => import('./encapsulation'),
+    'echange-sequence': () => import('./echange-sequence'),
+    traceroute: () => import('./traceroute'),
+    'resolution-dns': () => import('./resolution-dns'),
+    'hub-switch': () => import('./hub-switch'),
+    'codage-ligne': () => import('./codage-ligne'),
+    'conversion-binaire': () => import('./conversion-binaire'),
+    'masque-ip': () => import('./masque-ip'),
 };
 
 export function animationsDisponibles() {

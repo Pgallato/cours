@@ -1,0 +1,302 @@
+---
+titre: Fonctionnement du protocole IP (IPv4)
+resume: Rappels binaire et hexadécimal ; principes d'IP, format d'une adresse IPv4 ; masque de sous-réseau, numéro de réseau, d'hôte et de diffusion ; classes historiques et CIDR ; adresses réservées et multicast ; routage statique, passerelle par défaut, fragmentation et MTU.
+tags: [IP, IPv4, binaire, hexadécimal, masque de sous-réseau, CIDR, adresses privées, routage, passerelle par défaut, MTU, fragmentation]
+sources: ["reseaux.pdf p. 111–134"]
+---
+
+## Rappel sur les conversions de base
+
+### Formation d'un nombre binaire
+
+{/* CORRIGÉ (reseaux.pdf p. 112 : la diapositive indiquait « poids fort à droite, poids faible à gauche », contraire à son propre tableau). */}
+
+Notation conventionnelle : bit de poids fort à gauche, bit de poids faible à droite.
+
+| 128 | 64 | 32 | 16 | 8 | 4 | 2 | 1 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
+<Example titre="Nombre décimal 202">
+    | 128 | 64 | 32 | 16 | 8 | 4 | 2 | 1 |
+    | --- | --- | --- | --- | --- | --- | --- | --- |
+    | 1 | 1 | 0 | 0 | 1 | 0 | 1 | 0 |
+
+{/* AJOUT : détail du calcul de 202 */}
+
+    <Solution titre="Détail du calcul">
+        $202 = 128 + 64 + 8 + 2$, d'où les bits à 1 sous 128, 64, 8 et 2.
+    </Solution>
+</Example>
+
+### Formation d'un nombre hexadécimal
+
+À partir du binaire, l'hexadécimal est plutôt simple.
+
+{/* AJOUT : précision sur les quartets */}
+Chaque groupe de 4 bits donne un chiffre hexadécimal.
+
+<Example titre="Nombre décimal : 202">
+    | Décimal | 128 | 64 | 32 | 16 | – | 8 | 4 | 2 | 1 |
+    | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+    | Binaire | 1 | 1 | 0 | 0 | – | 1 | 0 | 1 | 0 |
+    | Hexa. | C | | | | – | A | | | |
+</Example>
+
+<Animation type="conversion-binaire" titre="Décimal, binaire et hexadécimal" params={{valeur: 202}} />
+
+## Principes élémentaires du protocole IPv4
+
+<Definition titre="Internet Protocol (IP)">
+    IP est une famille de protocoles de communication pour réseaux informatiques.
+</Definition>
+
+- Relier des terminaux entre eux, peu importe le moyen employé dans les couches inférieures.
+- Est un système **non connecté**, c'est-à-dire sans état.
+- Est un système « **best effort** », c'est-à-dire sans garantie de débit, d'intégrité, de délivrance, de duplication ou d'ordonnancement.
+- IP nécessite d'autres protocoles autour de lui, notamment ICMP.
+
+<Definition titre="Format d'une adresse IPv4">
+    Adresse sur **32 bits**, notée en décimal par blocs de 8 bits (1 octet), séparés par des points, donc 4 blocs de nombres de 0 à 255.
+</Definition>
+
+Exemples :
+
+- `192.168.10.20`
+- `1.1.1.1`
+- `224.0.0.5`
+- `265.125.9.1` ⇐ Ah ben non ! Faut suivre un peu !
+
+## La segmentation des réseaux IP
+
+### Découpage des réseaux
+
+**Problème** : si on a découpé le réseau Ethernet, il faut peut-être l'expliquer aussi à IP !
+
+**Solution** : affecter un numéro de réseau IP. Oui… mais il faut l'indiquer quelque part !
+
+### Masque de sous-réseau
+
+<Definition titre="Masque de sous-réseau">
+    Le masque de sous-réseau permet de déterminer le numéro de réseau à partir d'une adresse IP.
+
+    **Construction** : constitué de bits de poids fort à 1, puis de bits de poids faible à 0.
+</Definition>
+
+Exemples :
+
+- `1111 1111.1111 1111.1111 1111.0000 0000` : 255.255.255.0
+- `1111 1111.1111 1111.0000 0000.0000 0000` : 255.255.000.0
+- `1111 1111.1000 0000.0000 0000.0000 0000` : 255.128.0.0
+- `1111 1111.0000 0000.0000 0000.1111 1111` : invalide !
+
+<Theorem type="Utilisation du masque">
+    Le masque permet de séparer l'adresse de l'hôte par une opération binaire.
+
+    - Adresse & Masque = Numéro de réseau (& = ET logique)
+    - Adresse & !(Masque) = Numéro d'hôte (! = NON logique)
+    - Numéro de réseau + ( 255.255.255.255 & !(Masque) ) = Diffusion du réseau
+</Theorem>
+
+<Example titre="Ensemble des adresses d'un hôte donné">
+    Si j'ai 192.0.2.131 avec un masque 255.255.255.0, j'en fais quoi ?
+
+    | | |
+    | --- | --- |
+    | Adresse | `192.000.002.131` |
+    | Masque | `255.255.255.000` |
+    | Réseau | `192.000.002.000` |
+    | Hôte | `000.000.000.131` |
+    | Diffusion | `192.000.002.255` |
+</Example>
+
+<Animation type="masque-ip" titre="Réseau, hôte et diffusion à partir d'une adresse et d'un masque" params={{ip: '192.0.2.131', prefixe: 24}} />
+
+### Classes historiques IPv4
+
+À l'origine, les adresses étaient réparties par groupes en fonction de l'usage envisagé.
+
+{/* CORRIGÉ (reseaux.pdf p. 122 : la diapositive indiquait 240 à 254 pour la classe E). */}
+
+| Classe | Premier octet | Usage |
+| --- | --- | --- |
+| A | `0xxx xxxx` (0 à 127) | espace adressable pour grands réseaux |
+| B | `10xx xxxx` (128 à 191) | espace adressable pour réseaux moyens |
+| C | `110x xxxx` (192 à 223) | espace adressable pour petits réseaux |
+| D | `1110 xxxx` (224 à 239) | adresses de multidiffusion |
+| E | `1111 xxxx` (240 à 255) | réservée et jamais utilisée |
+
+<Remark>
+    Aujourd'hui, seules les classes D et E sont encore pertinentes.
+</Remark>
+
+### CIDR
+
+{/* CORRIGÉ (reseaux.pdf p. 123 : la diapositive écrivait « Classeless Internet Domain Routing »). */}
+
+<Definition titre="Classless Inter-Domain Routing (CIDR)">
+    Pour répondre au « grand gâchis » d'IPv4, le CIDR abolit la notion de classes et propose le mécanisme d'agrégation. (Et ça facilite la taille des tables de routage.)
+
+    En parallèle, une nouvelle notation est introduite : nombre de bits à 1.
+</Definition>
+
+<Example titre="Adresse avec notation CIDR">
+    `192.168.1.131 / 24`
+</Example>
+
+<Warning>
+    Comme on ne pouvait plus déduire le masque de l'adresse, il a fallu revoir certains protocoles de routage !
+</Warning>
+
+### Adresses techniques IPv4
+
+- `0.0.0.0/0` : adresse dite « indéfinie » ;
+- `255.255.255.255/32` : broadcast général ;
+- `x.x.x.255/24` : broadcast sur ce réseau uniquement ;
+- `x.x.x.0/24` : numéro de réseau.
+
+### Adresses réservées ou remarquables en IPv4
+
+Adresses à usage **privé** :
+
+- `10.0.0.0/8`
+- `172.16.0.0/12`
+- `192.168.0.0/16`
+
+Adresses spéciales :
+
+- `127.0.0.0/8` : loopback ;
+- `169.254.0.0/16` : APIPA.
+
+Autres blocs réservés :
+
+- `100.64.0.0/10` : Carrier Grade NAT ;
+- `192.0.0.0/24` : réservé IETF ;
+- `192.0.2.0/24` : Test 1 / Doc ;
+- `192.88.99.0/24` : 6to4 anycast ;
+- `198.51.100.0/24` : Test 2 / Doc ;
+- `203.0.113.0/24` : Test 3 / Doc.
+
+### Adresses de multicast IPv4
+
+Quelques exemples :
+
+- `224.0.0.1` : tous les systèmes ;
+- `224.0.0.2` : tous les routeurs ;
+- `224.0.0.5` : OSPFv2 ;
+- `224.0.0.9` : RIPv2 ;
+- `224.0.0.18` : VRRP ;
+- `224.0.0.22` : IGMP.
+
+## Le routage local
+
+<Definition titre="Routage">
+    Envoyer son paquet IP à un hôte qui saura le délivrer à sa destination si elle n'est pas voisine.
+
+    **Fonctionnement** : pour déterminer à qui envoyer un paquet, un hôte consulte sa **table de routage**.
+</Definition>
+
+### Routage statique vs. dynamique
+
+- **Routage statique** : remplissage « manuel » des tables de routage.
+- **Routage dynamique** : un ou plusieurs protocoles ajoutent et retirent à la volée des adresses de réseau des tables de routage.
+- Le routage dynamique ne fait pas partie de ce cours !
+
+### Contenu d'une table de routage
+
+Contenu : segments locaux ; passerelle par défaut (voir plus loin) ; routes explicites.
+
+<Example titre="Table de routage">
+    ```
+    172.20.40.0/24 dev eno1
+    default via 172.20.100.1
+    172.20.90.0/24 via 172.20.100.110
+    ```
+</Example>
+
+### Routes statiques
+
+Une route statique indique le routeur à utiliser pour atteindre un sous-réseau donné.
+
+<Example titre="Routes statiques">
+    ```
+    172.20.0.0/16 via 172.20.100.1
+    172.20.90.0/24 via 172.20.100.110
+    172.20.91.0/24 via 172.20.100.110
+    172.31.0.0/16 via 172.20.100.1
+    ```
+</Example>
+
+<Theorem type="Sélection">
+    Les réseaux aux masques les plus précis sont sélectionnés en premier. La métrique peut influencer le poids, donc la priorité.
+</Theorem>
+
+### Passerelle par défaut
+
+**Problème** : on ne peut pas enregistrer manuellement toutes les routes !
+
+**Astuce** : avec l'adresse indéfinie, ça peut fonctionner ! Masque grand donc priorité faible !
+
+<Example titre="Cas réel">
+    Sous Windows, dans PowerShell avec `Get-NetRoute` :
+
+    ```
+    DestPrefix   NextHop
+    0.0.0.0/0    192.168.1.1
+    ```
+</Example>
+
+### Fragmentation des paquets
+
+<Definition titre="Fragmentation">
+    Le multiplexage et l'empilement de protocoles exigent de fractionner la donnée en petites unités : c'est la fragmentation.
+</Definition>
+
+**Problème** : des fois le fragment n'est pas assez petit, et il faut re-fragmenter. Exemples de situations : en-tête d'authentification IPSec ; tunnel PPPoE ; empilement de VPN…
+
+### Maximum Transmission Unit (MTU)
+
+<Definition titre="MTU">
+    Nombre d'octets maximum transférables dans un paquet sans obligation de fragmentation.
+</Definition>
+
+Valeurs courantes :
+
+| Support | MTU |
+| --- | --- |
+| Ethernet | 1500 octets |
+| PPPoE | 1492 octets |
+| ADSL sur ATM | 1468 octets |
+| PPPoA (ADSL FR) | 1460 octets |
+| IPSec | MTU − 40 octets (parfois − 68 octets), soit 1420 généralement |
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Adresse IPv4">
+        32 bits, 4 octets de 0 à 255 séparés par des points
+    </Formula>
+    <Formula label="Numéro de réseau">
+        Adresse & Masque
+    </Formula>
+    <Formula label="Numéro d'hôte">
+        Adresse & !(Masque)
+    </Formula>
+    <Formula label="Diffusion">
+        Réseau + (255.255.255.255 & !(Masque))
+    </Formula>
+    <Formula label="CIDR">
+        /n = n bits à 1 dans le masque (ex. /24 = 255.255.255.0)
+    </Formula>
+    <Formula label="Privées">
+        10.0.0.0/8 · 172.16.0.0/12 · 192.168.0.0/16
+    </Formula>
+    <Formula label="Spéciales">
+        127.0.0.0/8 loopback · 169.254.0.0/16 APIPA · 0.0.0.0/0 indéfinie
+    </Formula>
+    <Formula label="Routage">
+        masque le plus précis d'abord ; passerelle par défaut = 0.0.0.0/0
+    </Formula>
+    <Formula label="MTU Ethernet">
+        1500 octets
+    </Formula>
+</Formulas>

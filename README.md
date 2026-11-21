@@ -62,7 +62,7 @@ Catalogue, filtres, navigation, pages et recherche se mettent à jour tout seuls
    }
    ```
 
-   Facultatif : `"enseignant"`, `"annee"`, `"teinte"` (0–360, couleur d'accent ;
+   Facultatif : `"annee"`, `"teinte"` (0–360, couleur d'accent ;
    sinon déduite de la matière). `"brouillon": true` cache le cours du catalogue.
 
 3. **Écrire un fichier par chapitre**, nommé `NN-titre-du-chapitre.mdx` :

@@ -1,0 +1,8 @@
+{
+  "titre": "Initiation aux réseaux informatiques",
+  "matiere": "Réseaux",
+  "semestre": "S1",
+  "description": "Découvrir et comprendre le fonctionnement des réseaux informatiques : modèle OSI, câblage, Ethernet, IPv4 et IPv6, TCP et UDP, puis les protocoles fondamentaux autour de TCP/IP (ICMP, DHCP, DNS…).",
+  "annee": "2026-2027",
+  "brouillon": false
+}

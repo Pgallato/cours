@@ -1,0 +1,369 @@
+---
+titre: Fonctionnement du protocole Ethernet
+resume: Norme IEEE 802.3, CSMA et ses variantes (CD, CA, CR) ; évolutions d'Ethernet du coaxial au Gigabit et normes Wi-Fi ; trame Ethernet, commutation, ARP, domaine de broadcast, VLAN 802.1Q, pont, Spanning Tree, contrôle de flux, PoE et agrégation de liens.
+tags: [Ethernet, IEEE 802.3, CSMA/CD, CSMA/CA, Wi-Fi, trame, adresse MAC, ARP, VLAN, STP, PoE, LACP]
+sources: ["reseaux.pdf p. 79–110"]
+---
+
+## Principes élémentaires de l'Ethernet
+
+<Definition titre="La norme Ethernet">
+    Norme IEEE 802.3 / ISO 8802-3 décrivant un réseau de type CSMA/CD.
+</Definition>
+
+- Ethernet a supplanté de nombreux réseaux grâce à sa simplicité.
+- Initialement en bus, il est plutôt réellement en point à point désormais (L1), bien que la logique de bus reste respectée (L2).
+
+### Le principe du CSMA
+
+<Definition titre="CSMA">
+    *Carrier Sense Multiple Access* (accès multiple avec détection de porteuse).
+</Definition>
+
+- Toutes les stations parlent sur le même média.
+- Une station qui veut émettre vérifie que le média est libre.
+- Elle émet son message…
+- … mais parfois des collisions arrivent !
+
+Des variantes mineures de CSMA existent pour ordonnancer l'émission de chaque station :
+
+- **Mode non persistant** : si le canal est libre, émission immédiate ; sinon réémission après délai aléatoire.
+- **Mode persistant** : si le canal est libre, émission immédiate ; si le canal est occupé, émission immédiatement à la libération. Probabilité de collision élevée à la libération du canal.
+- **Mode p-persistant** : si le canal est libre, émission après un délai aléatoire… y compris après une collision.
+
+### La détection de collision (CD)
+
+<Definition titre="CSMA/CD">
+    En CSMA/CD, on **détecte** la collision (*Collision Detection*). C'est le procédé employé sur Ethernet filaire (IEEE 802.3).
+</Definition>
+
+- La station qui émet écoute aussi ce qu'elle émet.
+- Si la station détecte une collision, elle émet du bourrage.
+- La détection s'appuie sur la capacité du codage Manchester.
+
+### L'évitement de collision (CA)
+
+<Definition titre="CSMA/CA">
+    En CSMA/CA, on **prévient** la collision par conception (*Collision Avoidance*). C'est le procédé employé sur Ethernet sans fil (IEEE 802.11).
+</Definition>
+
+- Si le canal est libre depuis un certain temps, émission d'une trame.
+- Une trame émise est systématiquement acquittée.
+- Si le canal est occupé, attente d'un délai aléatoire.
+- Un temps est laissé entre chaque trame dans un canal donné.
+- Une trame non acquittée est considérée comme ayant subi une collision.
+
+### La résolution de collision (CR)
+
+<Definition titre="CSMA/CR">
+    En CSMA/CR, on **gère** la collision par conception (*Collision Resolution*). C'est le procédé employé sur les réseaux CAN, qui repose sur des messages à priorité (et non à adresses).
+</Definition>
+
+- Si le support est libre, émission d'une trame.
+- Sinon attente, et réémission dès libération.
+- En cas de collision, la trame la plus prioritaire est émise.
+
+## Les évolutions d'Ethernet par leurs normes
+
+### Le bus Ethernet en câble coaxial
+
+- **10Base5** (1983) : 10 Mbps, câble coaxial blindé 50 Ω, portée 500 mètres, avec MAU, codage Manchester.
+- **10Base2** (1985) : câble coaxial non blindé et fin (« thin Ethernet »), BNC, 200 mètres.
+
+Mais :
+
+- l'accès physique au bus était parfois difficile ;
+- pour raccorder il fallait « ouvrir » le bus (comprendre : couper le coax et mettre un té !) ;
+- la MAU pouvait causer des problèmes ;
+- les bouchons garantissant l'impédance de la ligne n'étaient pas toujours soigneusement remis en place.
+
+### L'Ethernet en paire torsadée : 10BaseT
+
+Le 10BaseT est l'ancêtre de ce que nous connaissons aujourd'hui.
+
+- La topologie physique en bus est remplacée par une étoile.
+- La connexion d'un équipement est désormais simplifiée par le concentrateur (**hub**).
+- Le hub sert de répéteur de signal.
+- Il peut détecter les collisions et l'amplifier pour que le réseau redémarre plus vite.
+- Mais reste en semi-duplex.
+- 100BaseT : évolution à 100 Mbps avec des hubs dual-speed.
+
+### L'Ethernet commuté : Fast Ethernet
+
+Le 100BaseTX apporte la révolution : la **commutation de paquet**.
+
+- Le commutateur segmente le bus en point à point.
+- Il élimine les collisions en mettant en mémoire les paquets.
+- Il sait lire les adresses MAC pour ne pas diffuser à une station non concernée.
+- 100BaseTX : Fast Ethernet paire torsadée ; 100BaseFX : Fast Ethernet fibre optique.
+- … et retour du NRZ ! (100BT = NRZ-I + 4B5B + MLT-3)
+
+### Le Gigabit Ethernet
+
+Objectif principal : augmenter significativement les débits.
+
+- Modulation d'impulsion en amplitude (PAM-5 ; remplace MLT-3).
+- Modulation en treillis (TCM ; remplace le 4B5B).
+- Utilisation des 4 paires.
+
+### Et ensuite ?
+
+De nombreuses évolutions existent ou sont en cours d'élaboration pour augmenter toujours plus les débits d'Ethernet et de ses supports, notamment pour les fibres. En variant les encodages, les multiplexages, la qualité des supports pour réduire la probabilité de perte, on peut transmettre des trains de bits beaucoup plus vite.
+
+<Theorem type="Et pourtant !">
+    La trame Ethernet elle-même n'a jamais vraiment changé !
+</Theorem>
+
+### Les normes du Wi-Fi
+
+<Theorem type="Principe fondamental">
+    Faire transiter des trames Ethernet (L2) par radio.
+</Theorem>
+
+Principales évolutions :
+
+- changement de la modulation (OFDM depuis la fin du 802.11b et OFDMA depuis ax) ;
+- changement des bandes de fréquences ;
+- affectation des canaux ;
+- arrivée du MIMO (4 canaux en n, 8 en ac et en ax, 16 en be).
+
+| Nom commercial | Norme |
+| --- | --- |
+| Wi-Fi 1 | 802.11b |
+| Wi-Fi 2 | 802.11a |
+| Wi-Fi 3 | 802.11g |
+| Wi-Fi 4 | 802.11n |
+| Wi-Fi 5 | 802.11ac |
+| Wi-Fi 6 | 802.11ax |
+| Wi-Fi 7 | 802.11be |
+
+## Adressage : qui parle avec qui ?
+
+Dans un système multiplexé, il faut savoir qui échange avec qui. Techniques possibles :
+
+- **adressage** : Ethernet, IP, TCP (ports)… ;
+- **canal dédié** : câblage dédié, canal radio… ;
+- **priorité** : CAN, DMX…
+
+### La trame Ethernet IEEE 802.3
+
+<Figure legende="La trame Ethernet IEEE 802.3" page="reseaux.pdf p. 96">
+<svg viewBox="0 0 350 36" role="img" aria-label="Champs successifs de la trame IEEE 802.3 : Call, SFD, DA, SA, Len, Data, FCS">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><rect x="2" y="6" width="48" height="24" /><rect x="50" y="6" width="48" height="24" /><rect x="98" y="6" width="48" height="24" /><rect x="146" y="6" width="48" height="24" /><rect x="194" y="6" width="48" height="24" /><rect x="242" y="6" width="56" height="24" fill="var(--accent)" fill-opacity="0.12" /><rect x="298" y="6" width="48" height="24" /></g>
+<g font-size="11" text-anchor="middle" fill="currentColor"><text x="26" y="22">Call</text><text x="74" y="22">SFD</text><text x="122" y="22">DA</text><text x="170" y="22">SA</text><text x="218" y="22">Len</text><text x="270" y="22">Data</text><text x="322" y="22">FCS</text></g>
+</svg>
+</Figure>
+
+La trame Ethernet est constituée de :
+
+- **Préambule** : 7 octets de pré-synchronisation d'horloge (101010…10) ;
+- **Synchronisation** : 1 octet de départ du contenu de la trame (10101011) ;
+- **Destination** : adresse du destinataire de la trame sur 6 octets ;
+- **Source** : adresse de l'émetteur de la trame sur 6 octets ;
+- **Taille** : taille des données utiles (0x0000 à 0x05DC) ;
+- **Données** : charge utile de la trame de 46 à 1500 octets ;
+- **Contrôle** : code de contrôle d'intégrité sur 4 octets (CRC).
+
+### La trame Ethernet II
+
+<Figure legende="La trame Ethernet II" page="reseaux.pdf p. 97">
+<svg viewBox="0 0 350 36" role="img" aria-label="Champs successifs de la trame Ethernet II : Call, Sync, DA, SA, Type, Data, FCS">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><rect x="2" y="6" width="48" height="24" /><rect x="50" y="6" width="48" height="24" /><rect x="98" y="6" width="48" height="24" /><rect x="146" y="6" width="48" height="24" /><rect x="194" y="6" width="48" height="24" fill="var(--margin)" fill-opacity="0.12" /><rect x="242" y="6" width="56" height="24" fill="var(--accent)" fill-opacity="0.12" /><rect x="298" y="6" width="48" height="24" /></g>
+<g font-size="11" text-anchor="middle" fill="currentColor"><text x="26" y="22">Call</text><text x="74" y="22">Sync</text><text x="122" y="22">DA</text><text x="170" y="22">SA</text><text x="218" y="22">Type</text><text x="270" y="22">Data</text><text x="322" y="22">FCS</text></g>
+</svg>
+</Figure>
+
+La trame Ethernet est constituée de :
+
+- **Préambule** : 62 bits de pré-synchronisation d'horloge (101010…10) ;
+- **Synchronisation** : 2 bits de départ du contenu de la trame (11) ;
+- **Destination** : adresse du destinataire de la trame sur 6 octets ;
+- **Source** : adresse de l'émetteur de la trame sur 6 octets ;
+- **Type** : type des données = numéro de protocole sur 2 octets ;
+- **Données** : charge utile de la trame de 46 à 1500 octets ;
+- **Contrôle** : code de contrôle d'intégrité sur 4 octets (CRC).
+
+{/* AJOUT : remarque comparant les deux trames */}
+
+<Remark>
+    La différence entre les deux trames : le champ **Taille** (802.3) est remplacé par le champ **Type** (Ethernet II).
+</Remark>
+
+### La commutation Ethernet
+
+- Les stations A et C veulent émettre vers D.
+- Les trames peuvent partir en même temps car pas de collision grâce au switch.
+- Le switch stocke les trames et lit les adresses destination.
+- Le switch envoie uniquement sur le port où D est connecté (l'une après l'autre).
+
+<Animation type="hub-switch" titre="La commutation Ethernet : A et C émettent vers D (reseaux.pdf p. 98)" params={{mode: 'switch'}} />
+
+### Le protocole ARP
+
+<Definition titre="Address Resolution Protocol (ARP)">
+    **Problème** : les stations ne se connaissent pas initialement ! **Solution** : un protocole pour découvrir l'adresse d'une station distante.
+</Definition>
+
+Principe : appeler la station concernée en broadcast pour obtenir son adresse MAC à partir de son adresse IP.
+
+- Envoi d'un message avec `DSTADDR = FF:FF:FF:FF:FF:FF` en broadcast.
+- En substance : « Quelle adresse MAC possède cette adresse IP ? »
+- La station concernée répond en unicast : « Je suis à cette adresse. »
+
+Détail des paquets ARP à voir en TP !
+
+### Le domaine de broadcast
+
+**Problème** : si le monde entier diffuse ARP, ça va vite être compliqué !
+
+**Solution** : segmentation du réseau, en petits réseaux de quelques machines et un routeur de sortie. Nécessite :
+
+- un ou plusieurs switches dédiés ;
+- un routeur avec autant de cartes réseau que de segments ;
+- ou plusieurs routeurs ;
+- …
+
+### Le réseau local virtuel (VLAN)
+
+<Definition titre="VLAN : solution aux matériels multiples">
+    Injection d'un « numéro » de réseau virtuel pour multiplexer sans mélanger les réseaux.
+</Definition>
+
+Fonctionnement :
+
+- est défini dans la norme IEEE 802.1Q ;
+- on utilise habituellement les termes anglais « trunk » et « tag » ;
+- on insère 4 octets dans la trame Ethernet après les adresses ;
+- et évidemment on recalcule la FCS.
+
+<Figure legende="L'étiquette VLAN (802.1q) : le champ TCI se découpe en PCP, CFI et VID" page="reseaux.pdf p. 103">
+<svg viewBox="0 0 300 70" role="img" aria-label="Étiquette VLAN : TPID puis TCI ; TCI est détaillé en PCP, CFI et VID">
+<g fill="none" stroke="currentColor" stroke-opacity="0.7"><rect x="20" y="4" width="70" height="24" /><rect x="90" y="4" width="70" height="24" fill="var(--accent)" fill-opacity="0.12" /><rect x="90" y="42" width="70" height="24" /><rect x="160" y="42" width="70" height="24" /><rect x="230" y="42" width="70" height="24" /><path d="M90 28 L90 42 M160 28 L300 42" stroke-dasharray="3 3" /></g>
+<g font-size="11" text-anchor="middle" fill="currentColor"><text x="55" y="20">TPID</text><text x="125" y="20">TCI</text><text x="125" y="58">PCP</text><text x="195" y="58">CFI</text><text x="265" y="58">VID</text></g>
+</svg>
+</Figure>
+
+- **Tag Protocol ID** : 16 bits, pour 802.1q = 0x8100 ;
+- **Tag Control Information** : 16 bits découpés en 3 champs :
+    - **Priority Code Point** : priorité pour les VLAN ;
+    - **Canonical Format ID** : 1 bit de compatibilité Ethernet / TokenRing ;
+    - **VLAN ID** : numéro du VLAN de 1 à 4094 (0 et 4095 réservés).
+
+<Remark>
+    Il est possible d'encapsuler un VLAN dans un VLAN avec 802.1ad, dit « Q in Q ».
+</Remark>
+
+### Le pont
+
+<Definition titre="Pont">
+    Relier deux éléments ensemble, avec ou sans conversion de média.
+</Definition>
+
+Cas d'usage :
+
+- modem-routeur en mode « pont » (fonctions routeurs et services inhibés) ;
+- pont radio entre deux bâtiments ;
+- segmentation du domaine de broadcast ;
+- (par extension) « tunnel » entre deux modems ;
+- (par extension) encapsulation dans un autre protocole (IP over ATM).
+
+### Détection de boucles
+
+**Problème** : si deux switches sont reliés avec deux câbles, un paquet peut tourner indéfiniment ! Notamment sur du broadcast ARP, qui peut s'accumuler. On appelle ça une « **tempête de broadcast** ».
+
+**Solution** :
+
+- câbler intelligemment et consciencieusement pour ne fabriquer qu'une structure hiérarchique ;
+- sur des switches intelligents, on sait détecter les boucles, notamment avec IEEE 802.1d et IEEE 802.1aq.
+
+### Principe du Spanning Tree Protocol (STP)
+
+- Le switch ayant l'identifiant le plus petit est élu « racine ».
+- Les liens qui permettent de joindre la racine sont marqués.
+- Sur chaque réseau, on détermine le port délégué de moindre coût.
+- On détermine aussi les ports bloqués, mais qui pourront servir de backup.
+- Les données sont échangées par des trames *Bridge Protocol Data Units* (BPDU).
+
+{/* CORRIGÉ (reseaux.pdf p. 106 : la figure de la diapositive n'étiquetait pas le port délégué (DP) du switch 24 sur le réseau d). */}
+
+<Figure legende="Exemple de STP : switches 3 (racine), 92, 24, 8, 34, 12 ; réseaux a à f ; RP = port racine, DP = port délégué, BP = port bloqué" page="reseaux.pdf p. 106">
+<svg viewBox="0 0 280 230" role="img" aria-label="Six switches reliés par six réseaux. Le switch 3 est la racine avec deux ports délégués. Les autres switches ont un port racine vers la racine. Le port du switch 12 sur le réseau f est bloqué.">
+<g fill="none" stroke="currentColor" stroke-opacity="0.6"><path d="M60 30 L160 80 M60 30 V130 M160 80 L240 205 M60 130 L160 180 M60 130 V205 M160 180 L240 205" /></g>
+<g fill="currentColor"><circle cx="60" cy="30" r="8" /><circle cx="160" cy="80" r="8" /><circle cx="60" cy="130" r="8" /><circle cx="160" cy="180" r="8" /><circle cx="60" cy="205" r="8" /><circle cx="240" cy="205" r="8" /></g>
+<g font-size="12" fill="currentColor"><text x="34" y="34">3</text><text x="172" y="84">92</text><text x="28" y="134">24</text><text x="152" y="202">8</text><text x="28" y="209">34</text><text x="254" y="209">12</text></g>
+<g font-size="11" font-style="italic" fill="currentColor" fill-opacity="0.75"><text x="104" y="64">a</text><text x="46" y="82">b</text><text x="208" y="146">c</text><text x="46" y="170">d</text><text x="104" y="164">e</text><text x="196" y="200">f</text></g>
+<g font-size="10" fill="var(--accent)"><text x="66" y="156">DP</text><text x="74" y="28">DP</text><text x="40" y="52">DP</text><text x="74" y="132">DP</text><text x="140" y="110">DP</text><text x="176" y="186">DP</text></g>
+<g font-size="10" fill="oklch(55% 0.17 262)"><text x="38" y="116">RP</text><text x="130" y="72">RP</text><text x="38" y="192">RP</text><text x="130" y="172">RP</text><text x="236" y="186">RP</text></g>
+<g font-size="10" font-weight="600" fill="var(--margin)"><text x="208" y="222">BP</text></g>
+</svg>
+</Figure>
+
+### Évolutions du STP
+
+- **Rapid STP** : évolution pour faire converger plus rapidement STP et pour rendre plus efficaces les changements de topologie.
+- **Per-VLAN Spanning Tree** : fonctionnement de STP par-dessus les VLAN, exclusivement Cisco.
+- **Multiple Spanning Tree Protocol** : évolution normalisée (802.1s) de PVST et compatible RSTP.
+- **Shortest Path Bridging** : norme 802.1aq, est une évolution rassemblant ou enrichissant différentes normes, dont RSTP, MSTP, MMRP et LACP.
+
+### Contrôle de flux en Ethernet commuté
+
+**Problème** : si plein de stations veulent contacter une seule autre ?
+
+**Solutions** :
+
+- mettre en mémoire les trames et les envoyer dès que possible ;
+- envoyer artificiellement du brouillage aux autres stations pour créer une congestion et ralentir le débit ;
+- supprimer des trames… et donc renvoyer la congestion aux couches supérieures !
+
+### Alimentation par le réseau (PoE)
+
+**Problème** : on veut placer une borne Wi-Fi mais il n'y a pas d'électricité à cet endroit !
+
+**Solution** : utiliser les paires pour envoyer un courant continu et son retour :
+
+- mode A : paires Data ;
+- mode B : paires supplémentaires ;
+- mode 4PPoE : les 4 paires.
+
+{/* CORRIGÉ (reseaux.pdf p. 109 : la diapositive attribuait le PoE++ / 4PPoE à la norme 802.3bu (qui est le PoDL)). */}
+
+- Norme 802.3af (PoE) : 48 V / 13 W environ.
+- Norme 802.3at (PoE+) : 55 V / 25 W environ.
+- Norme 802.3bt (PoE++ et 4PPoE) : 50 W à 70 W.
+- Évolution PoDL (802.3bu) : utilise une seule paire (pour 10BaseT1 et successeurs).
+
+### Agrégation de liens
+
+**Problème** : le trunk vers le datacenter est saturé !
+
+**Solution** : l'agrégation de liens 802.1ax (historiquement 802.3ad) et *Link Aggregation Control Protocol* (LACP).
+
+- Rassembler plusieurs ports comme s'ils n'étaient qu'un même port.
+- Négocier dynamiquement la présence, la disparition et la reprise d'un ou de plusieurs ports.
+- Tenir compte de certaines contraintes, par exemple ne pas trop mélanger les paquets !
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Ethernet">
+        IEEE 802.3, CSMA/CD ; Wi-Fi : IEEE 802.11, CSMA/CA ; CAN : CSMA/CR
+    </Formula>
+    <Formula label="Trame">
+        préambule · SFD · DA (6 o) · SA (6 o) · taille ou type (2 o) · données (46 à 1500 o) · FCS (4 o, CRC)
+    </Formula>
+    <Formula label="Hub vs switch">
+        hub : répéteur, semi-duplex, collisions · switch : mémorise, lit la MAC destination, point à point
+    </Formula>
+    <Formula label="ARP">
+        broadcast FF:FF:FF:FF:FF:FF « quelle MAC pour cette IP ? » → réponse en unicast
+    </Formula>
+    <Formula label="VLAN 802.1Q">
+        +4 octets : TPID = 0x8100 ; TCI = PCP + CFI + VID (1 à 4094)
+    </Formula>
+    <Formula label="STP">
+        plus petit identifiant = racine ; RP, DP, ports bloqués (backup) ; BPDU
+    </Formula>
+    <Formula label="PoE">
+        802.3af ≈ 13 W · 802.3at ≈ 25 W
+    </Formula>
+</Formulas>
