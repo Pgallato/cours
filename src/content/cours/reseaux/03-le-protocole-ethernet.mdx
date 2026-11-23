@@ -8,11 +8,10 @@ sources: ["reseaux.pdf p. 79–110"]
 ## Principes élémentaires de l'Ethernet
 
 <Definition titre="La norme Ethernet">
-    Norme IEEE 802.3 / ISO 8802-3 décrivant un réseau de type CSMA/CD.
+    Norme IEEE 802.3 / ISO 8802-3 qui décrit un réseau de type CSMA/CD.
 </Definition>
 
-- Ethernet a supplanté de nombreux réseaux grâce à sa simplicité.
-- Initialement en bus, il est plutôt réellement en point à point désormais (L1), bien que la logique de bus reste respectée (L2).
+Ethernet a supplanté de nombreux réseaux grâce à sa simplicité. Initialement en bus, il fonctionne aujourd'hui en réalité en point à point au niveau physique (L1), bien que la logique de bus soit conservée au niveau liaison (L2).
 
 ### Le principe du CSMA
 
@@ -20,16 +19,13 @@ sources: ["reseaux.pdf p. 79–110"]
     *Carrier Sense Multiple Access* (accès multiple avec détection de porteuse).
 </Definition>
 
-- Toutes les stations parlent sur le même média.
-- Une station qui veut émettre vérifie que le média est libre.
-- Elle émet son message…
-- … mais parfois des collisions arrivent !
+Toutes les stations communiquent sur le même média. Une station qui veut émettre vérifie d'abord que le média est libre, puis émet son message ; malgré cette précaution, des collisions se produisent parfois.
 
 Des variantes mineures de CSMA existent pour ordonnancer l'émission de chaque station :
 
-- **Mode non persistant** : si le canal est libre, émission immédiate ; sinon réémission après délai aléatoire.
-- **Mode persistant** : si le canal est libre, émission immédiate ; si le canal est occupé, émission immédiatement à la libération. Probabilité de collision élevée à la libération du canal.
-- **Mode p-persistant** : si le canal est libre, émission après un délai aléatoire… y compris après une collision.
+- **Mode non persistant** : si le canal est libre, la station émet immédiatement ; sinon, elle réessaie après un délai aléatoire.
+- **Mode persistant** : si le canal est libre, la station émet immédiatement ; s'il est occupé, elle émet dès qu'il se libère. Le risque de collision est donc élevé au moment de la libération du canal.
+- **Mode p-persistant** : si le canal est libre, la station émet après un délai aléatoire, y compris après une collision.
 
 ### La détection de collision (CD)
 
@@ -37,9 +33,7 @@ Des variantes mineures de CSMA existent pour ordonnancer l'émission de chaque s
     En CSMA/CD, on **détecte** la collision (*Collision Detection*). C'est le procédé employé sur Ethernet filaire (IEEE 802.3).
 </Definition>
 
-- La station qui émet écoute aussi ce qu'elle émet.
-- Si la station détecte une collision, elle émet du bourrage.
-- La détection s'appuie sur la capacité du codage Manchester.
+La station qui émet écoute aussi ce qu'elle émet. Si elle détecte une collision, elle émet un signal de bourrage. Cette détection s'appuie sur les propriétés du codage Manchester.
 
 ### L'évitement de collision (CA)
 
@@ -47,10 +41,10 @@ Des variantes mineures de CSMA existent pour ordonnancer l'émission de chaque s
     En CSMA/CA, on **prévient** la collision par conception (*Collision Avoidance*). C'est le procédé employé sur Ethernet sans fil (IEEE 802.11).
 </Definition>
 
-- Si le canal est libre depuis un certain temps, émission d'une trame.
-- Une trame émise est systématiquement acquittée.
-- Si le canal est occupé, attente d'un délai aléatoire.
-- Un temps est laissé entre chaque trame dans un canal donné.
+- Si le canal est libre depuis un certain temps, la station émet une trame.
+- Chaque trame émise est systématiquement acquittée.
+- Si le canal est occupé, la station attend un délai aléatoire.
+- Un intervalle de temps est laissé entre deux trames sur un même canal.
 - Une trame non acquittée est considérée comme ayant subi une collision.
 
 ### La résolution de collision (CR)
@@ -59,73 +53,71 @@ Des variantes mineures de CSMA existent pour ordonnancer l'émission de chaque s
     En CSMA/CR, on **gère** la collision par conception (*Collision Resolution*). C'est le procédé employé sur les réseaux CAN, qui repose sur des messages à priorité (et non à adresses).
 </Definition>
 
-- Si le support est libre, émission d'une trame.
-- Sinon attente, et réémission dès libération.
-- En cas de collision, la trame la plus prioritaire est émise.
+Si le support est libre, la station émet sa trame ; sinon, elle attend et réémet dès qu'il se libère. En cas de collision, c'est la trame la plus prioritaire qui est émise.
 
 ## Les évolutions d'Ethernet par leurs normes
 
 ### Le bus Ethernet en câble coaxial
 
-- **10Base5** (1983) : 10 Mbps, câble coaxial blindé 50 Ω, portée 500 mètres, avec MAU, codage Manchester.
-- **10Base2** (1985) : câble coaxial non blindé et fin (« thin Ethernet »), BNC, 200 mètres.
+- **10Base5** (1983) : débit de 10 Mbps sur câble coaxial blindé de 50 Ω, portée de 500 mètres, raccordement par MAU et codage Manchester.
+- **10Base2** (1985) : câble coaxial fin et non blindé (« thin Ethernet »), connecteurs BNC, portée de 200 mètres.
 
-Mais :
+Ces bus présentaient toutefois plusieurs inconvénients :
 
 - l'accès physique au bus était parfois difficile ;
-- pour raccorder il fallait « ouvrir » le bus (comprendre : couper le coax et mettre un té !) ;
+- pour raccorder une station, il fallait « ouvrir » le bus, c'est-à-dire couper le câble coaxial et y insérer un té ;
 - la MAU pouvait causer des problèmes ;
-- les bouchons garantissant l'impédance de la ligne n'étaient pas toujours soigneusement remis en place.
+- les bouchons qui garantissent l'impédance de la ligne n'étaient pas toujours remis en place correctement.
 
 ### L'Ethernet en paire torsadée : 10BaseT
 
 Le 10BaseT est l'ancêtre de ce que nous connaissons aujourd'hui.
 
 - La topologie physique en bus est remplacée par une étoile.
-- La connexion d'un équipement est désormais simplifiée par le concentrateur (**hub**).
+- Le raccordement d'un équipement est simplifié grâce au concentrateur (**hub**).
 - Le hub sert de répéteur de signal.
-- Il peut détecter les collisions et l'amplifier pour que le réseau redémarre plus vite.
-- Mais reste en semi-duplex.
-- 100BaseT : évolution à 100 Mbps avec des hubs dual-speed.
+- Il peut détecter les collisions et les amplifier pour que le réseau redémarre plus vite.
+- Le fonctionnement reste cependant en semi-duplex.
+- Le 100BaseT fait évoluer le débit à 100 Mbps, avec des hubs bi-vitesse (*dual-speed*).
 
 ### L'Ethernet commuté : Fast Ethernet
 
-Le 100BaseTX apporte la révolution : la **commutation de paquet**.
+Le 100BaseTX apporte une révolution : la **commutation de paquets**.
 
-- Le commutateur segmente le bus en point à point.
-- Il élimine les collisions en mettant en mémoire les paquets.
-- Il sait lire les adresses MAC pour ne pas diffuser à une station non concernée.
-- 100BaseTX : Fast Ethernet paire torsadée ; 100BaseFX : Fast Ethernet fibre optique.
-- … et retour du NRZ ! (100BT = NRZ-I + 4B5B + MLT-3)
+- Le commutateur découpe le bus en liaisons point à point.
+- Il élimine les collisions en mettant les paquets en mémoire.
+- Il sait lire les adresses MAC, ce qui lui évite de diffuser une trame à une station non concernée.
+- Le Fast Ethernet existe sur paire torsadée (100BaseTX) et sur fibre optique (100BaseFX).
+- Il marque aussi le retour du codage NRZ : le 100BaseT combine NRZ-I, 4B5B et MLT-3.
 
 ### Le Gigabit Ethernet
 
-Objectif principal : augmenter significativement les débits.
+Son objectif principal est d'augmenter significativement les débits. Pour cela :
 
-- Modulation d'impulsion en amplitude (PAM-5 ; remplace MLT-3).
-- Modulation en treillis (TCM ; remplace le 4B5B).
-- Utilisation des 4 paires.
+- la modulation d'impulsion en amplitude (PAM-5) remplace le MLT-3 ;
+- la modulation en treillis (TCM) remplace le 4B5B ;
+- les 4 paires du câble sont utilisées.
 
 ### Et ensuite ?
 
-De nombreuses évolutions existent ou sont en cours d'élaboration pour augmenter toujours plus les débits d'Ethernet et de ses supports, notamment pour les fibres. En variant les encodages, les multiplexages, la qualité des supports pour réduire la probabilité de perte, on peut transmettre des trains de bits beaucoup plus vite.
+De nombreuses évolutions existent ou sont en cours d'élaboration pour augmenter toujours plus les débits d'Ethernet et de ses supports, notamment pour la fibre. En jouant sur les encodages, les multiplexages et la qualité des supports, qui réduit la probabilité de perte, on peut transmettre des trains de bits beaucoup plus vite.
 
-<Theorem type="Et pourtant !">
-    La trame Ethernet elle-même n'a jamais vraiment changé !
+<Theorem type="À retenir">
+    Malgré toutes ces évolutions, la trame Ethernet elle-même n'a presque pas changé.
 </Theorem>
 
 ### Les normes du Wi-Fi
 
 <Theorem type="Principe fondamental">
-    Faire transiter des trames Ethernet (L2) par radio.
+    Le Wi-Fi fait transiter des trames Ethernet (L2) par radio.
 </Theorem>
 
-Principales évolutions :
+Les normes successives ont principalement fait évoluer :
 
-- changement de la modulation (OFDM depuis la fin du 802.11b et OFDMA depuis ax) ;
-- changement des bandes de fréquences ;
-- affectation des canaux ;
-- arrivée du MIMO (4 canaux en n, 8 en ac et en ax, 16 en be).
+- la modulation (OFDM depuis la fin du 802.11b, puis OFDMA depuis le 802.11ax) ;
+- les bandes de fréquences ;
+- l'affectation des canaux ;
+- le MIMO, apparu avec le 802.11n (4 canaux en n, 8 en ac et ax, 16 en be).
 
 | Nom commercial | Norme |
 | --- | --- |
@@ -139,11 +131,11 @@ Principales évolutions :
 
 ## Adressage : qui parle avec qui ?
 
-Dans un système multiplexé, il faut savoir qui échange avec qui. Techniques possibles :
+Dans un système multiplexé, il faut savoir qui échange avec qui. Plusieurs techniques le permettent :
 
-- **adressage** : Ethernet, IP, TCP (ports)… ;
-- **canal dédié** : câblage dédié, canal radio… ;
-- **priorité** : CAN, DMX…
+- l'**adressage**, comme dans Ethernet, IP ou TCP (avec les ports) ;
+- le **canal dédié**, par exemple un câblage ou un canal radio réservé ;
+- la **priorité**, comme dans les réseaux CAN ou DMX.
 
 ### La trame Ethernet IEEE 802.3
 
@@ -191,50 +183,37 @@ La trame Ethernet est constituée de :
 
 ### La commutation Ethernet
 
-- Les stations A et C veulent émettre vers D.
-- Les trames peuvent partir en même temps car pas de collision grâce au switch.
-- Le switch stocke les trames et lit les adresses destination.
-- Le switch envoie uniquement sur le port où D est connecté (l'une après l'autre).
+Prenons l'exemple de deux stations A et C qui veulent émettre vers D. Leurs trames peuvent partir en même temps, car le switch évite toute collision : il stocke les trames, lit leur adresse de destination, puis les envoie l'une après l'autre uniquement sur le port où D est connecté.
 
 <Animation type="hub-switch" titre="La commutation Ethernet : A et C émettent vers D (reseaux.pdf p. 98)" params={{mode: 'switch'}} />
 
 ### Le protocole ARP
 
 <Definition titre="Address Resolution Protocol (ARP)">
-    **Problème** : les stations ne se connaissent pas initialement ! **Solution** : un protocole pour découvrir l'adresse d'une station distante.
+    Au départ, les stations ne se connaissent pas. ARP est le protocole qui permet de découvrir l'adresse d'une station distante.
 </Definition>
 
-Principe : appeler la station concernée en broadcast pour obtenir son adresse MAC à partir de son adresse IP.
+Le principe est d'appeler la station concernée en broadcast pour obtenir son adresse MAC à partir de son adresse IP :
 
-- Envoi d'un message avec `DSTADDR = FF:FF:FF:FF:FF:FF` en broadcast.
-- En substance : « Quelle adresse MAC possède cette adresse IP ? »
-- La station concernée répond en unicast : « Je suis à cette adresse. »
+- la station envoie en broadcast un message dont la destination est `DSTADDR = FF:FF:FF:FF:FF:FF` ;
+- ce message demande en substance : « Quelle adresse MAC possède cette adresse IP ? » ;
+- la station concernée répond en unicast : « Je suis à cette adresse. »
 
-Détail des paquets ARP à voir en TP !
+Le détail des paquets ARP sera étudié en TP.
 
 ### Le domaine de broadcast
 
-**Problème** : si le monde entier diffuse ARP, ça va vite être compliqué !
+Si toutes les machines du monde diffusaient leurs requêtes ARP, le réseau serait vite saturé.
 
-**Solution** : segmentation du réseau, en petits réseaux de quelques machines et un routeur de sortie. Nécessite :
-
-- un ou plusieurs switches dédiés ;
-- un routeur avec autant de cartes réseau que de segments ;
-- ou plusieurs routeurs ;
-- …
+La solution consiste à segmenter le réseau en petits réseaux de quelques machines, chacun doté d'un routeur de sortie. Cela nécessite par exemple un ou plusieurs switches dédiés, et soit un routeur avec autant de cartes réseau que de segments, soit plusieurs routeurs.
 
 ### Le réseau local virtuel (VLAN)
 
 <Definition titre="VLAN : solution aux matériels multiples">
-    Injection d'un « numéro » de réseau virtuel pour multiplexer sans mélanger les réseaux.
+    On insère un « numéro » de réseau virtuel dans les trames pour multiplexer plusieurs réseaux sur le même matériel sans les mélanger.
 </Definition>
 
-Fonctionnement :
-
-- est défini dans la norme IEEE 802.1Q ;
-- on utilise habituellement les termes anglais « trunk » et « tag » ;
-- on insère 4 octets dans la trame Ethernet après les adresses ;
-- et évidemment on recalcule la FCS.
+Le VLAN est défini par la norme IEEE 802.1Q, et on utilise habituellement les termes anglais « trunk » et « tag ». Concrètement, on insère 4 octets dans la trame Ethernet, juste après les adresses, puis on recalcule la FCS.
 
 <Figure legende="L'étiquette VLAN (802.1q) : le champ TCI se découpe en PCP, CFI et VID" page="reseaux.pdf p. 103">
 <svg viewBox="0 0 300 70" role="img" aria-label="Étiquette VLAN : TPID puis TCI ; TCI est détaillé en PCP, CFI et VID">
@@ -243,11 +222,11 @@ Fonctionnement :
 </svg>
 </Figure>
 
-- **Tag Protocol ID** : 16 bits, pour 802.1q = 0x8100 ;
-- **Tag Control Information** : 16 bits découpés en 3 champs :
-    - **Priority Code Point** : priorité pour les VLAN ;
-    - **Canonical Format ID** : 1 bit de compatibilité Ethernet / TokenRing ;
-    - **VLAN ID** : numéro du VLAN de 1 à 4094 (0 et 4095 réservés).
+- **Tag Protocol ID** : 16 bits, qui valent 0x8100 pour le 802.1Q ;
+- **Tag Control Information** : 16 bits répartis en 3 champs :
+    - **Priority Code Point** : priorité au sein des VLAN ;
+    - **Canonical Format ID** : 1 bit de compatibilité entre Ethernet et TokenRing ;
+    - **VLAN ID** : numéro du VLAN, de 1 à 4094 (0 et 4095 sont réservés).
 
 <Remark>
     Il est possible d'encapsuler un VLAN dans un VLAN avec 802.1ad, dit « Q in Q ».
@@ -256,33 +235,30 @@ Fonctionnement :
 ### Le pont
 
 <Definition titre="Pont">
-    Relier deux éléments ensemble, avec ou sans conversion de média.
+    Dispositif qui relie deux éléments, avec ou sans conversion de média.
 </Definition>
 
-Cas d'usage :
+On rencontre des ponts dans plusieurs cas :
 
-- modem-routeur en mode « pont » (fonctions routeurs et services inhibés) ;
-- pont radio entre deux bâtiments ;
-- segmentation du domaine de broadcast ;
-- (par extension) « tunnel » entre deux modems ;
-- (par extension) encapsulation dans un autre protocole (IP over ATM).
+- un modem-routeur en mode « pont », dont les fonctions de routage et les services sont désactivés ;
+- un pont radio entre deux bâtiments ;
+- la segmentation d'un domaine de broadcast ;
+- par extension, un « tunnel » entre deux modems ;
+- par extension, l'encapsulation dans un autre protocole (IP over ATM).
 
 ### Détection de boucles
 
-**Problème** : si deux switches sont reliés avec deux câbles, un paquet peut tourner indéfiniment ! Notamment sur du broadcast ARP, qui peut s'accumuler. On appelle ça une « **tempête de broadcast** ».
+Si deux switches sont reliés par deux câbles, un paquet peut tourner indéfiniment entre eux. C'est notamment le cas des broadcasts ARP, qui peuvent s'accumuler : on appelle ce phénomène une « **tempête de broadcast** ».
 
-**Solution** :
-
-- câbler intelligemment et consciencieusement pour ne fabriquer qu'une structure hiérarchique ;
-- sur des switches intelligents, on sait détecter les boucles, notamment avec IEEE 802.1d et IEEE 802.1aq.
+Pour l'éviter, on peut câbler soigneusement le réseau de façon à n'obtenir qu'une structure hiérarchique. Les switches intelligents savent aussi détecter les boucles, notamment grâce aux normes IEEE 802.1d et IEEE 802.1aq.
 
 ### Principe du Spanning Tree Protocol (STP)
 
-- Le switch ayant l'identifiant le plus petit est élu « racine ».
+- Le switch qui a le plus petit identifiant est élu « racine ».
 - Les liens qui permettent de joindre la racine sont marqués.
-- Sur chaque réseau, on détermine le port délégué de moindre coût.
-- On détermine aussi les ports bloqués, mais qui pourront servir de backup.
-- Les données sont échangées par des trames *Bridge Protocol Data Units* (BPDU).
+- Sur chaque réseau, on choisit le port délégué de moindre coût.
+- Les autres ports sont bloqués, mais pourront servir de secours.
+- Les switches échangent ces informations dans des trames *Bridge Protocol Data Units* (BPDU).
 
 {/* CORRIGÉ (reseaux.pdf p. 106 : la figure de la diapositive n'étiquetait pas le port délégué (DP) du switch 24 sur le réseau d). */}
 
@@ -300,47 +276,41 @@ Cas d'usage :
 
 ### Évolutions du STP
 
-- **Rapid STP** : évolution pour faire converger plus rapidement STP et pour rendre plus efficaces les changements de topologie.
-- **Per-VLAN Spanning Tree** : fonctionnement de STP par-dessus les VLAN, exclusivement Cisco.
-- **Multiple Spanning Tree Protocol** : évolution normalisée (802.1s) de PVST et compatible RSTP.
-- **Shortest Path Bridging** : norme 802.1aq, est une évolution rassemblant ou enrichissant différentes normes, dont RSTP, MSTP, MMRP et LACP.
+- **Rapid STP** : il accélère la convergence de STP et rend les changements de topologie plus efficaces.
+- **Per-VLAN Spanning Tree** : il fait fonctionner STP au-dessus des VLAN ; il est propre à Cisco.
+- **Multiple Spanning Tree Protocol** (802.1s) : évolution normalisée de PVST, compatible avec RSTP.
+- **Shortest Path Bridging** (802.1aq) : il rassemble ou enrichit différentes normes, dont RSTP, MSTP, MMRP et LACP.
 
 ### Contrôle de flux en Ethernet commuté
 
-**Problème** : si plein de stations veulent contacter une seule autre ?
+Que se passe-t-il si de nombreuses stations veulent contacter la même station en même temps ? Plusieurs solutions existent :
 
-**Solutions** :
-
-- mettre en mémoire les trames et les envoyer dès que possible ;
-- envoyer artificiellement du brouillage aux autres stations pour créer une congestion et ralentir le débit ;
-- supprimer des trames… et donc renvoyer la congestion aux couches supérieures !
+- mettre les trames en mémoire et les envoyer dès que possible ;
+- envoyer volontairement du brouillage aux autres stations pour créer une congestion et ralentir leur débit ;
+- supprimer des trames, ce qui reporte le problème de congestion sur les couches supérieures.
 
 ### Alimentation par le réseau (PoE)
 
-**Problème** : on veut placer une borne Wi-Fi mais il n'y a pas d'électricité à cet endroit !
+Il arrive qu'on veuille installer une borne Wi-Fi à un endroit dépourvu d'alimentation électrique. La solution consiste à utiliser les paires du câble réseau pour transporter un courant continu et son retour :
 
-**Solution** : utiliser les paires pour envoyer un courant continu et son retour :
-
-- mode A : paires Data ;
-- mode B : paires supplémentaires ;
-- mode 4PPoE : les 4 paires.
+- en mode A, sur les paires de données ;
+- en mode B, sur les paires supplémentaires ;
+- en mode 4PPoE, sur les 4 paires.
 
 {/* CORRIGÉ (reseaux.pdf p. 109 : la diapositive attribuait le PoE++ / 4PPoE à la norme 802.3bu (qui est le PoDL)). */}
 
-- Norme 802.3af (PoE) : 48 V / 13 W environ.
-- Norme 802.3at (PoE+) : 55 V / 25 W environ.
-- Norme 802.3bt (PoE++ et 4PPoE) : 50 W à 70 W.
-- Évolution PoDL (802.3bu) : utilise une seule paire (pour 10BaseT1 et successeurs).
+- La norme 802.3af (PoE) fournit environ 13 W sous 48 V.
+- La norme 802.3at (PoE+) fournit environ 25 W sous 55 V.
+- La norme 802.3bt (PoE++ et 4PPoE) fournit de 50 à 70 W.
+- Le PoDL (802.3bu) n'utilise qu'une seule paire (pour le 10BaseT1 et ses successeurs).
 
 ### Agrégation de liens
 
-**Problème** : le trunk vers le datacenter est saturé !
+Quand le lien principal (trunk) vers le datacenter est saturé, on peut recourir à l'agrégation de liens, définie par la norme 802.1ax (historiquement 802.3ad) et par le *Link Aggregation Control Protocol* (LACP). Elle permet de :
 
-**Solution** : l'agrégation de liens 802.1ax (historiquement 802.3ad) et *Link Aggregation Control Protocol* (LACP).
-
-- Rassembler plusieurs ports comme s'ils n'étaient qu'un même port.
-- Négocier dynamiquement la présence, la disparition et la reprise d'un ou de plusieurs ports.
-- Tenir compte de certaines contraintes, par exemple ne pas trop mélanger les paquets !
+- rassembler plusieurs ports pour qu'ils se comportent comme un seul ;
+- gérer dynamiquement l'apparition, la disparition et la reprise d'un ou de plusieurs ports ;
+- respecter certaines contraintes, par exemple ne pas trop mélanger l'ordre des paquets.
 
 ## Fiche récapitulative
 

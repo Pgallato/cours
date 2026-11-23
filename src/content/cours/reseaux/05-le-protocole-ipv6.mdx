@@ -8,18 +8,15 @@ sources: ["reseaux.pdf p. 135–153"]
 ## Principes élémentaires du protocole IPv6
 
 <Definition titre="IPv6">
-    IPv6 est le successeur d'IPv4, il en reprend l'objectif fonctionnel.
+    IPv6 est le successeur d'IPv4, dont il reprend l'objectif fonctionnel.
 </Definition>
 
-- Résoudre différents problèmes d'IPv4.
-- Répondre à la croissance fulgurante des demandes d'adresses IPv4.
-- Envisager l'avenir de l'Internet sans IPv4.
-- A nécessité la réécriture complète de différents protocoles.
+IPv6 a été conçu pour résoudre différents problèmes d'IPv4, répondre à la croissance fulgurante des demandes d'adresses et préparer un Internet sans IPv4. Sa mise en place a nécessité la réécriture complète de plusieurs protocoles.
 
 <Definition titre="Format d'une adresse IPv6">
-    Adresse sur **128 bits**, notée en hexadécimal par blocs de 16 bits, séparés par deux points (0000 à FFFF). Les principes de masque, de réseau et d'hôte sont identiques à IPv4.
+    Une adresse IPv6 tient sur **128 bits**. Elle se note en hexadécimal par blocs de 16 bits (de 0000 à FFFF) séparés par deux-points. Les principes de masque, de réseau et d'hôte sont les mêmes qu'en IPv4.
 
-    Peut s'abréger en supprimant les zéros non significatifs des blocs de 16 bits, et fusionner (**une seule fois par adresse**) tous les blocs mis à zéro.
+    On peut l'abréger en supprimant les zéros non significatifs de chaque bloc, et en remplaçant par « :: » une suite de blocs nuls (**une seule fois par adresse**).
 </Definition>
 
 <Example titre="Notation">
@@ -29,20 +26,18 @@ sources: ["reseaux.pdf p. 135–153"]
     - `FD00:0:1::`
     - `::1`
 
-    Et dans les URL quand on veut préciser le port ? `http://[fd00:0:1::]:8080`
+    Dans une URL, pour préciser le port, on place l'adresse entre crochets : `http://[fd00:0:1::]:8080`.
 </Example>
 
 <Theorem type="Important">
-    En IPv6, une station aura généralement **plusieurs adresses IPv6**, et peut en avoir plusieurs sur le même segment !
+    En IPv6, une station a généralement **plusieurs adresses**, éventuellement plusieurs sur le même segment.
 </Theorem>
 
 ## La segmentation en IPv6
 
 ### Sous-réseau en IPv6
 
-- La notation inspirée du CIDR est la seule utilisée pour donner un masque.
-- Le fractionnement en sous-réseaux est autorisé jusqu'à /64 puis /127 et /128.
-- Il n'y a pas de notion de classe en IPv6.
+La notation inspirée du CIDR est la seule utilisée pour indiquer un masque, et il n'y a pas de notion de classe en IPv6. Le découpage en sous-réseaux est autorisé jusqu'à /64, puis en /127 et /128.
 
 ### L'adresse locale au lien (Link-Local)
 
@@ -51,7 +46,7 @@ sources: ["reseaux.pdf p. 135–153"]
 </Definition>
 
 <Warning titre="Attention">
-    La Link-Local est indispensable au fonctionnement d'IPv6, mais elle n'est **pas routable** ! Nous la reverrons en détail avec ICMPv6.
+    L'adresse Link-Local est indispensable au fonctionnement d'IPv6, mais elle n'est **pas routable**. Nous la reverrons en détail avec ICMPv6.
 </Warning>
 
 ### L'adresse locale (Unique-Local)
@@ -67,60 +62,58 @@ sources: ["reseaux.pdf p. 135–153"]
 ### L'adresse globale (Global-Unicast)
 
 <Definition titre="Global-Unicast">
-    Les Global-Unicast sont les adresses publiques utilisables.
+    Les adresses Global-Unicast sont les adresses publiques utilisables sur Internet.
 </Definition>
 
 ### Plages remarquables ou réservées en IPv6
 
-- `::/8` : réservé, dont :
-    - `::/128` : adresse indéfinie ;
-    - `::1/128` : adresse de bouclage (127.0.0.1/8) ;
-- `2000::/3` : espace d'adressage public (Internet) ;
-- `2001:db8::/32` : plage réservée pour la documentation ;
-- `fc00::/7` : adresses Unique-Local, dont :
-    - `fc00::/8` : adresses à affectation centralisée ;
-    - `fd00::/8` : adresses attribuées localement ;
-- `fe80::/10` : adresses Link-Local ;
-- `fec0::/10` : adresses Site-Local (obsolètes mais encore dans Windows) ;
-- `ff00::/8` : adresses de multicast.
+- `::/8` est réservé ; il contient notamment :
+    - `::/128`, l'adresse indéfinie ;
+    - `::1/128`, l'adresse de bouclage (équivalent de 127.0.0.1/8) ;
+- `2000::/3` est l'espace d'adressage public (Internet) ;
+- `2001:db8::/32` est réservé à la documentation ;
+- `fc00::/7` regroupe les adresses Unique-Local :
+    - `fc00::/8` pour les adresses à affectation centralisée ;
+    - `fd00::/8` pour les adresses attribuées localement ;
+- `fe80::/10` regroupe les adresses Link-Local ;
+- `fec0::/10` regroupe les adresses Site-Local, obsolètes mais encore présentes dans Windows ;
+- `ff00::/8` regroupe les adresses de multicast.
 
-D'autres segments sont ou ont été réservés pour la transition et sont reportés plus loin.
+D'autres plages sont ou ont été réservées pour la transition ; elles sont présentées plus loin.
 
 ### Adresses de multicast IPv6
 
-Quelques exemples (ici scope Link-Local) :
+Voici quelques adresses de multicast de portée Link-Local :
 
 - `FF02::1` : tous les systèmes ;
 - `FF02::2` : tous les routeurs ;
-- `FF02::5` : OSPFv3 ;
-- `FF02::9` : RIP-ng.
+- `FF02::5` : routeurs OSPFv3 ;
+- `FF02::9` : routeurs RIP-ng.
 
 <Remark>
-    On notera l'absence d'IGMP, remplacé par ICMPv6 *Multicast Listener Discovery* (MLD).
+    IGMP n'existe plus en IPv6 : il est remplacé par *Multicast Listener Discovery* (MLD), qui fait partie d'ICMPv6.
 </Remark>
 
 ## Le routage local en IPv6
 
-<Warning titre="Attention !">
-    Ben… c'est (presque) comme en IPv4. Voilà !
-</Warning>
+Le routage local fonctionne presque comme en IPv4. On y retrouve :
 
-- Routes statiques.
-- Routes des segments connectés.
-- Passerelle par défaut.
-- Routes dynamiquement affectées.
-- Précédence de certaines routes par rapport à d'autres.
+- les routes statiques ;
+- les routes des segments connectés ;
+- la passerelle par défaut ;
+- les routes affectées dynamiquement ;
+- la priorité de certaines routes sur d'autres.
 
 ### Sélection de l'adresse source en IPv6
 
-S'appuie sur un mécanisme de priorisation à base d'étiquette. En substance :
+Le choix de l'adresse source s'appuie sur un mécanisme de priorité fondé sur des étiquettes. En substance :
 
 {/* CORRIGÉ (reseaux.pdf p. 148 : la diapositive plaçait ::/128 (adresse indéfinie) en tête ; c'est ::1/128 (RFC 6724)). */}
 
 1. `::1/128` (bouclage) est la plus prioritaire ;
-2. `::/0` est celle qui force généralement IPv6 sur IPv4 ;
-3. les mécanismes de transition viennent ensuite ;
-4. puis les Unique-Local.
+2. `::/0` vient ensuite : c'est elle qui fait généralement préférer IPv6 à IPv4 ;
+3. viennent ensuite les mécanismes de transition ;
+4. puis les adresses Unique-Local.
 
 ## Transition vers IPv6
 
@@ -128,38 +121,36 @@ S'appuie sur un mécanisme de priorisation à base d'étiquette. En substance :
 
 Différents mécanismes de transition ont existé :
 
-- **6to4** : utilisait la plage `2002::/16` et l'adresse anycast `192.88.99.1` ;
-- **6rd** : en cours de déploiement, peu utilisé manifestement ;
-- **Teredo** : tunnel IPv6 sur UDP à travers le NAT, utilise `2001:0000::/32` ;
-- **NAT64, DNS64 et 464XLAT** sont des traducteurs de protocole et utilisent la plage `64:ff9b::/96`, peu utilisés manifestement ;
-- adresses compatibles IPv4 `::A.B.C.D/96` rendues obsolètes.
+- **6to4** utilisait la plage `2002::/16` et l'adresse anycast `192.88.99.1` ;
+- **6rd** est en cours de déploiement, mais manifestement peu utilisé ;
+- **Teredo** crée un tunnel IPv6 sur UDP à travers le NAT et utilise `2001:0000::/32` ;
+- **NAT64, DNS64 et 464XLAT** sont des traducteurs de protocole qui utilisent la plage `64:ff9b::/96` ; ils sont manifestement peu utilisés ;
+- les adresses compatibles IPv4 `::A.B.C.D/96` sont devenues obsolètes.
 
 ### Dual-stack IPv4 + IPv6
 
 <Definition titre="Dual-stack">
-    Posséder deux piles configurées et exploitables, l'une en IPv4 et l'autre en IPv6.
+    Un hôte en dual-stack possède deux piles configurées et utilisables, l'une en IPv4, l'autre en IPv6.
 </Definition>
 
-**Implémentation** : c'est la plus répandue, les autres mécanismes IPv6 étant peu répandus ou arrêtés.
+C'est la solution la plus répandue, les autres mécanismes étant peu utilisés ou abandonnés.
 
 ### Où éteindre IPv4 ?
 
-Sur les réseaux « récents » :
+Sur les réseaux « récents », on peut désactiver IPv4 :
 
-- tous les hôtes qui n'ont pas besoin d'aller directement sur Internet ;
-- les enclaves d'administration (si compatible) ;
-- certains segments bénéficiant de services de traduction en bordure ;
-- si 464XLAT est déployé, on peut même éteindre complètement IPv4 à l'intérieur d'un réseau, même pour les clients voulant accéder à des hôtes uniquement IPv4.
+- sur tous les hôtes qui n'ont pas besoin d'accéder directement à Internet ;
+- dans les enclaves d'administration, si les équipements le permettent ;
+- sur certains segments qui bénéficient de services de traduction en bordure ;
+- partout à l'intérieur d'un réseau si 464XLAT est déployé, même pour les clients qui veulent accéder à des hôtes uniquement IPv4.
 
 ### Fragmentation et MTU en IPv6
 
 <Warning titre="Attention">
-    La fragmentation est interdite en IPv6 !
+    En IPv6, les routeurs ne fragmentent plus les paquets.
 </Warning>
 
-- La MTU minimale est portée à **1280** (contre 68 en IPv4).
-- Un mécanisme de découverte est utilisé : PMTUd (voir ICMPv6).
-- La fragmentation est donc renvoyée à la source, allégeant la charge des routeurs.
+La MTU minimale passe à **1280** octets (contre 68 en IPv4). La source découvre la MTU du chemin grâce au mécanisme PMTUd (voir ICMPv6) et fragmente elle-même si nécessaire, ce qui allège la charge des routeurs.
 
 ## Fiche récapitulative
 

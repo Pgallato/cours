@@ -7,7 +7,7 @@ sources: ["reseaux.pdf p. 250–278"]
 
 ## Le protocole DNS
 
-### Au temps de l'ARPANET… étaient les fichiers hosts !
+### À l'époque d'ARPANET : les fichiers hosts
 
 <Remark titre="Point historique">
     Avant le DNS, pour connaître les noms associés aux adresses, on s'échangeait des fichiers.
@@ -21,20 +21,15 @@ sources: ["reseaux.pdf p. 250–278"]
     ```
 </Example>
 
-Structure du fichier `/etc/hosts` : une adresse IP ; un nom d'hôte principal ; un ou plusieurs alias. Exemple : `127.0.1.1 host.localdomain host`.
+Chaque ligne du fichier `/etc/hosts` contient une adresse IP, un nom d'hôte principal, puis un ou plusieurs alias, par exemple `127.0.1.1 host.localdomain host`.
 
-### Au temps des universités US
+### L'invention du DNS dans les universités américaines
 
-**Problème** :
-
-- un fichier à distribuer à toutes les machines…
-- dans toutes les universités…
-- ça devient pénible, et Stanford invente le **Domain Name System**…
-- … et Berkeley son implémentation **Berkeley Internet Name Domain** (BIND).
+Il fallait distribuer ce fichier à toutes les machines, dans toutes les universités, ce qui devenait vite pénible. Stanford a alors inventé le **Domain Name System**, et Berkeley son implémentation, **Berkeley Internet Name Domain** (BIND).
 
 ### Normalisation du DNS
 
-« RFC rules the world ! »
+Le DNS est défini par un ensemble de RFC, dont voici les principales :
 
 | RFC | Objet |
 | --- | --- |
@@ -49,9 +44,7 @@ Structure du fichier `/etc/hosts` : une adresse IP ; un nom d'hôte principal ; 
 
 ### La structure du Domain Name System
 
-- Arborescence : on part d'une racine (.).
-- TLD : première hiérarchie.
-- Autres : n-ième hiérarchie.
+Le DNS est une arborescence qui part d'une racine, notée « . ». Les domaines de premier niveau (TLD) forment le premier niveau de la hiérarchie, et les autres domaines les niveaux suivants.
 
 <Figure legende="Arborescence du DNS : la racine, des TLD (net, org, fr) et des domaines de second niveau" page="reseaux.pdf p. 255">
 <svg viewBox="0 0 300 130" role="img" aria-label="Racine reliée à net, org et fr ; net à freenode, org à matrix, fr à gouv">
@@ -63,18 +56,18 @@ Structure du fichier `/etc/hosts` : une adresse IP ; un nom d'hôte principal ; 
 
 ### Les Top Level Domains
 
-Quelques exemples :
+On distingue plusieurs catégories de TLD :
 
-- domaines historiques (`.net`, `.org`, `.com`…) ;
-- domaines ouverts (`.info`, `.ovh`, `.clothing`…) ;
-- domaines parrainés (`.edu`, `.gov`, `.gouv.fr`, `.travel`…) ;
-- domaines restreints (`.biz`, `.pro`, `.name`…) ;
-- domaines privés (`.leclerc`, `.sncf`, `.axa`…) ;
-- domaines nationaux (`.fr`, `.re`, `.us`, `.de`…).
+- les domaines historiques (`.net`, `.org`, `.com`…) ;
+- les domaines ouverts (`.info`, `.ovh`, `.clothing`…) ;
+- les domaines parrainés (`.edu`, `.gov`, `.gouv.fr`, `.travel`…) ;
+- les domaines restreints (`.biz`, `.pro`, `.name`…) ;
+- les domaines privés (`.leclerc`, `.sncf`, `.axa`…) ;
+- les domaines nationaux (`.fr`, `.re`, `.us`, `.de`…).
 
 ### Les domaines de premier niveau spéciaux
 
-Bonne question, merci de l'avoir posée ! Lesquels ?
+Certains domaines de premier niveau sont réservés à des usages particuliers :
 
 | TLD | Usage |
 | --- | --- |
@@ -89,24 +82,21 @@ Bonne question, merci de l'avoir posée ! Lesquels ?
 
 ### Les Second Level Domains
 
-- Domaines attachés à un domaine de premier niveau.
-- Frontière du domaine privé.
-- Contient autant de sous-domaines que nécessaires…
-- … qui eux-mêmes peuvent contenir des sous-domaines, etc.
+Les domaines de second niveau sont rattachés à un domaine de premier niveau ; ils marquent la frontière du domaine privé. Chacun peut contenir autant de sous-domaines que nécessaire, qui peuvent eux-mêmes contenir des sous-domaines, et ainsi de suite.
 
 ### Les racines alternatives
 
 <Definition titre="Racines du DNS">
-    Le *Domain Name System*, implicitement, fait référence à l'ICANN et aux 13 serveurs racine couramment utilisés.
+    Lorsqu'on parle du *Domain Name System*, on fait implicitement référence à l'ICANN et aux 13 serveurs racine couramment utilisés.
 </Definition>
 
-Il existe d'autres racines :
+Il existe pourtant d'autres racines :
 
-- **AlterNIC** : était le concurrent d'InterNIC avant la création de l'ICANN. Décédé.
-- **Handshake** : est un système décentralisé fondé sur une blockchain, avec objectif de résilience, et complément au DNS classique.
-- **Namecoin** : est un système décentralisé fondé sur une blockchain, spécifique au TLD `.bit`.
-- **OpenNIC** : est une racine DNS alternative, fondée sur le mécanisme DNS classique, mais sans lien avec les racines de l'ICANN et de l'IANA.
-- **Souverains** : Yeti DNS Project, `.chn`, Russian National Domain Name System.
+- **AlterNIC** était le concurrent d'InterNIC avant la création de l'ICANN ; il a disparu.
+- **Handshake** est un système décentralisé fondé sur une blockchain ; il vise la résilience et complète le DNS classique.
+- **Namecoin** est un système décentralisé fondé sur une blockchain, propre au TLD `.bit`.
+- **OpenNIC** est une racine DNS alternative qui reprend le mécanisme classique du DNS, mais sans lien avec les racines de l'ICANN et de l'IANA.
+- Il existe enfin des racines **souveraines** : le Yeti DNS Project, `.chn` ou le Russian National Domain Name System.
 
 ### Types d'enregistrements
 
@@ -114,9 +104,9 @@ Il existe d'autres racines :
     Le DNS utilise des *Resource Records* pour catégoriser l'information et la distribuer.
 </Definition>
 
-Un enregistrement est un nom qui associe différentes données, par exemple : des adresses IPv4 ; des adresses IPv6 ; des clés SSH ; du texte libre…
+Un enregistrement associe un nom à différentes données, par exemple des adresses IPv4 ou IPv6, des clés SSH ou du texte libre.
 
-Enregistrements les plus courants :
+Voici les enregistrements les plus courants :
 
 | Type | Contenu |
 | --- | --- |
@@ -133,7 +123,7 @@ Enregistrements les plus courants :
 ### Start Of Authority (SOA)
 
 <Definition titre="SOA">
-    Indique qu'un serveur fait autorité pour un sous-domaine donné.
+    L'enregistrement SOA indique qu'un serveur fait autorité pour un sous-domaine donné.
 </Definition>
 
 | Champ | Signification |
@@ -160,14 +150,14 @@ Enregistrements les plus courants :
 
 ### Circulation de la requête
 
-1. Le client se pose une question : `www.free.fr ?` Il envoie sa requête à son serveur de rattachement.
-2. Le résolveur ne connaît pas ce nom ni cette racine. Il demande à un serveur racine qui gère ce TLD.
-3. Le serveur racine le renvoie vers un serveur autoritaire .FR.
-4. Le serveur repose sa question pour le domaine de second niveau.
-5. Une nouvelle autorité est renvoyée, celle de Free.
-6. Le serveur interroge les DNS de Free, désormais connus.
-7. La réponse définitive est enfin obtenue…
-8. … et renvoyée au client.
+1. Le client cherche l'adresse de `www.free.fr` : il envoie sa requête à son serveur DNS de rattachement, le résolveur.
+2. Le résolveur ne connaît ni ce nom ni ce TLD : il interroge un serveur racine.
+3. Le serveur racine le renvoie vers un serveur qui fait autorité pour .FR.
+4. Le résolveur repose sa question pour le domaine de second niveau.
+5. Le serveur .FR lui indique une nouvelle autorité, celle de Free.
+6. Le résolveur interroge alors les serveurs DNS de Free, qu'il connaît désormais.
+7. Il obtient enfin la réponse définitive,
+8. qu'il renvoie au client.
 
 {/* CORRIGÉ (reseaux.pdf p. 264 : le schéma posait la question « com. ? » à la racine ; corrigé en « fr. ? », ici et dans l'animation). */}
 
@@ -178,31 +168,27 @@ Enregistrements les plus courants :
 ### Client DNS sous Windows
 
 <Definition titre="Client DNS">
-    Il centralise les requêtes au DNS pour proposer du cache ou parfois un peu « d'intelligence ».
+    Il centralise les requêtes DNS pour offrir un cache, et parfois un peu « d'intelligence ».
 </Definition>
 
-Sous Windows, un service appelé « Client DNS » permet d'effectuer ces opérations. Sans lui, les résolutions fonctionnent moins bien (voire pas du tout selon les versions). Peut se manipuler avec des CmdLets PowerShell.
+Sous Windows, c'est un service appelé « Client DNS » qui joue ce rôle. Sans lui, les résolutions fonctionnent moins bien, voire pas du tout selon les versions. On peut le piloter avec des CmdLets PowerShell.
 
 ### Client DNS historique sous Linux
 
-Les fichiers très historiques de Linux sont interfacés par le « *Name Service Switch* », dont le fameux `/etc/hosts`.
+Sous Linux, les fichiers historiques de résolution de noms, dont le fameux `/etc/hosts`, sont exploités à travers le « *Name Service Switch* » (NSSwitch).
 
-- Le client historique correspond essentiellement (et par raccourci) à NSSwitch.
-- Un cache peut lui être ajouté : NSCD, *Name Service Caching Daemon*.
-- Bascule entre les fichiers (`hosts`, `resolv.conf`) et le DNS (entre autres).
+Le client historique se résume essentiellement à NSSwitch, qui choisit entre les fichiers (`hosts`, `resolv.conf`) et le DNS, entre autres sources. On peut lui ajouter un cache : NSCD, le *Name Service Caching Daemon*.
 
 ### Client DNS de systemd : systemd-resolved
 
-**Objectif** : éliminer certains mécanismes obsolètes ou plus maintenus activement.
+systemd-resolved a pour objectif d'éliminer certains mécanismes obsolètes ou qui ne sont plus activement maintenus. En pratique :
 
-Fonctionnement général :
-
-- il agrège des sources de noms différentes ;
+- il agrège différentes sources de noms ;
 - il émule un résolveur local ;
-- il fait du cache et de la signature ;
+- il fait du cache et de la vérification de signatures ;
 - il remplace `/etc/resolv.conf` par un lien symbolique.
 
-<Example titre="Exemple de configuration simple et largement utilisé">
+<Example titre="Exemple de configuration simple et largement utilisée">
     ```ini
     [Resolve]
     DNS=192.168.1.254
@@ -212,35 +198,35 @@ Fonctionnement général :
     ```
 </Example>
 
-## Bonus : le protocole VRRP
+## Pour aller plus loin : le protocole VRRP
 
 <Definition titre="Virtual Router Redundancy Protocol (VRRP)">
-    Affecter une IP « flottante » à plusieurs routeurs ou plusieurs services afin d'avoir un « actif » et un (ou plusieurs) « secours ».
+    VRRP affecte une adresse IP « flottante » à plusieurs routeurs ou services, afin d'avoir un équipement « actif » et un ou plusieurs équipements « de secours ».
 </Definition>
 
-Fonctionnement :
+Son fonctionnement est le suivant :
 
-- les systèmes s'entendent sur la possession d'un jeton qui autorise à utiliser l'adresse IP ;
-- les participants s'annoncent via une adresse de multicast ;
-- les participants s'attribuent une adresse MAC virtuelle ;
-- des paquets ARP gratuits permettent de reprendre le contrôle de l'IP virtuelle en cas de bascule.
+- les systèmes se mettent d'accord sur la possession d'un jeton, qui autorise à utiliser l'adresse IP ;
+- les participants s'annoncent sur une adresse de multicast ;
+- ils s'attribuent une adresse MAC virtuelle ;
+- en cas de bascule, des paquets ARP gratuits permettent au nouvel actif de reprendre le contrôle de l'adresse IP virtuelle.
 
-## Bonus : le protocole IPSec
+## Pour aller plus loin : le protocole IPSec
 
 <Definition titre="Internet Protocol Security (IPSec)">
-    Signer ou chiffrer les paquets IP.
+    IPSec signe ou chiffre les paquets IP.
 </Definition>
 
-**Fonctionnement** : un « contexte de sécurité » (ou association de sécurité) définit le fait de chiffrer le flux pour un ou plusieurs sous-réseaux IP avec une clé donnée.
+Un « contexte de sécurité » (ou association de sécurité) définit le chiffrement du flux pour un ou plusieurs sous-réseaux IP, avec une clé donnée.
 
-**Protocoles** : la négociation des clés est généralement effectuée par *Internet Key Exchange* (IKE). Selon les implémentations, l'authentification peut être réalisée par *Extensible Authentication Protocol* (EAP) et ses modules.
+La négociation des clés est généralement assurée par *Internet Key Exchange* (IKE). Selon les implémentations, l'authentification peut passer par *Extensible Authentication Protocol* (EAP) et ses modules.
 
-## HTTP, le protocole à tout faire (ou pas !)
+## HTTP, un protocole à tout faire ?
 
 <Definition titre="HyperText Transfer Protocol (HTTP)">
-    **Principe le plus élémentaire** : transporter des données de différents formats sur le Web.
+    À l'origine, HTTP sert simplement à transporter sur le Web des données de différents formats.
 
-    **Principe actuel** : transporter des pages Web et leur contenu (voire plus).
+    Aujourd'hui, il transporte des pages Web et leur contenu, voire bien plus.
 </Definition>
 
 ### Fonctionnement
@@ -252,31 +238,30 @@ Fonctionnement :
     ```
 </Example>
 
-Quelques verbes / méthodes : `GET`, `POST`, `HEAD`, `PUT`, `DELETE`, `CONNECT`…
+Les principaux verbes (ou méthodes) sont `GET`, `POST`, `HEAD`, `PUT`, `DELETE` et `CONNECT`.
 
-- **Mode de fonctionnement** : HTTP est un protocole **sans état**… comme UDP donc !
-- **En-têtes** : les en-têtes, notamment les cookies, permettent de créer un mode connecté, donc de poursuivre une « session » vue de l'application Web… comme TCP donc !
+HTTP est un protocole **sans état**, comme UDP. Cependant, les en-têtes, notamment les cookies, permettent de construire un mode connecté et de suivre une « session » du point de vue de l'application Web, à la manière de TCP.
 
 ### Utilisation
 
-Il est tellement répandu qu'il a été adapté à de nouveaux usages :
+HTTP est si répandu qu'il a été adapté à de nouveaux usages :
 
-- **WebDAV** : transferts de fichiers montants et descendants (dont CalDAV et CardDAV) ;
-- **WebServices** : flux machine-to-machine (REST, SOAP…) ;
-- **WebSockets** : flux full-duplex entre clients et serveur (dont streaming) ;
-- **WebRTC** : flux peer-to-peer multimédia entre navigateurs (dont RTP) ;
-- **DNS over HTTP (DoH)** : pour contourner la censure DNS.
+- **WebDAV** pour les transferts de fichiers dans les deux sens (dont CalDAV et CardDAV) ;
+- les **WebServices** pour les échanges entre machines (REST, SOAP…) ;
+- les **WebSockets** pour les flux full-duplex entre clients et serveur (dont le streaming) ;
+- **WebRTC** pour les flux multimédias pair à pair entre navigateurs (dont RTP) ;
+- **DNS over HTTP (DoH)** pour contourner la censure DNS.
 
-Il en est devenu difficile à filtrer !
+Il est donc devenu difficile à filtrer.
 
 ### Dérive potentielle
 
 <Remark titre="Idée de réflexion">
-    À tout mettre dans HTTP, on oublie les couches inférieures et les protocoles existants… et on réinvente la roue… des fois mieux, des fois moins bien…
+    À force de tout faire passer par HTTP, on oublie les couches inférieures et les protocoles existants, et on réinvente la roue, parfois en mieux, parfois en moins bien.
 </Remark>
 
 <Theorem type="Conseil">
-    Regardez l'existant, il existe sûrement déjà un outil ou un protocole qui fait ce que vous voulez, moyennant une adaptation mineure !
+    Avant de concevoir une solution, regardez l'existant : il y a sûrement déjà un outil ou un protocole qui fait ce dont vous avez besoin, moyennant une adaptation mineure.
 </Theorem>
 
 ## Fiche récapitulative

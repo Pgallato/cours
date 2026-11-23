@@ -13,12 +13,12 @@ sources: ["reseaux.pdf p. 154–213"]
     Le port sert à multiplexer et démultiplexer des communications sur un même hôte.
 </Definition>
 
-- S'encode sur 16 bits, donc de 0 à 65535.
-- Des numéros sont réservés et enregistrés à l'IANA.
-- Un port donné côté serveur est souvent un indicateur fiable du service qui l'utilise.
-- Parfois port source et port destination peuvent être identiques.
+- Un port est codé sur 16 bits : il va donc de 0 à 65535.
+- Certains numéros sont réservés et enregistrés auprès de l'IANA.
+- Côté serveur, le numéro de port est souvent un indicateur fiable du service utilisé.
+- Le port source et le port destination peuvent parfois être identiques.
 
-Exemples de ports connus :
+Voici quelques ports connus :
 
 | Service | Port(s) |
 | --- | --- |
@@ -31,30 +31,27 @@ Exemples de ports connus :
 | RADIUS | 1812 et 1813 |
 
 <Warning titre="Le port n'indique pas toujours le protocole !">
-    Utilisent HTTP (exemples) :
+    Beaucoup de services utilisent HTTP sur un autre port que 80, par exemple :
 
     - 631 : IPP (dont CUPS) ;
     - 3000 : Grafana ;
-    - 8096 et 8920 : Jellyfin HTTP et HTTPS ;
-    - 9090 et 9091 : administration OpenFire HTTP et HTTPS ;
-    - … (vous n'êtes pas encore prêts !) …
-    - 5000 : ASP.NET Core, Flask Framework Dev Webserver, Docker Registry, 3CX Management, AWS Elastic Beanstalk Proxy, Frigate NVR, Synology NAS…
+    - 8096 et 8920 : Jellyfin en HTTP et en HTTPS ;
+    - 9090 et 9091 : administration d'OpenFire en HTTP et en HTTPS ;
+    - 5000 : ASP.NET Core, le serveur de développement de Flask, Docker Registry, l'administration de 3CX, le proxy d'AWS Elastic Beanstalk, Frigate NVR, les NAS Synology…
 </Warning>
 
 <Remark titre="Historique">
     Les ports dits « bien connus » (*well-known*) ou ports « système » s'étendent de **0 à 1023**.
 
-    - Il faut être administrateur (root) sous Unix-like pour les utiliser.
-    - C'est moins vrai aujourd'hui, même si le principe persiste.
+    Sur les systèmes de type Unix, il fallait être administrateur (root) pour les utiliser. C'est moins vrai aujourd'hui, même si le principe persiste.
 </Remark>
 
-Autres plages :
+Les autres numéros se répartissent en deux plages :
 
 {/* CORRIGÉ (reseaux.pdf p. 158 : la diapositive indiquait 51280 pour WireGuard). */}
 
 - la plage des numéros « **enregistrés** » va de **1024 à 49151** ;
-- la plage des numéros « **dynamiques** » (ou « éphémères ») va de **49152 à 65535** ;
-- … bien que des applications en utilisent de manière statique mais non officielle (WireGuard 51820, ActiveMQ 61616…).
+- la plage des numéros « **dynamiques** » (ou « éphémères ») va de **49152 à 65535**, même si certaines applications y utilisent un port fixe de manière non officielle (WireGuard 51820, ActiveMQ 61616…).
 
 ### Généricité des données
 
@@ -62,17 +59,15 @@ Autres plages :
     La couche transport ne définit pas les données qu'elle transporte.
 </Theorem>
 
-**Proposition** : on peut choisir arbitrairement de changer les numéros de port par défaut. Mon serveur HTTP peut donc très bien aller en TCP/25 et mon serveur de courrier en TCP/80. Même si c'est peu recommandé !
+On peut donc choisir librement de changer les numéros de port par défaut : un serveur HTTP peut très bien écouter sur le port TCP 25 et un serveur de courrier sur le port TCP 80, même si c'est peu recommandé.
 
 ### Poignée de main
 
 <Definition titre="Poignée de main">
-    Établir une connexion entre deux systèmes.
+    Échange initial qui établit une connexion entre deux systèmes.
 </Definition>
 
-- Permet de s'assurer que la partie distante est bien présente.
-- Implique un état de connexion (et son suivi).
-- Permet de négocier des paramètres.
+La poignée de main permet de s'assurer que la partie distante est bien présente et de négocier des paramètres. Elle implique un état de connexion, qu'il faut ensuite suivre.
 
 <Animation type="echange-sequence" titre="Poignée de main générique : exemple du 3-way handshake (reseaux.pdf p. 161)" params={{scenario: 'poignee-de-main'}}>
     Client → Service, Service → Client, Client → Service, puis échange de données (Data) dans les deux sens.
@@ -86,28 +81,22 @@ Des variantes existent, ainsi que des superpositions protocolaires.
     Les sockets sont les interfaces permettant à une application d'utiliser une pile réseau (API).
 </Definition>
 
-Par exemple sous Linux, il existe deux grandes familles :
+Sous Linux, par exemple, il existe deux grandes familles de sockets :
 
-- **socket AF_INET** : utilisation du réseau TCP/IP (adresse IP + port + protocole de transport) :
-    - type « stream » : TCP ;
-    - type « datagram » : UDP ;
-- **socket AF_UNIX** : utilisation des canaux interprocessus (nom du fichier pivot + droits d'accès) ;
-- **Winsock** : équivalent sous Windows ;
-- **Raw** : mode brut au-dessus d'IP, donc sans mécanisme de transport.
+- les **sockets AF_INET** utilisent le réseau TCP/IP (adresse IP, port et protocole de transport) ; elles sont de type « stream » pour TCP et de type « datagram » pour UDP ;
+- les **sockets AF_UNIX** utilisent les canaux de communication entre processus (nom du fichier pivot et droits d'accès).
 
-Vous les verrez en cours de programmation, ce n'est pas l'objet de ce cours.
+Sous Windows, l'équivalent s'appelle **Winsock**. Il existe enfin des sockets **Raw**, en mode brut au-dessus d'IP, donc sans mécanisme de transport.
+
+Les sockets sont étudiées en cours de programmation ; elles ne sont pas l'objet de ce cours.
 
 ## Principe et fonctionnement d'UDP
 
 <Definition titre="User Datagram Protocol (UDP)">
-    Transmission de données **sans état**.
+    Protocole de transmission de données **sans état**.
 </Definition>
 
-Ce que fournit UDP :
-
-- somme de contrôle des datagrammes ;
-- multiplexage à l'aide des 64k ports possibles ;
-- et c'est tout !
+UDP fournit seulement une somme de contrôle des datagrammes et le multiplexage grâce aux 65 536 ports possibles.
 
 ### Le mode non connecté
 
@@ -115,33 +104,33 @@ Ce que fournit UDP :
     UDP est non connecté, donc les datagrammes sont émis **sans garantie de délivrance**.
 </Theorem>
 
-Cas d'utilisation d'UDP :
+UDP est utilisé par exemple pour :
 
-- flux audio et/ou vidéo avec débit adaptatif : la perte est compensée par l'encodage des données ;
-- protocoles sans connexion à faible volumétrie : DNS (historiquement), Kerberos ;
-- tunnels VPN : le tunnel n'a pas à suivre les connexions des couches supérieures.
+- les flux audio ou vidéo à débit adaptatif, où l'encodage des données compense les pertes ;
+- les protocoles sans connexion et peu volumineux, comme DNS (historiquement) ou Kerberos ;
+- les tunnels VPN, qui n'ont pas à suivre les connexions des couches supérieures.
 
 ## Principe et fonctionnement de TCP
 
 <Definition titre="Transmission Control Protocol (TCP)">
-    Transmission de données **avec état** et **garantie de délivrance**.
+    Protocole de transmission de données **avec état** et **garantie de délivrance**.
 </Definition>
 
-Ce que fournit TCP :
+TCP fournit :
 
-- somme de contrôle des segments ;
-- multiplexage à l'aide des 64k ports possibles ;
-- contrôle de congestion ;
-- réordonnancement à l'arrivée ;
-- déduplication ;
-- garantie d'établissement de connexion.
+- une somme de contrôle des segments ;
+- le multiplexage grâce aux 65 536 ports possibles ;
+- un contrôle de congestion ;
+- la remise dans l'ordre des segments à l'arrivée ;
+- la suppression des doublons ;
+- la garantie d'établissement de la connexion.
 
 ### Le segment TCP
 
 <Definition titre="Segment TCP">
     Le segment TCP est un élément de données et/ou de métadonnées d'une connexion TCP.
 
-    **Principe lexical** : le segment a un début et une fin, et on peut enchaîner des segments : l'adresse de début du segment B suit immédiatement l'adresse de fin du segment A.
+    Un segment a un début et une fin, et les segments s'enchaînent : le début du segment B suit immédiatement la fin du segment A.
 </Definition>
 
 ### Le mode connecté
@@ -150,11 +139,10 @@ Ce que fournit TCP :
     TCP est connecté : il fournit des garanties de délivrance, ou a minima de notification d'échec.
 </Theorem>
 
-Cas d'utilisation de TCP :
+TCP est utilisé par exemple pour :
 
-- transferts de fichiers : les données doivent arriver dans l'ordre ;
-- système de commande à distance : les commandes, les acquittements et réponses doivent être émis et reçus avec fiabilité ;
-- …
+- les transferts de fichiers, où les données doivent arriver dans l'ordre ;
+- les systèmes de commande à distance, où les commandes, les acquittements et les réponses doivent être émis et reçus de façon fiable.
 
 ### La fenêtre TCP
 
@@ -162,9 +150,7 @@ Cas d'utilisation de TCP :
     La fenêtre TCP permet d'envoyer une certaine quantité de données **sans attendre d'acquittement**.
 </Definition>
 
-- La fenêtre peut être agrandie ou réduite dynamiquement.
-- La fenêtre « avance » au rythme des acquittements.
-- Des mécanismes permettent d'optimiser l'utilisation de cette fenêtre.
+La fenêtre peut être agrandie ou réduite dynamiquement, et elle « avance » au rythme des acquittements. Divers mécanismes permettent d'optimiser son utilisation.
 
 ### Ouvrir une connexion
 
@@ -271,91 +257,82 @@ Client → Service : **SYN** ; Service → Client : **SYN + ACK** ; Client → S
 ### Flux vs. congestion
 
 <Definition titre="Contrôle de flux">
-    S'applique entre l'émetteur et le récepteur, par exemple récepteur de faible capacité.
+    Il régule les échanges entre l'émetteur et le récepteur, par exemple lorsque le récepteur a une faible capacité.
 </Definition>
 
 <Definition titre="Contrôle de congestion">
-    Détecte un étranglement du réseau de transport.
+    Il détecte un engorgement du réseau de transport.
 </Definition>
 
 ### Maximum Segment Size (MSS)
 
 <Definition titre="MSS">
-    Fixe la taille maximale des données transportables dans un segment TCP.
+    La MSS fixe la taille maximale des données qu'un segment TCP peut transporter.
 </Definition>
 
 {/* CORRIGÉ (reseaux.pdf p. 183 : la diapositive indiquait « MSS <= MTU - en-tête TCP », sans l'en-tête IP). */}
 
-- Est liée à la MTU (`MSS <= MTU - en-tête IP - en-tête TCP`, soit 1500 − 20 − 20 = 1460 octets en IPv4 sur Ethernet).
-- La MSS n'est pas calculée dynamiquement (comme peut l'être la MTU).
+Elle est liée à la MTU : `MSS <= MTU - en-tête IP - en-tête TCP`, soit 1500 − 20 − 20 = 1460 octets en IPv4 sur Ethernet. Contrairement à la MTU, elle n'est pas calculée dynamiquement.
 
-Généralement, MTU et MSS sont fixes, et à leurs valeurs par défaut, sauf cas de transport VPN ou liaisons exotiques.
+En général, MTU et MSS restent fixes, à leurs valeurs par défaut, sauf dans le cas d'un transport par VPN ou de liaisons particulières.
 
 ### Ajustement de la bande passante
 
 <Theorem type="Principe">
-    Augmenter ou limiter le débit émis en élargissant ou réduisant la fenêtre TCP.
+    On augmente ou on limite le débit émis en élargissant ou en réduisant la fenêtre TCP.
 </Theorem>
 
-**Problème** : si on augmente et qu'on diminue du même facteur (par addition ou par multiplication), on n'atteint jamais le point optimal !
+Cependant, si l'on augmente et diminue le débit du même facteur (par addition ou par multiplication dans les deux sens), on n'atteint jamais le point optimal.
 
 ### Additive Increase Multiplicative Decrease (AIMD)
 
 {/* CORRIGÉ (reseaux.pdf p. 185-186 : les diapositives présentaient AIMD comme le mécanisme de démarrage et disaient que le slow start « suit le principe AIMD »). */}
 
-- **Utilisation** : évitement de congestion (*congestion avoidance*), une fois la phase de slow start terminée.
-- **Principe** : pour accélérer, ajouter la valeur de la MSS (valeur typique) ; pour ralentir, diviser de moitié le débit émis.
-- **Objectif** : la bande passante utilisée finit par converger vers une valeur optimale.
+AIMD est utilisé pour l'évitement de congestion (*congestion avoidance*), une fois la phase de slow start terminée. Pour accélérer, on ajoute une MSS (valeur typique) à la fenêtre ; pour ralentir, on divise le débit émis par deux. La bande passante utilisée finit ainsi par converger vers une valeur optimale.
 
 ### Slow start
 
 <Theorem type="Principe">
-    Se servir de la fenêtre de congestion pour accélérer progressivement.
+    On se sert de la fenêtre de congestion pour accélérer progressivement.
 </Theorem>
 
-- L'accélération est **exponentielle** : la fenêtre de congestion augmente d'une MSS par acquittement reçu, donc double à chaque aller-retour.
-- La perte d'un paquet déclenche le ralentissement en réduisant la fenêtre.
-- Un paramètre « *slow start threshold* » permet de basculer en évitement de congestion (AIMD).
+L'accélération est **exponentielle** : la fenêtre de congestion augmente d'une MSS à chaque acquittement reçu, et double donc à chaque aller-retour. La perte d'un paquet déclenche un ralentissement en réduisant la fenêtre. Un seuil, le « *slow start threshold* », permet de basculer en évitement de congestion (AIMD).
 
 ### Fast retransmit
 
 <Theorem type="Principe">
-    Renvoyer rapidement les paquets qui semblent perdus.
+    On renvoie rapidement les paquets qui semblent perdus.
 </Theorem>
 
-Généralement, la réception de **3 ACK dupliqués** déclenche « fast retransmit ».
+En général, c'est la réception de **3 ACK dupliqués** qui déclenche le « fast retransmit ».
 
 ### Fast recovery
 
 <Theorem type="Principe">
-    Attendre l'ACK d'un segment perdu, voire de toute la fenêtre déjà envoyée après un « fast retransmit ».
+    Après un « fast retransmit », on attend l'acquittement du segment perdu, voire de toute la fenêtre déjà envoyée.
 </Theorem>
 
-**Intérêt majeur** : éviter de repasser en mode « slow start ».
+Son intérêt majeur est d'éviter de repasser en mode « slow start ».
 
 ### Algorithmes de gestion de congestion TCP
 
-- **TCP Tahoe** : Slow Start puis Congestion Avoidance (mais sans Fast Retransmit).
-- **TCP Reno** : évolution de Tahoe pour utiliser Fast Retransmit.
-- **TCP New Reno** : modification de Reno pour rester en mode Fast Recovery.
-- **TCP Vegas** : n'attend plus la perte de paquet, mais se sert du Round Trip Time (RTT).
-- **TCP Westwood** : réécriture de New Reno, modifie le comportement de divers mécanismes pour les rendre plus souples (gère RTT, « Agile Probing », Persistent Non Congestion Detection (PNCD)).
-- **TCP SACK** : (Selective ACK) permet d'indiquer un segment perdu mais d'acquitter d'autres segments suivants.
-- **TCP CUBIC** : élimine AIMD, plus du tout efficace sur nos réseaux n-Gigabit, recherche par dichotomie, Linux depuis 2.6.19.
-- **TCP CTCP** : (Compound TCP), double fenêtre : RTT + BP, Windows depuis Vista.
+- **TCP Tahoe** enchaîne Slow Start puis Congestion Avoidance, mais sans Fast Retransmit.
+- **TCP Reno** fait évoluer Tahoe pour utiliser Fast Retransmit.
+- **TCP New Reno** modifie Reno pour rester en mode Fast Recovery.
+- **TCP Vegas** n'attend plus la perte d'un paquet : il se sert du temps d'aller-retour (*Round Trip Time*, RTT).
+- **TCP Westwood** réécrit New Reno et assouplit divers mécanismes : prise en compte du RTT, « Agile Probing », *Persistent Non Congestion Detection* (PNCD).
+- **TCP SACK** (*Selective ACK*) permet de signaler un segment perdu tout en acquittant les segments suivants.
+- **TCP CUBIC** abandonne AIMD, devenu inefficace sur les réseaux à plusieurs gigabits, au profit d'une recherche par dichotomie ; il est utilisé par Linux depuis la version 2.6.19.
+- **TCP CTCP** (*Compound TCP*) utilise une double fenêtre, fondée sur le RTT et sur la bande passante ; il est utilisé par Windows depuis Vista.
 
 ### Et pour UDP ?
 
-Tristement simple !
-
-- Comme il n'existe aucun mécanisme de congestion…
-- … UDP écrase TCP !
-- UDP peut saturer la bande passante sans s'en apercevoir.
+UDP ne dispose d'aucun mécanisme de contrôle de congestion. Il peut donc saturer la bande passante sans s'en apercevoir, et prendre le dessus sur TCP, qui réduit son débit.
 
 ### Qualité de service sur les réseaux
 
 <Definition titre="Qualité de service (QoS)">
-    La QoS correspond à différents moyens et protocoles permettant de réguler et de prioriser le trafic sur les routeurs.
+    La QoS regroupe différents moyens et protocoles qui permettent de réguler le trafic sur les routeurs et de lui donner des priorités.
 </Definition>
 
 La gestion de la QoS sur les routeurs ne fait pas partie de ce cours.
@@ -368,15 +345,15 @@ La gestion de la QoS sur les routeurs ne fait pas partie de ce cours.
     QUIC propose une alternative à TCP pour le transport fiable en mode connecté.
 </Definition>
 
-Fonctionnalités majeures proposées :
+Ses principales fonctionnalités sont :
 
-- réémission de paquets perdus non bloquante ;
-- chiffrement par TLS obligatoire ;
-- déplacement du traitement en environnement utilisateur (et non noyau) ;
-- simplification des poignées de main ;
-- segmentation des données dans des flux ;
-- itinérance de connexion ;
-- est moins agressif qu'UDP sur la bande passante utilisée (QoS interne).
+- la réémission non bloquante des paquets perdus ;
+- le chiffrement obligatoire par TLS ;
+- un traitement déplacé dans l'espace utilisateur (et non plus dans le noyau) ;
+- des poignées de main simplifiées ;
+- le découpage des données en flux ;
+- l'itinérance des connexions ;
+- une consommation de bande passante moins agressive qu'UDP (QoS interne).
 
 ### RTP
 
@@ -384,32 +361,32 @@ Fonctionnalités majeures proposées :
     Le Real-time Transport Protocol permet de transporter des données en « équivalent temps réel ».
 </Definition>
 
-Utilisation : flux voix (VoIP) ; visio et vidéoconférence ; parfois streaming vidéo (si pas en WebRTC).
+Il sert aux flux de voix (VoIP), à la visioconférence et parfois au streaming vidéo (lorsque WebRTC n'est pas utilisé).
 
-Il peut être complété par *Real-Time Streaming Protocol* (RTSP) pour la télécommande et *Real-Time Control Protocol* (RTCP) s'il n'est pas utilisé par d'autres protocoles sachant le gérer comme SIP.
+Il peut être complété par le *Real-Time Streaming Protocol* (RTSP), qui sert de télécommande, et par le *Real-Time Control Protocol* (RTCP), sauf si d'autres protocoles comme SIP assurent déjà ce contrôle.
 
 ### SCTP
 
 <Definition titre="Stream Control Transmission Protocol (SCTP)">
     SCTP propose de remplacer UDP et TCP en associant leurs atouts :
 
-    - orienté message comme UDP ;
-    - options pour le transport fiable comme TCP ;
-    - options pour la fragmentation et le réassemblage comme TCP ;
-    - options natives pour la redondance et la répartition de charge.
+    - il est orienté message, comme UDP ;
+    - il propose des options de transport fiable, comme TCP ;
+    - il propose des options de fragmentation et de réassemblage, comme TCP ;
+    - il gère nativement la redondance et la répartition de charge.
 </Definition>
 
-Utilisation : principalement par les opérateurs de téléphonie mobile pour la signalisation de la voix et les SMS.
+Il est surtout utilisé par les opérateurs de téléphonie mobile pour la signalisation de la voix et pour les SMS.
 
 ### TLS
 
 <Definition titre="Transport Layer Security (TLS)">
-    TLS fournit un canal chiffré, généralement à l'aide d'authentification partielle ou complète avec de la cryptographie asymétrique.
+    TLS fournit un canal chiffré, généralement avec une authentification partielle ou complète fondée sur la cryptographie asymétrique.
 </Definition>
 
-Utilisation : TLS est utilisé notamment par HTTP : **HTTP sur TLS = HTTPS**.
+TLS est notamment utilisé par HTTP : **HTTP sur TLS = HTTPS**.
 
-**Poignée de main TLS** : SYN ; SYN + ACK ; ACK + ClientHello ; ServerHello + Cert ; ClientKeyExch + ChangeCipher ; ChangeCipher ; puis Data dans les deux sens.
+La **poignée de main TLS** se déroule ainsi : SYN ; SYN + ACK ; ACK + ClientHello ; ServerHello + Cert ; ClientKeyExch + ChangeCipher ; ChangeCipher ; puis échange de données (Data) dans les deux sens.
 
 <Animation type="echange-sequence" titre="Poignée de main TLS (reseaux.pdf p. 197)" params={{scenario: 'tls'}}>
     SYN, SYN + ACK, ACK + ClientHello, ServerHello + Cert, ClientKeyExch + ChangeCipher, ChangeCipher, Data, Data.
@@ -418,39 +395,32 @@ Utilisation : TLS est utilisé notamment par HTTP : **HTTP sur TLS = HTTPS**.
 ### DTLS
 
 <Definition titre="DTLS">
-    Fournir un équivalent de TLS sur UDP.
+    DTLS fournit un équivalent de TLS sur UDP.
 </Definition>
 
-Utilisation : sécurisation de RTP (SRTP). C'est un protocole récent et encore peu utilisé.
+Il sert notamment à sécuriser RTP (SRTP). C'est un protocole récent et encore peu utilisé.
 
 ## La translation d'adresse et de port
 
 <Definition titre="Translation d'adresse (NAT)">
-    Remplacer une adresse IP par une autre.
+    La translation d'adresse consiste à remplacer une adresse IP par une autre.
 </Definition>
 
-**Où faire ce type de manœuvre ?** Sur un routeur évidemment !
-
-**Sens du changement** : changer l'adresse source : **SNAT** ; changer l'adresse destination : **DNAT**.
+Cette opération se fait sur un routeur. Si l'on change l'adresse source, on parle de **SNAT** ; si l'on change l'adresse de destination, on parle de **DNAT**.
 
 <Definition titre="Translation de port (PAT)">
-    Remplacer un port UDP ou TCP par un autre.
+    La translation de port consiste à remplacer un port UDP ou TCP par un autre.
 </Definition>
 
-**Où faire ce type de manœuvre ?** Sur un routeur évidemment ! … Même si parfois, c'est sur la même machine !
+Elle se fait elle aussi sur un routeur, mais parfois directement sur la machine concernée.
 
 ### Quand faire la translation ?
 
-Ça dépend !
-
-- Certaines modifications doivent se faire dès l'entrée dans le routeur…
-- … d'autres doivent se faire juste avant la sortie définitive.
-
-Vous verrez lorsque vous étudierez le pare-feu Netfilter (Linux) et la circulation des paquets dans le noyau.
+Cela dépend des cas : certaines modifications doivent être faites dès l'entrée du paquet dans le routeur, d'autres juste avant sa sortie définitive. Vous le verrez en étudiant le pare-feu Netfilter (Linux) et la circulation des paquets dans le noyau.
 
 ### Translation d'adresse : cas d'utilisation n° 1
 
-Franchissement sortant d'une box Internet. Déroulement et état du paquet IP :
+Prenons un paquet qui sort d'un réseau domestique en traversant une box Internet. Voici son déroulement et l'état du paquet IP à chaque étape :
 
 | Étape | Description | SRCADDR | DSTADDR |
 | --- | --- | --- | --- |
@@ -459,63 +429,52 @@ Franchissement sortant d'une box Internet. Déroulement et état du paquet IP :
 | 3 | Le serveur distant répond | 192.0.2.115 | 203.0.113.198 |
 | 4 | La passerelle renvoie en interne | 192.0.2.115 | 192.168.1.110 |
 
-<Theorem type="Comment on appelle cette technique ?">
-    Le **masquerading** ! La passerelle garde un état des connexions sortantes pour effectuer la traduction retour. La traduction se fait en sortie, c'est un cas particulier de SNAT.
+<Theorem type="Masquerading">
+    Cette technique s'appelle le **masquerading**. La passerelle garde un état des connexions sortantes pour effectuer la traduction retour. La traduction se fait en sortie : c'est un cas particulier de SNAT.
 </Theorem>
 
 ### Translation d'adresse : cas d'utilisation n° 2
 
-Franchissement sortant d'un routeur avec personnalisation de l'adresse.
-
-- Le principe est sensiblement identique.
-- Il peut ne pas avoir à suivre l'état : association statique d'une adresse à une autre.
-- Utilisé parfois sur des campus universitaires : hôte interne avec une adresse privée mais associée à une IP publique gérée par un routeur de bordure.
-- C'est une sorte de « one-to-one NAT » (ou NAT 1:1).
+Un paquet peut aussi sortir par un routeur qui lui attribue une adresse personnalisée. Le principe est sensiblement le même, mais le routeur n'a pas forcément besoin de suivre l'état des connexions : une adresse est associée statiquement à une autre. Cette technique est parfois utilisée sur les campus universitaires, où un hôte interne a une adresse privée associée à une adresse publique gérée par le routeur de bordure. C'est une sorte de « one-to-one NAT » (ou NAT 1:1).
 
 ### Translation de port : cas d'utilisation
 
-Partage d'adresse IP chez Free.
-
-- 4 abonnés Free se partagent une seule IP publique, la Freeteuse ne la voit plus directement par défaut.
-- Seule une plage de ports TCP et UDP est relayée vers elle depuis Internet.
-- En sortie les ports source peuvent être modifiés pour régler les conflits.
+Free utilise la translation de port pour partager des adresses IP. Quatre abonnés se partagent une seule adresse IP publique, si bien que, par défaut, la Freebox ne la voit plus directement. Seule une plage de ports TCP et UDP lui est relayée depuis Internet, et en sortie, les ports source peuvent être modifiés pour éviter les conflits.
 
 ### La redirection d'adresse
 
 <Definition titre="Redirection d'adresse">
-    Rediriger une connexion entrante vers une autre adresse (généralement interne).
+    La redirection d'adresse envoie une connexion entrante vers une autre adresse, généralement interne.
 </Definition>
 
-- Utilisé par exemple sur les box Internet pour exposer des services internes.
-- On indique l'adresse interne à qui envoyer le trafic.
-- Le réseau extérieur ne connaît que l'adresse de la passerelle.
+Elle est utilisée par exemple sur les box Internet pour exposer des services internes : on indique l'adresse interne à laquelle envoyer le trafic, et le réseau extérieur ne connaît que l'adresse de la passerelle.
 
-Sous Linux : l'argument « jump-to » d'iptables, ou « dnat to » de nftables.
+Sous Linux, on utilise l'argument « jump-to » d'iptables ou « dnat to » de nftables.
 
 ### La redirection de port
 
 <Definition titre="Redirection de port">
-    Rediriger une connexion entrante sur un port vers un autre port.
+    La redirection de port envoie une connexion entrante sur un port vers un autre port.
 </Definition>
 
-Cas d'utilisation : utilisé par exemple sur un serveur pour rediriger 80 vers 8080.
+On l'utilise par exemple sur un serveur pour rediriger le port 80 vers le port 8080.
 
 <Warning titre="Attention">
-    On ne fait pas n'importe quoi ! Le protocole doit être identique, ou bien le client sait quel protocole parler : on ne fait pas du 80 vers 443 par PAT !
+    Le protocole doit rester le même, ou bien le client doit savoir quel protocole parler : on ne redirige pas le port 80 vers le port 443 par PAT.
 </Warning>
 
 ### Le cumul redirection adresse / port
 
 <Definition titre="Cumul">
-    Cumuler une translation d'adresse et une translation de port.
+    On peut combiner une translation d'adresse et une translation de port.
 </Definition>
 
-Cas d'utilisation :
+C'est le cas par exemple :
 
-- exposition d'un service interne par une Freeteuse : translation de l'adresse IP et du port. Par exemple : `192.0.2.110:443` vers `192.168.1.110:8443` ;
-- exposition d'un service interne à un hôte : `192.168.1.110:443` vers `127.0.0.1:9091`.
+- pour exposer un service interne derrière une Freebox, en traduisant l'adresse IP et le port, par exemple de `192.0.2.110:443` vers `192.168.1.110:8443` ;
+- pour exposer un service local à un hôte, par exemple de `192.168.1.110:443` vers `127.0.0.1:9091`.
 
-## En bonus : fonctionnements avancés
+## Pour aller plus loin : fonctionnements avancés
 
 ### Principe du tunnel
 
@@ -535,30 +494,30 @@ Cas d'utilisation :
 ### Quelques types de tunnels
 
 <Definition titre="IP in IP">
-    Transporte un paquet IP dans un autre paquet IP. Par exemple pour : IPv6 over IPv4 ; IPv4 over IPv6 ; pont IP entre deux LAN.
+    Un paquet IP est transporté dans un autre paquet IP, par exemple pour faire passer IPv6 sur IPv4, IPv4 sur IPv6, ou pour créer un pont IP entre deux LAN.
 </Definition>
 
 {/* CORRIGÉ (reseaux.pdf p. 211 : la diapositive indiquait le port UDP 47 pour GRE). */}
 
 <Definition titre="Generic Routing Encapsulation (GRE)">
-    Transport générique de données (pas forcément IP) :
+    GRE transporte des données de façon générique (pas forcément IP) :
 
-    - soit directement au-dessus d'IP (proto 47) ;
+    - soit directement au-dessus d'IP (protocole 47) ;
     - soit via UDP (port 4754).
 </Definition>
 
-Tunnels dits « VPN » :
+Parmi les tunnels dits « VPN », on trouve :
 
-- **IPSec** : directement prévu par les protocoles IP : c'est bien IP qui est chiffré. Négociation des clés par logiciel externe. Complexe, mais très fiable notamment en entreprise.
-- **OpenVPN** : tunnel de type SSL/TLS (niveau application). Logiciel et driver réseau à part entière. Vieillissant.
-- **WireGuard** : tente de rassembler le meilleur des deux mondes : pilote noyau, sécurité par conception, manipulation relativement facile.
+- **IPSec**, directement prévu par les protocoles IP : c'est bien IP qui est chiffré. Les clés sont négociées par un logiciel externe. Il est complexe, mais très fiable, notamment en entreprise.
+- **OpenVPN**, un tunnel de type SSL/TLS (niveau application), qui comprend un logiciel et un pilote réseau à part entière. Il est vieillissant.
+- **WireGuard**, qui tente de réunir le meilleur des deux mondes : pilote noyau, sécurité dès la conception et prise en main relativement facile.
 
 <Definition titre="Multiprotocol Label Switching (MPLS)">
-    MPLS permet de transporter tout type de trafic : IPv4, IPv6, ATM, Ethernet… Apprécié des opérateurs pour les VPN intersite de leurs clients : très léger, très rapide, remplace le routage IP.
+    MPLS permet de transporter tout type de trafic : IPv4, IPv6, ATM, Ethernet… Très léger et très rapide, il remplace le routage IP ; les opérateurs l'apprécient pour les VPN entre les sites de leurs clients.
 </Definition>
 
 <Warning titre="Contrainte">
-    Tous les routeurs de l'AS doivent gérer MPLS. Les bordures posent et enlèvent les étiquettes (inspiré du VLAN).
+    Tous les routeurs du système autonome (AS) doivent gérer MPLS. Les routeurs de bordure posent et retirent les étiquettes, sur un principe inspiré du VLAN.
 </Warning>
 
 ## Fiche récapitulative

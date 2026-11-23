@@ -18,7 +18,7 @@ import sc from './images/connecteur-sc.jpg';
 ## Le câble coaxial
 
 <Definition titre="Câble coaxial">
-    Constitué d'une **âme** et d'un **écran** séparés par un **isolant**.
+    Il est constitué d'une **âme** et d'un **écran**, séparés par un **isolant**.
 </Definition>
 
 {/* AJOUT : légende détaillant les repères A à D de la photo */}
@@ -30,12 +30,12 @@ import sc from './images/connecteur-sc.jpg';
 ## La paire torsadée
 
 <Definition titre="Paire torsadée">
-    Deux brins enlacés forment une paire, généralement rassemblés par 4.
+    Deux brins enlacés forment une paire ; un câble rassemble généralement 4 paires.
 </Definition>
 
-- Torsader les fils atténue l'influence du champ magnétique environnant… donc certains parasites !
-- Dans une même gaine, les pas de torsade sont différents pour éviter la **diaphonie**.
-- Des écrans limitent encore le parasitage : soit pour le câble, soit pour chaque paire, soit les deux.
+- Torsader les fils atténue l'influence du champ magnétique environnant, et donc certains parasites.
+- Dans une même gaine, les paires ont des pas de torsade différents pour éviter la **diaphonie**.
+- Des écrans limitent encore davantage les parasites : il peut y en avoir un autour du câble, un autour de chaque paire, ou les deux.
 
 <Figure legende="Paire torsadée : observez les pas de torsade différents" page="reseaux.pdf p. 66">
     <Image src={paireTorsadee} alt="Extrémité d'un câble réseau dont les quatre paires torsadées (bleue, orange, verte, marron) ont des pas de torsade différents" width={420} style="display:block;width:100%;max-width:20rem;height:auto;margin-inline:auto;border-radius:0.5rem" />
@@ -44,15 +44,15 @@ import sc from './images/connecteur-sc.jpg';
 ## Le blindage électromagnétique
 
 <Definition titre="Blindage électromagnétique">
-    Mettre une barrière électromagnétique pour éviter les interférences.
+    Il consiste à placer une barrière électromagnétique pour éviter les interférences.
 </Definition>
 
-- Blindage ou écran : pour être efficaces, doivent être reliés à la masse.
+- Pour être efficaces, le blindage et les écrans doivent être reliés à la masse.
 - **U/UTP** : paire torsadée non blindée (*Unfoiled Twisted Pair*).
 - **F/UTP** : la gaine extérieure est blindée par un feuillard (*Foiled*).
 - **U/FTP** : chaque paire est blindée par un feuillard.
 - **S/FTP** : la gaine est blindée par une tresse, et chaque paire par un feuillard (*Shielded / Foiled Twisted Pair*).
-- En pratique, il existe de nombreuses définitions selon l'efficacité de blindage désirée.
+- En pratique, il existe de nombreuses variantes selon l'efficacité de blindage recherchée.
 
 <Figure legende="Blindage sur paire torsadée : feuillard par paire, tresse globale" page="reseaux.pdf p. 68">
     <Image src={blindage} alt="Câble S/FTP dénudé : tresse métallique globale et feuillard d'aluminium autour de chaque paire" width={560} style="display:block;width:100%;max-width:28rem;height:auto;margin-inline:auto;border-radius:0.5rem" />
@@ -61,24 +61,24 @@ import sc from './images/connecteur-sc.jpg';
 ## La fibre optique
 
 <Definition titre="Fibre optique">
-    Un mince brin en verre ou en plastique enchâssé dans une gaine.
+    Mince brin de verre ou de plastique enchâssé dans une gaine.
 </Definition>
 
-- **Mono-mode** : le rayon laser va tout droit et le brin sert de guide d'onde.
-- **Multi-mode** : plusieurs rayons peuvent être émis, on utilise les reflets dans le guide d'onde et sur la gaine.
-- **Simplex** : un seul sens de communication.
-- **Duplex** : deux sens, donc deux longueurs d'ondes lumineuses différentes (ou plus).
-- Plusieurs longueurs d'ondes possibles.
+- En **mono-mode**, le rayon laser va tout droit et le brin sert de guide d'onde.
+- En **multi-mode**, plusieurs rayons peuvent être émis : on exploite leurs reflets dans le guide d'onde et sur la gaine.
+- En **simplex**, la communication se fait dans un seul sens.
+- En **duplex**, elle se fait dans les deux sens, avec donc au moins deux longueurs d'onde lumineuses différentes.
+- Une même fibre peut transporter plusieurs longueurs d'onde.
 
 <Remark>
-    En langage commercial : on dit « fibre noire » quand il n'y a pas d'équipement actif de part et d'autre.
+    Dans le langage commercial, on parle de « fibre noire » lorsqu'aucun équipement actif n'est installé à ses extrémités.
 </Remark>
 
 ## Les connecteurs courants
 
 ### Le connecteur BNC
 
-Généralement utilisé pour « Thin Ethernet », en électronique et en radio (*Bayonet Neill–Concelman connector*).
+Il est généralement utilisé pour le « Thin Ethernet », en électronique et en radio. Son nom vient de *Bayonet Neill–Concelman connector*.
 
 <Figure legende="Connecteurs BNC : té et bouchons" page="reseaux.pdf p. 71">
     <Image src={bnc} alt="Connecteurs BNC métalliques : un té BNC muni d'un bouchon vert, un connecteur seul et un bouchon de terminaison" width={640} style="display:block;width:100%;max-width:28rem;height:auto;margin-inline:auto;border-radius:0.5rem" />
@@ -86,7 +86,7 @@ Généralement utilisé pour « Thin Ethernet », en électronique et en radio (
 
 ### Le connecteur 4P4C (RJ9)
 
-Généralement utilisé pour relier les combinés téléphoniques à leurs appareils (4 contacts, 4 fils).
+Il sert généralement à relier les combinés téléphoniques à leur appareil ; il comporte 4 contacts et 4 fils.
 
 <Figure legende="Connecteur 4P4C (RJ9)" page="reseaux.pdf p. 72">
     <Image src={rj9} alt="Petite fiche transparente à quatre contacts au bout d'un cordon spiralé de combiné téléphonique" width={230} style="display:block;width:100%;max-width:12rem;height:auto;margin-inline:auto;border-radius:0.5rem" />
@@ -94,7 +94,7 @@ Généralement utilisé pour relier les combinés téléphoniques à leurs appar
 
 ### Le connecteur 6P2C (RJ11)
 
-Généralement utilisé pour relier les appareils téléphoniques non IP (6 contacts, 2 fils).
+Il sert généralement à relier les appareils téléphoniques non IP ; il comporte 6 contacts et 2 fils.
 
 <Figure legende="Connecteurs 6P (RJ11), repérage de la broche 1" page="reseaux.pdf p. 73">
     <Image src={rj11} alt="Deux fiches transparentes à six emplacements de contacts, tête-bêche, avec l'indication « Pin 1 »" width={250} style="display:block;width:100%;max-width:12rem;height:auto;margin-inline:auto;border-radius:0.5rem" />
@@ -102,7 +102,7 @@ Généralement utilisé pour relier les appareils téléphoniques non IP (6 cont
 
 ### Le connecteur 8P8C (RJ45)
 
-Généralement utilisé pour Ethernet, mais aussi pour RS232, et parfois sur le terrain avec RS485 et ses dérivés (des contacts ne sont alors pas utilisés).
+Il est surtout utilisé pour Ethernet, mais aussi pour RS232, et parfois sur le terrain avec RS485 et ses dérivés (certains contacts ne sont alors pas utilisés).
 
 <Figure legende="Connecteur 8P8C (dit « RJ45 ») : contacts numérotés de 1 à 8" page="reseaux.pdf p. 74">
     <Image src={rj45} alt="Fiche RJ45 transparente vue de biais, ses huit contacts dorés numérotés de 1 à 8" width={330} style="display:block;width:100%;max-width:16rem;height:auto;margin-inline:auto;border-radius:0.5rem" />
@@ -110,7 +110,7 @@ Généralement utilisé pour Ethernet, mais aussi pour RS232, et parfois sur le 
 
 ### La norme EIA 568
 
-Affectation des brins dans un connecteur 8P8C (dit « RJ45 ») pour les réseaux Ethernet.
+Cette norme fixe l'affectation des brins dans un connecteur 8P8C (dit « RJ45 ») pour les réseaux Ethernet.
 
 | N° | 568A : paire | Couleur | 568B : paire | Couleur | 10BT | 1GBT |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -125,7 +125,7 @@ Affectation des brins dans un connecteur 8P8C (dit « RJ45 ») pour les réseaux
 
 ### Le connecteur SC
 
-Très utilisé dans les environnements de bureau et en domestique.
+Il est très utilisé au bureau et chez les particuliers.
 
 <Figure legende="Connecteur SC sur une jarretière optique" page="reseaux.pdf p. 76">
     <Image src={sc} alt="Jarretière de fibre optique jaune terminée par un connecteur SC carré vert" width={480} style="display:block;width:100%;max-width:18rem;height:auto;margin-inline:auto;border-radius:0.5rem" />
@@ -134,16 +134,16 @@ Très utilisé dans les environnements de bureau et en domestique.
 ## Le codage « non-return to zero » (NRZ)
 
 <Definition titre="Codage NRZ">
-    Codage de deux états (0 ou 1) avec deux valeurs significatives impossibles à confondre (sans état intermédiaire).
+    Ce codage représente deux états (0 ou 1) par deux valeurs significatives impossibles à confondre, sans état intermédiaire.
 </Definition>
 
-- Sur RS232, le 0 est encodé avec +12 V, le 1 est encodé en −12 V.
+- Sur RS232, le 0 est codé par +12 V et le 1 par −12 V.
 
 {/* CORRIGÉ (reseaux.pdf p. 77 : la diapositive inversait la convention NRZI d'USB (« changement = 1 ») et le bourrage (« un 1 tous les six 0 »)). */}
 
 - Sur USB, on utilise **NRZI**, où un 0 provoque un changement d'état et un 1 l'absence de changement.
-- Problème : lors d'une longue séquence de 1, aucune transition n'a lieu : l'horloge portée par les données est potentiellement perdue…
-- … c'est pourquoi USB ajoute un 0 après six 1 consécutifs (*bit stuffing*), à éliminer à la réception.
+- Lors d'une longue suite de 1, aucune transition n'a lieu : l'horloge portée par les données risque alors d'être perdue.
+- C'est pourquoi USB insère un 0 après six 1 consécutifs (*bit stuffing*) ; ce 0 est retiré à la réception.
 
 ## Le codage Manchester
 
@@ -153,10 +153,12 @@ Très utilisé dans les environnements de bureau et en domestique.
     Les transitions au milieu de chaque bit servent à encoder les données. Convention IEEE 802.3 (Ethernet) : **front montant = 1**, **front descendant = 0** (la convention inverse, dite de G. E. Thomas, existe aussi).
 </Definition>
 
-- Doit émettre au moins 2 fois plus vite que les données.
-- Auto-porte son signal d'horloge.
-- Moins sensible aux parasites.
-- Moins sensible à l'affaiblissement du signal.
+Ce codage présente plusieurs caractéristiques :
+
+- il faut émettre au moins deux fois plus vite que le débit des données ;
+- le signal porte lui-même son horloge ;
+- il est moins sensible aux parasites ;
+- il est moins sensible à l'affaiblissement du signal.
 
 <Animation type="codage-ligne" titre="NRZ, NRZI et Manchester sur une suite de bits" params={{bits: '010111111100'}} />
 

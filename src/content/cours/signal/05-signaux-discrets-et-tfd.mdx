@@ -618,12 +618,12 @@ $$
 
 ## Transformée de Fourier discrète (TFD)
 
-Inconvénients de la TFTD :
+La TFTD présente deux inconvénients :
 
-- nombre d'échantillons de $x[n]$ infini ;
-- fréquence considérée comme une variable continue dans l'intervalle $\left[-\frac{1}{2}, \frac{1}{2}\right]$ → nombre d'échantillons de fréquence infini → difficile à traiter à l'aide d'un ordinateur.
+- le nombre d'échantillons de $x[n]$ est infini ;
+- la fréquence est une variable continue dans l'intervalle $\left[-\frac{1}{2}, \frac{1}{2}\right]$ : le nombre d'échantillons de fréquence est donc lui aussi infini, ce qui rend le calcul difficile à traiter par ordinateur.
 
-Solution : **limiter** le nombre d'échantillons de $x[n]$ à $N$ valeurs, et **discrétiser** la fréquence (limiter le nombre d'échantillons de $f$ à $L$ valeurs) → transformée de Fourier discrète (TFD).
+La solution consiste à **limiter** le nombre d'échantillons de $x[n]$ à $N$ valeurs, et à **discrétiser** la fréquence (en limitant le nombre d'échantillons de $f$ à $L$ valeurs). On obtient ainsi la transformée de Fourier discrète (TFD).
 
 Soit la suite finie $\{x[n]\}$, $n = 0, 1, \ldots, N-1$. Sa TFTD pour $N$ échantillons est
 
