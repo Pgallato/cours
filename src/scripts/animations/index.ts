@@ -21,6 +21,7 @@ const registre: Record<string, () => Promise<{ default: Monteur }>> = {
     'codage-ligne': () => import('./codage-ligne'),
     'conversion-binaire': () => import('./conversion-binaire'),
     'masque-ip': () => import('./masque-ip'),
+    permissions: () => import('./permissions'),
 };
 
 export function animationsDisponibles() {
