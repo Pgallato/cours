@@ -21,6 +21,7 @@ src/
     NN-titre.mdx            un chapitre par fichier ; NN = ordre, le reste = slug d'URL
   content/_template/        gabarit à copier (hors collection, jamais publié)
   lib/cours.ts              tousLesCours() : assemble cours + chapitres triés, slugs, durées, teinte
+  lib/rehype-tableaux.mjs   plugin rehype (astro.config) : data-label + classe mobile des tableaux
   pages/index.astro         catalogue (filtres matière/semestre, reprise, favoris, avancement)
   pages/cours/[cours]/index.astro        sommaire d'un cours
   pages/cours/[cours]/[chapitre].astro   page chapitre (plan latéral/tiroir, sommaire, préc./suiv., fil d'Ariane)
@@ -56,6 +57,7 @@ Enrichir un cours déjà publié (exemples, explications, schémas, exercices, s
 - **Transcription fidèle.** Ne rien inventer (ni énoncé, ni question). Erreur de fond repérée → la laisser telle quelle, ajouter `{/* FOND ? … Signalé, non corrigé. */}` juste avant, et la signaler à l'utilisateur. Corriger seulement après son accord.
 - Passage illisible/ambigu : `{/* TODO: illisible, <référence> */}` ; énoncé ou figure manquant : `<Todo page={…}>…</Todo>` (visible). Contradiction entre deux sources = point `FOND ?`. Lister les TODO en fin de travail.
 - Formules en LaTeX : `$…$` en ligne ; **les formules centrées s'écrivent `$$` seul sur sa ligne** (un `$$x$$` sur une seule ligne est rendu *en ligne* par remark-math). Décimales françaises : `0{,}58`. Pourcentages dans KaTeX : `\%`.
+- Tableaux Markdown : rien à faire pour le mobile. Au build, `rehype-tableaux.mjs` classe chaque tableau ; sous 40rem, un tableau de texte (≥ 3 colonnes, cellules longues) ou une grande grille (≥ 4 colonnes et ≥ 7 lignes) devient une carte par ligne (1re cellule = titre), un tableau large et plat (≥ 7 colonnes, ≤ 3 lignes) est transposé ; les autres restent en grille compacte. Une 1re colonne d'en-tête explicite améliore les cartes.
 - Une section = un `##` (apparaît dans le plan et le sommaire) ; sections courtes ; `###` pour les sous-parties.
 - Composants : `Definition`, `Theorem` (prop `type` pour changer l'étiquette, ex. « À retenir »), `Property`, `Remark`, `Warning`, `Example`, `Exercise` (+ `<Solution>` repliée, `niveau={1..3}`), `Solution` (aussi pour « Détail du calcul »), `Formulas` + `Formula label`, `Figure` (SVG inline), `Animation`, `Todo`. Terminer chaque chapitre par `## Fiche récapitulative` avec `<Formulas>`.
 - Figures : redessiner en SVG inline (`currentColor`, `var(--accent)`), `role="img"` + `aria-label` ; ids de `<marker>` uniques par figure.
