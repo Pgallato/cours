@@ -96,7 +96,7 @@ Catalogue, filtres, navigation, pages et recherche se mettent à jour tout seuls
 
 4. **Vérifier** : `npm run dev`, puis `npm run build` (le build échoue si le frontmatter est invalide).
 
-5. **Publier** : `git add . && git commit -m "Cours : mécanique" && git push` → Dokploy redéploie.
+5. **Publier** : `git add . && git commit -m "Cours : mécanique" && git push` (pas de mise en ligne), puis, quand on veut publier, un tag : `git tag v2026.11.25 && git push origin v2026.11.25` → GitHub Actions construit et déploie sur Netlify.
 
 ### Composants disponibles (sans import)
 
@@ -125,27 +125,37 @@ les pages qui l'utilisent.
 
 ---
 
-## Déployer sur Dokploy (depuis GitHub)
+## Déployer sur Netlify (à chaque tag)
 
-1. Pousser le dépôt sur GitHub (`sources/` est ignoré par git **et** par Docker).
-2. Dans Dokploy : **Create Application** → source **GitHub** → choisir le dépôt et la branche `main`.
-3. **Build Type : `Dockerfile`** (chemin `./Dockerfile`, contexte `.`).
-4. Onglet **Domains** : ajouter le domaine, **port du conteneur : `80`**, activer HTTPS (Let's Encrypt).
-5. Onglet **General** → activer **Auto Deploy** : chaque `git push` sur `main` reconstruit et redéploie.
-6. **Deploy**. Le conteneur expose un `HEALTHCHECK` sur `/healthz`.
+Un `git push` sur `main` **ne met rien en ligne** : seuls les tags déclenchent un déploiement.
 
-Pensez à mettre votre domaine dans `site` de `astro.config.mjs` (URL canonique).
+- `netlify.toml` : `ignore = "exit 0"` annule tous les builds lancés par Netlify lui-même
+  (push, deploy previews) ; il porte aussi les en-têtes de sécurité et de cache (repris de `nginx.conf`).
+- `.github/workflows/deploiement-netlify.yml` : à chaque tag poussé, `npm ci`, `npm run check`,
+  `npm test` (build + liens), puis `netlify deploy --prod --no-build --dir=dist`.
+  Si une vérification échoue, rien n'est mis en ligne.
 
-L'image finale ne contient que `nginx` et le dossier `dist/` (≈ quelques Mo) :
-gzip, cache long sur `/_astro/*` (fichiers hashés), cache court sur le HTML,
-page 404 personnalisée et en-têtes de sécurité (CSP, nosniff, etc.).
+Mise en place (une fois) : dans GitHub, **Settings → Secrets and variables → Actions**, créer
+`NETLIFY_AUTH_TOKEN` (Netlify : *User settings → Applications → Personal access tokens*) et
+`NETLIFY_SITE_ID` (Netlify : *Project configuration → General → Project ID*).
+
+Publier :
+
+```bash
+git tag v2026.11.25
+git push origin v2026.11.25
+```
+
+Le workflow peut aussi être relancé à la main (onglet **Actions** → *Run workflow*, en choisissant le tag).
+
+L'ancien déploiement Docker (`Dockerfile` + `nginx.conf`) reste utilisable pour tester l'image en local.
 
 ---
 
 ## Installer comme une application (PWA)
 
 Le site est installable et **fonctionne hors ligne** (tous les cours sont mis en cache à la première visite).
-L'installation exige **HTTPS** (acquis avec Dokploy + Let's Encrypt).
+L'installation exige **HTTPS** (fourni par Netlify).
 
 - **Android (Chrome)** : bouton « Installer l'application » en bas de page, ou menu ⋮ → *Installer l'application*.
 - **iPhone / iPad (Safari)** : Partager → *Sur l'écran d'accueil*.

@@ -1,0 +1,43 @@
+# Déploiement sur Netlify uniquement lors de la publication d'un tag (ex. v2026.11.25).
+# Les push sur main ne déclenchent plus de mise en ligne : Netlify ignore ses propres builds
+# (voir « ignore » dans netlify.toml) ; c'est ce workflow qui construit et envoie dist/.
+#
+# Secrets à créer dans GitHub (Settings → Secrets and variables → Actions) :
+#   NETLIFY_AUTH_TOKEN : jeton personnel Netlify (User settings → Applications → Personal access tokens)
+#   NETLIFY_SITE_ID    : Project configuration → General → Project ID
+name: Déploiement Netlify (tags)
+
+on:
+  push:
+    tags: ['*']
+  # relancer à la main un déploiement (choisir le tag dans « Use workflow from »)
+  workflow_dispatch:
+
+concurrency:
+  group: deploiement-netlify
+  cancel-in-progress: false
+
+jobs:
+  deployer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      # types + schéma de contenu, puis build (astro + pagefind + service worker) et liens internes
+      - run: npm run check
+      - run: npm test
+
+      - name: Mise en ligne (production)
+        run: npx --yes netlify-cli@27.16.3 deploy --prod --no-build --dir=dist --message "Tag ${GITHUB_REF_NAME}"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
