@@ -1,0 +1,370 @@
+---
+titre: Architecture interne du microprocesseur
+resume: Fonctions d’un microprocesseur, unité de commande et unité de traitement (ALU, accumulateur, registre d’état, PC, registre et décodeur d’instruction), registres classiques, séquencement, architectures Von Neumann et Harvard, pipeline.
+tags: [ALU, accumulateur, registre d'état, flags, compteur ordinal, pile, registre d'instruction, Von Neumann, Harvard, pipeline, PIC]
+sources: ["part1.pdf p. 20", "part1.pdf p. 21", "part1.pdf p. 22", "part1.pdf p. 23", "part1.pdf p. 24", "part1.pdf p. 25", "part1.pdf p. 26", "part1.pdf p. 27", "part1.pdf p. 28", "part1.pdf p. 29", "part1.pdf p. 30", "part1.pdf p. 31", "part1.pdf p. 32", "part1.pdf p. 33", "part1.pdf p. 34", "part2.pdf p. 2", "part2.pdf p. 3", "part2.pdf p. 4"]
+---
+
+## Généralités
+
+<Definition titre="Microprocesseur (µP)">
+    Un microprocesseur est un circuit intégré **programmable** qui exécute les fonctions d’unité centrale d’un ordinateur.
+</Definition>
+
+Ses fonctions sont au nombre de trois :
+
+1. **appeler** une instruction, qu’il lit en mémoire ;
+2. **décoder** cette instruction, c’est-à-dire la traduire en commandes internes ;
+3. **exécuter** cette instruction.
+
+Un microprocesseur intègre sur une même puce de silicium une **fonction de calcul**, une **fonction de contrôle** et un **jeu de registres**. Il est le cœur d’un système qui exécute des ordres élémentaires (les instructions) de façon **séquentielle**, contrairement à un FPGA, qui exécute des ordres câblés et permet donc à plusieurs sous-systèmes de fonctionner en parallèle. Les ordres sont stockés par le développeur dans une mémoire, la mémoire programme.
+
+Il existe deux types de structures : **Von Neumann** et **Harvard** (voir plus bas).
+
+## Schéma fonctionnel
+
+Le microprocesseur est cadencé par une **horloge**. Son **unité de commande** (U.C.) envoie des **microcommandes** aux autres blocs : le registre d’**instruction**, le registre d’**état**, l’**ALU**, les registres **de donnée**, le **PC** et les registres **d’adresse**. Ces blocs échangent leurs informations par un **bus interne** et communiquent avec l’extérieur par le bus de commande, le bus de données et le bus d’adresses.
+
+<Figure legende="Schéma fonctionnel d’un microprocesseur relié à sa mémoire programme (ROM) et à sa mémoire de données (RAM)" page="part1.pdf p. 22">
+    <svg viewBox="0 0 540 300" role="img" aria-label="À l'intérieur du microprocesseur : l'accumulateur et le registre d'états entourent l'UAL ; le registre de données relie l'UAL au bus de données. Le PC et le registre d'adresse alimentent le bus d'adresses. Le registre d'instruction et le décodeur d'instruction pilotent le bloc logique de commande, qui envoie le bus de commande vers les mémoires. À droite, la ROM programme et la RAM de données sont reliées au bus d'adresses et au bus de données.">
+        <g stroke="currentColor" stroke-width="1.2">
+            <rect x="20" y="40" width="370" height="220" fill="var(--accent)" fill-opacity="0.07" stroke-dasharray="5 3" />
+            <rect x="420" y="70" width="100" height="160" fill="var(--paper-2)" />
+            <rect x="435" y="85" width="70" height="55" fill="var(--paper)" />
+            <rect x="435" y="160" width="70" height="55" fill="var(--paper)" />
+        </g>
+        <rect x="20" y="8" width="500" height="16" fill="var(--accent)" fill-opacity="0.8" />
+        <rect x="20" y="276" width="500" height="16" fill="var(--margin)" fill-opacity="0.8" />
+        <g fill="var(--paper)" font-size="11" font-weight="600">
+            <text x="26" y="20">Bus d’adresses</text>
+            <text x="26" y="288">Bus de données</text>
+        </g>
+        <g font-size="11" fill="currentColor">
+            <g stroke="currentColor" stroke-width="1.1" fill="var(--paper)">
+                <rect x="40" y="60" width="50" height="24" />
+                <rect x="115" y="80" width="70" height="30" />
+                <rect x="40" y="220" width="100" height="24" />
+                <rect x="250" y="55" width="90" height="24" />
+                <rect x="220" y="100" width="50" height="24" />
+                <rect x="205" y="145" width="150" height="24" fill="var(--accent)" fill-opacity="0.2" />
+                <rect x="205" y="200" width="70" height="36" />
+                <rect x="290" y="200" width="70" height="36" />
+            </g>
+            <path d="M55 165 L75 125 L95 165 L83 165 L75 150 L67 165 Z" fill="var(--accent)" fill-opacity="0.35" stroke="currentColor" />
+            <text x="65" y="76" text-anchor="middle">Acc.</text>
+            <text x="150" y="93" text-anchor="middle">Registre</text><text x="150" y="105" text-anchor="middle">d’états</text>
+            <text x="75" y="178" text-anchor="middle">UAL</text>
+            <text x="90" y="236" text-anchor="middle">Registre données</text>
+            <text x="295" y="71" text-anchor="middle">Registre d’@</text>
+            <text x="245" y="116" text-anchor="middle">PC</text>
+            <text x="280" y="161" text-anchor="middle">Bloc logique de commande</text>
+            <text x="240" y="215" text-anchor="middle">Registre</text><text x="240" y="228" text-anchor="middle">d’instruction</text>
+            <text x="325" y="215" text-anchor="middle">Décodeur</text><text x="325" y="228" text-anchor="middle">d’instruction</text>
+            <text x="470" y="110" text-anchor="middle">Programme</text><text x="470" y="126" text-anchor="middle">ROM</text>
+            <text x="470" y="185" text-anchor="middle">Données</text><text x="470" y="201" text-anchor="middle">RAM</text>
+            <text x="362" y="176" font-size="9.5">Bus de</text><text x="362" y="187" font-size="9.5">commande</text>
+        </g>
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+            <line x1="295" y1="24" x2="295" y2="55" />
+            <line x1="245" y1="79" x2="245" y2="100" />
+            <line x1="470" y1="24" x2="470" y2="70" />
+            <line x1="470" y1="230" x2="470" y2="276" />
+            <line x1="90" y1="244" x2="90" y2="276" />
+            <line x1="240" y1="236" x2="240" y2="276" />
+            <line x1="275" y1="218" x2="290" y2="218" />
+            <line x1="325" y1="200" x2="325" y2="169" />
+            <line x1="245" y1="124" x2="245" y2="145" />
+            <line x1="90" y1="140" x2="205" y2="157" stroke="var(--accent)" />
+            <line x1="355" y1="157" x2="420" y2="157" stroke="var(--accent)" />
+            <path d="M65 84 V125 M85 165 V220 M95 140 H115" />
+        </g>
+    </svg>
+</Figure>
+
+## 1.1 Unité de traitement
+
+L’unité de traitement **exécute les instructions** : elle regroupe l’ALU, l’accumulateur et le registre d’état.
+
+### L’ALU : unité arithmétique et logique
+
+L’**ALU** (UAL en français) est destinée à effectuer des opérations **arithmétiques** (addition, soustraction, incrémentation, décrémentation) et **logiques** (ET, OU inclusif, OU exclusif, comparaison, décalage). Elle reçoit des ordres de l’unité de commande, qui lui indique quelles opérations effectuer et dans quel ordre.
+
+### L’accumulateur (Acc ou W)
+
+<Definition titre="Accumulateur">
+    L’accumulateur est le **registre de travail** du microprocesseur. Les opérations arithmétiques l’utilisent pour stocker l’une des deux opérandes, puis le résultat.
+</Definition>
+
+Il est extrêmement important et utilisé : la plupart des instructions passent par lui, au point qu’on peut le comparer à un véritable hall de gare. Il est aussi facile à utiliser du point de vue du logiciel.
+
+### Le registre d’état
+
+<Definition titre="Registre d’état (flags)">
+    Chacun des bits du registre d’état dépend du résultat de la dernière opération réalisée par l’ALU : retenue, débordement, parité, zéro…
+</Definition>
+
+Les indicateurs (*flags*) que l’on retrouve sur la plupart des processeurs sont :
+
+- **S** ou **N** (*Sign*) : le résultat est négatif ;
+- **Z** (*Zero*) : le résultat est nul ;
+- **C** (*Carry*) : bit supplémentaire des opérations arithmétiques (« emprunt », *borrow*, pour les soustractions) ;
+- **O** ou **V** (*Overflow*) : le résultat est trop grand.
+
+## Remarque : le registre d’état du Z80
+
+Sur le Z80, le registre d’état F comporte les bits suivants.
+
+| Bit | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Flag | SF | ZF | YF | HF | XF | PF | NF | CF |
+
+- **SF** est mis à 1 si la valeur, lue en complément à 2, est négative : c’est simplement une copie du bit de poids fort.
+- **ZF** est mis à 1 si le résultat est nul.
+- **YF** est une copie du bit 5 du résultat.
+- **HF** est la demi-retenue (*half-carry*) d’une addition ou d’une soustraction, du bit 3 vers le bit 4 ; elle sert à la correction BCD par l’instruction `DAA`.
+- **XF** est une copie du bit 3 du résultat.
+- **PF** peut indiquer soit la parité du résultat (PF), soit le dépassement signé en complément à 2 (VF), mis à 1 si la valeur ne tient pas dans le registre.
+- **NF** indique si la dernière opération était une addition (0) ou une soustraction (1) ; cette information sert aussi à `DAA`.
+- **CF** est la retenue (*carry*).
+
+Ces indicateurs servent de **conditions de branchement** :
+
+| Condition | Signification |
+| --- | --- |
+| C | retenue (*carry*) |
+| NC | pas de retenue (*no carry*) |
+| Z | zéro |
+| NZ | non nul (*not zero*) |
+| P | positif (*plus*) |
+| M | négatif (*minus*) |
+| PE | parité paire (*parity even*) |
+| PO | parité impaire (*parity odd*) |
+
+## 1.2 Unité de commande : séquencement du déroulement des instructions
+
+L’unité de commande organise le déroulement des instructions. Elle comprend les éléments suivants.
+
+- Le **PC** (*Program Counter*, compteur ordinal) contient l’adresse de la prochaine instruction à aller chercher en mémoire.
+- Le **registre d’instruction** et le **décodeur d’instruction** : le code binaire d’une instruction est chargé dans le registre puis décodé, pour savoir quelles actions internes il faut lancer.
+- La **logique de commande** assure un fonctionnement cohérent des éléments précédents : elle organise l’exécution des instructions au rythme de l’horloge.
+
+## Les registres classiques
+
+On retrouve dans la plupart des microprocesseurs les registres suivants.
+
+<Definition titre="Accumulateur">
+    Sur les processeurs à accumulateur, c’est le registre des résultats intermédiaires des opérations arithmétiques.
+</Definition>
+
+<Definition titre="Compteur programme (PC)">
+    Il contient l’adresse de la prochaine instruction à aller chercher en mémoire. Il est incrémenté après la lecture de chaque instruction, et modifié par les instructions de saut (*jump*) ou d’appel de sous-programme (*call*).
+</Definition>
+
+<Definition titre="Pointeur de pile (SP)">
+    Il contient l’emplacement libre suivant de la **pile**. La pile est une zone de mémoire RAM gérée en **LIFO** (*Last In, First Out*) : l’adresse de retour y est empilée lors de l’appel d’un sous-programme, puis dépilée à la fin de celui-ci.
+</Definition>
+
+<Definition titre="Registres à usage général">
+    Ce sont des registres de travail à accès rapide pour les valeurs de l’application. Leur durée de vie est courte : il faut y faire attention lors des appels de sous-programmes.
+</Definition>
+
+## Le séquencement
+
+Le microprocesseur va chercher ses instructions en mémoire et les traite en trois étapes successives, confiées à trois unités.
+
+- L’**unité de recherche** va chercher une instruction en mémoire et récupère un code instruction.
+- L’**unité de décodage** fait correspondre au code instruction récupéré une suite de petites **micro-instructions** internes.
+- L’**unité d’exécution** exécute ces micro-instructions.
+
+### Les échanges possibles
+
+L’**unité de commande** reçoit les **instructions** depuis la **mémoire** et envoie des **ordres** à l’**unité de traitement**. Celle-ci échange des **données** dans les deux sens avec la mémoire et avec l’**interface d’entrées/sorties**, elle-même reliée à l’extérieur.
+
+## L’architecture Von Neumann
+
+<Definition titre="Architecture Von Neumann">
+    Une **même zone mémoire** contient à la fois le programme **et** les données. Un **seul bus** interne fait transiter les instructions **ou** les données.
+</Definition>
+
+Cette architecture, du nom du mathématicien américain d’origine hongroise John von Neumann (1903-1957), est celle du Z80, du 68HC11 et des 68XXX. Les opérations s’y effectuent nécessairement en un certain nombre de cycles machine. On retrouve en permanence le cycle suivant : recherche d’une instruction, décodage de l’instruction, exécution de l’instruction, puis recherche de l’instruction suivante, et ainsi de suite. On remarque ici la notion de **traitement séquentiel**.
+
+## L’architecture Harvard
+
+<Definition titre="Architecture Harvard">
+    Les **données** et les **instructions** (le code machine) sont séparées dans **deux espaces mémoire distincts**, chacun avec son propre bus.
+</Definition>
+
+On la trouve sur le 80C51XA, les DSP et les PIC. Disposer de deux bus internes séparés (instructions et données) permet d’aller chercher une deuxième instruction **pendant** le décodage de la première. Le gain de temps est important : on exécute souvent une instruction par cycle machine. On parle alors de structure **pipeline**.
+
+<Figure legende="Von Neumann : les phases s’enchaînent. Harvard : les instructions se chevauchent (pipeline)" page="part1.pdf p. 32">
+    <svg viewBox="0 0 520 290" role="img" aria-label="Deux chronogrammes sur six cycles T0 à T5. En Von Neumann, l'instruction 1 occupe T0 à T2 (fetch, decode, execute) et l'instruction 2 occupe T3 à T5. En Harvard, l'instruction 1 occupe T0 à T2, l'instruction 2 T1 à T3, l'instruction 3 T2 à T4 et l'instruction 4 T3 à T5 : quatre instructions au lieu de deux.">
+        <g fill="currentColor" font-size="12" font-weight="600">
+            <text x="10" y="18">Von Neumann</text>
+            <text x="10" y="138">Harvard (pipeline)</text>
+        </g>
+        <g font-size="11" fill="currentColor" text-anchor="middle">
+            <text x="135" y="40">T0</text><text x="195" y="40">T1</text><text x="255" y="40">T2</text><text x="315" y="40">T3</text><text x="375" y="40">T4</text><text x="435" y="40">T5</text>
+            <text x="135" y="160">T0</text><text x="195" y="160">T1</text><text x="255" y="160">T2</text><text x="315" y="160">T3</text><text x="375" y="160">T4</text><text x="435" y="160">T5</text>
+        </g>
+        <g font-size="11" fill="currentColor">
+            <text x="10" y="67">Instruction 1</text><text x="10" y="97">Instruction 2</text>
+            <text x="10" y="187">Instruction 1</text><text x="10" y="217">Instruction 2</text><text x="10" y="247">Instruction 3</text><text x="10" y="277">Instruction 4</text>
+        </g>
+        <g stroke="currentColor" stroke-width="0.8" font-size="10.5" text-anchor="middle">
+            <rect x="107" y="52" width="56" height="22" fill="var(--paper-2)" /><rect x="167" y="52" width="56" height="22" fill="var(--accent)" fill-opacity="0.3" /><rect x="227" y="52" width="56" height="22" fill="var(--accent)" fill-opacity="0.7" />
+            <rect x="287" y="82" width="56" height="22" fill="var(--paper-2)" /><rect x="347" y="82" width="56" height="22" fill="var(--accent)" fill-opacity="0.3" /><rect x="407" y="82" width="56" height="22" fill="var(--accent)" fill-opacity="0.7" />
+            <rect x="107" y="172" width="56" height="22" fill="var(--paper-2)" /><rect x="167" y="172" width="56" height="22" fill="var(--accent)" fill-opacity="0.3" /><rect x="227" y="172" width="56" height="22" fill="var(--accent)" fill-opacity="0.7" />
+            <rect x="167" y="202" width="56" height="22" fill="var(--paper-2)" /><rect x="227" y="202" width="56" height="22" fill="var(--accent)" fill-opacity="0.3" /><rect x="287" y="202" width="56" height="22" fill="var(--accent)" fill-opacity="0.7" />
+            <rect x="227" y="232" width="56" height="22" fill="var(--paper-2)" /><rect x="287" y="232" width="56" height="22" fill="var(--accent)" fill-opacity="0.3" /><rect x="347" y="232" width="56" height="22" fill="var(--accent)" fill-opacity="0.7" />
+            <rect x="287" y="262" width="56" height="22" fill="var(--paper-2)" /><rect x="347" y="262" width="56" height="22" fill="var(--accent)" fill-opacity="0.3" /><rect x="407" y="262" width="56" height="22" fill="var(--accent)" fill-opacity="0.7" />
+        </g>
+        <g font-size="10.5" text-anchor="middle" fill="var(--ink)">
+            <text x="135" y="67">Fetch</text><text x="195" y="67">Decode</text><text x="255" y="67">Execute</text>
+            <text x="315" y="97">Fetch</text><text x="375" y="97">Decode</text><text x="435" y="97">Execute</text>
+            <text x="135" y="187">Fetch</text><text x="195" y="187">Decode</text><text x="255" y="187">Execute</text>
+            <text x="195" y="217">Fetch</text><text x="255" y="217">Decode</text><text x="315" y="217">Execute</text>
+            <text x="255" y="247">Fetch</text><text x="315" y="247">Decode</text><text x="375" y="247">Execute</text>
+            <text x="315" y="277">Fetch</text><text x="375" y="277">Decode</text><text x="435" y="277">Execute</text>
+        </g>
+    </svg>
+</Figure>
+
+En résumé, l’architecture Von Neumann n’a qu’un bus pour le programme et les données, alors que l’architecture Harvard dispose d’un bus par mémoire, ce qui permet aux instructions de se chevaucher.
+
+## Exemples d’architecture Harvard : les PIC
+
+Les schémas internes des microcontrôleurs Microchip PIC16F83/84 et PIC10F200 (redessinés ci-dessous de façon simplifiée) illustrent l’architecture Harvard : la mémoire programme (Flash) et la mémoire de données (RAM, *file registers*) ont chacune leur bus, de largeurs différentes.
+
+- Sur le **PIC16F84**, le bus programme a une largeur de **14 bits** (mémoire programme de 1 K × 14) alors que le bus de données fait **8 bits**. On y trouve aussi un compteur programme de 13 bits, une pile matérielle à 8 niveaux, une EEPROM de données de 64 × 8, le registre de travail W à la sortie de l’ALU, le registre STATUS et le registre FSR d’adressage indirect.
+- Sur le **PIC10F200**, le bus programme fait **12 bits** (Flash de 256 × 12 ou 512 × 12) pour un bus de données de 8 bits et une RAM de 16 ou 24 octets ; la pile n’a que deux niveaux. Ce microcontrôleur n’a que 6 broches.
+
+<Figure legende="PIC16F84 (schéma-bloc simplifié) : bus programme de 14 bits, bus de données de 8 bits" page="part1.pdf p. 33">
+    <svg viewBox="0 0 560 300" role="img" aria-label="Schéma-bloc simplifié du PIC16F84 : la mémoire programme Flash de 1K mots de 14 bits alimente le registre d'instruction par un bus programme de 14 bits ; le compteur programme de 13 bits et sa pile à 8 niveaux, la RAM, l'EEPROM de données, les registres FSR, STATUS, TMR0, les ports d'entrées-sorties et l'ALU avec le registre W sont reliés par un bus de données de 8 bits séparé.">
+        <g stroke="currentColor" stroke-width="1.2" fill="var(--paper-2)">
+            <rect x="20" y="20" width="130" height="65" fill="var(--accent)" fill-opacity="0.2" />
+            <rect x="180" y="20" width="120" height="26" /><rect x="180" y="56" width="120" height="28" />
+            <rect x="340" y="20" width="110" height="55" fill="var(--margin)" fill-opacity="0.2" />
+            <rect x="470" y="20" width="85" height="55" />
+            <rect x="20" y="120" width="130" height="26" />
+            <rect x="20" y="185" width="130" height="36" /><rect x="20" y="235" width="130" height="28" />
+            <rect x="340" y="125" width="110" height="24" /><rect x="340" y="157" width="110" height="24" /><rect x="340" y="189" width="110" height="24" />
+            <rect x="470" y="125" width="85" height="90" />
+            <path d="M200 170 H290 L280 190 H210 Z" />
+            <path d="M200 200 H235 L245 210 L255 200 H290 L275 235 H215 Z" fill="var(--accent)" fill-opacity="0.15" />
+            <rect x="200" y="255" width="90" height="24" />
+        </g>
+        <line x1="170" y1="105" x2="555" y2="105" stroke="var(--margin)" stroke-width="4" />
+        <g fill="none" stroke="var(--margin)" stroke-width="1.6">
+            <path d="M300 33 H320 V105" /><line x1="395" y1="75" x2="395" y2="105" /><line x1="512" y1="75" x2="512" y2="105" />
+            <line x1="512" y1="105" x2="512" y2="125" />
+            <path d="M330 105 V201 M330 137 H340 M330 169 H340 M330 201 H340" />
+            <line x1="245" y1="105" x2="245" y2="170" />
+            <path d="M290 218 H320 V105" />
+        </g>
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+            <line x1="240" y1="46" x2="240" y2="56" />
+            <line x1="85" y1="146" x2="85" y2="185" /><line x1="85" y1="221" x2="85" y2="235" />
+            <path d="M150 133 H220 V170" />
+            <line x1="245" y1="235" x2="245" y2="255" />
+            <path d="M200 267 H185 V180 H205" />
+                    </g>
+        <line x1="85" y1="85" x2="85" y2="120" stroke="var(--accent)" stroke-width="4" />
+        <line x1="150" y1="33" x2="180" y2="33" stroke="currentColor" />
+        <g fill="currentColor" font-size="11" text-anchor="middle">
+            <text x="85" y="40">Mémoire programme</text><text x="85" y="55">Flash</text><text x="85" y="70">1K × 14 (F84)</text>
+            <text x="240" y="37">Compteur programme</text><text x="240" y="74">Pile 8 niveaux</text>
+            <text x="165" y="13" font-size="9.5">13 bits</text>
+            <text x="395" y="40">RAM</text><text x="395" y="54">(file registers)</text><text x="395" y="68">68 × 8 (F84)</text>
+            <text x="512" y="40">EEPROM</text><text x="512" y="54">données</text><text x="512" y="68">64 × 8</text>
+            <text x="85" y="137">Registre d’instruction</text>
+            <text x="85" y="200">Décodage</text><text x="85" y="214">et contrôle</text>
+            <text x="85" y="253">Génération du timing</text>
+            <text x="395" y="141">FSR (indirect)</text><text x="395" y="173">STATUS</text><text x="395" y="205">TMR0</text>
+            <text x="512" y="150">Ports</text><text x="512" y="164">d’E/S</text><text x="512" y="185" font-size="10">RA0–RA4</text><text x="512" y="199" font-size="10">RB0–RB7</text>
+            <text x="245" y="184">MUX</text><text x="245" y="228">ALU</text><text x="245" y="271">W</text>
+        </g>
+        <g font-size="10.5">
+            <text x="92" y="100" fill="var(--accent)">14 bits</text>
+            <text x="336" y="119" fill="var(--margin)">bus de données 8 bits</text>
+            <text x="155" y="128" fill="currentColor">littéral 8</text>
+        </g>
+        <text x="20" y="292" font-size="10" fill="currentColor" fill-opacity="0.75">Autour : power-up timer, power-on reset, watchdog timer, oscillateur ; broches MCLR, VDD, VSS.</text>
+    </svg>
+</Figure>
+
+<Figure legende="PIC10F200 (schéma-bloc simplifié) : bus programme de 12 bits, bus de données de 8 bits" page="part1.pdf p. 34">
+    <svg viewBox="0 0 560 300" role="img" aria-label="Schéma-bloc simplifié du PIC10F200 : la mémoire programme Flash de 256 ou 512 mots de 12 bits alimente le registre d'instruction par un bus programme de 12 bits ; le compteur programme et sa pile à 2 niveaux, la RAM de 16 ou 24 octets, les registres FSR, STATUS, TMR0, les ports GP0 à GP3 et l'ALU avec le registre W sont reliés par un bus de données de 8 bits séparé.">
+        <g stroke="currentColor" stroke-width="1.2" fill="var(--paper-2)">
+            <rect x="20" y="20" width="130" height="65" fill="var(--accent)" fill-opacity="0.2" />
+            <rect x="180" y="20" width="120" height="26" /><rect x="180" y="56" width="120" height="28" />
+            <rect x="340" y="20" width="110" height="55" fill="var(--margin)" fill-opacity="0.2" />
+            
+            <rect x="20" y="120" width="130" height="26" />
+            <rect x="20" y="185" width="130" height="36" /><rect x="20" y="235" width="130" height="28" />
+            <rect x="340" y="125" width="110" height="24" /><rect x="340" y="157" width="110" height="24" /><rect x="340" y="189" width="110" height="24" />
+            <rect x="470" y="125" width="85" height="90" />
+            <path d="M200 170 H290 L280 190 H210 Z" />
+            <path d="M200 200 H235 L245 210 L255 200 H290 L275 235 H215 Z" fill="var(--accent)" fill-opacity="0.15" />
+            <rect x="200" y="255" width="90" height="24" />
+        </g>
+        <line x1="170" y1="105" x2="555" y2="105" stroke="var(--margin)" stroke-width="4" />
+        <g fill="none" stroke="var(--margin)" stroke-width="1.6">
+            <path d="M300 33 H320 V105" /><line x1="395" y1="75" x2="395" y2="105" />
+            <line x1="512" y1="105" x2="512" y2="125" />
+            <path d="M330 105 V201 M330 137 H340 M330 169 H340 M330 201 H340" />
+            <line x1="245" y1="105" x2="245" y2="170" />
+            <path d="M290 218 H320 V105" />
+        </g>
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+            <line x1="240" y1="46" x2="240" y2="56" />
+            <line x1="85" y1="146" x2="85" y2="185" /><line x1="85" y1="221" x2="85" y2="235" />
+            <path d="M150 133 H220 V170" />
+            <line x1="245" y1="235" x2="245" y2="255" />
+            <path d="M200 267 H185 V180 H205" />
+                    </g>
+        <line x1="85" y1="85" x2="85" y2="120" stroke="var(--accent)" stroke-width="4" />
+        <line x1="150" y1="33" x2="180" y2="33" stroke="currentColor" />
+        <g fill="currentColor" font-size="11" text-anchor="middle">
+            <text x="85" y="40">Mémoire programme</text><text x="85" y="55">Flash</text><text x="85" y="70">256 × 12 / 512 × 12</text>
+            <text x="240" y="37">Compteur programme</text><text x="240" y="74">Pile 2 niveaux</text>
+            <text x="165" y="13" font-size="9.5">9–10 bits</text>
+            <text x="395" y="40">RAM</text><text x="395" y="54">(file registers)</text><text x="395" y="68">16 ou 24 octets</text>
+            
+            <text x="85" y="137">Registre d’instruction</text>
+            <text x="85" y="200">Décodage</text><text x="85" y="214">et contrôle</text>
+            <text x="85" y="253">Génération du timing</text>
+            <text x="395" y="141">FSR (indirect)</text><text x="395" y="173">STATUS</text><text x="395" y="205">TMR0</text>
+            <text x="512" y="150">Ports</text><text x="512" y="164">d’E/S</text><text x="512" y="185" font-size="10">GP0–GP3</text>
+            <text x="245" y="184">MUX</text><text x="245" y="228">ALU</text><text x="245" y="271">W</text>
+        </g>
+        <g font-size="10.5">
+            <text x="92" y="100" fill="var(--accent)">12 bits</text>
+            <text x="336" y="119" fill="var(--margin)">bus de données 8 bits</text>
+            <text x="155" y="128" fill="currentColor">littéral 8</text>
+        </g>
+        <text x="20" y="292" font-size="10" fill="currentColor" fill-opacity="0.75">Autour : power-up timer, power-on reset, watchdog timer, oscillateur ; broches MCLR, VDD, VSS.</text>
+    </svg>
+</Figure>
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Fonctions du µP">
+        Appeler (lire) une instruction en mémoire, la décoder, l’exécuter — de façon séquentielle.
+    </Formula>
+    <Formula label="Registres">
+        Accumulateur (registre de travail), PC (adresse d’instruction, +1 ou modifié par JUMP/CALL), SP (sommet de la pile LIFO en RAM), registre d’état, registres généraux.
+    </Formula>
+    <Formula label="Flags">
+        S/N signe, Z zéro, C retenue (emprunt), O/V débordement ; Z80 : SF ZF YF HF XF PF NF CF (bits 7 à 0).
+    </Formula>
+    <Formula label="Séquencement">
+        Recherche (fetch) → décodage en micro-instructions → exécution.
+    </Formula>
+    <Formula label="Von Neumann">
+        Une mémoire et un bus pour programme et données : traitement séquentiel (Z80, 68HC11).
+    </Formula>
+    <Formula label="Harvard">
+        Mémoires et bus séparés : pipeline, souvent une instruction par cycle (PIC, DSP).
+    </Formula>
+</Formulas>

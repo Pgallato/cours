@@ -1,0 +1,304 @@
+---
+titre: "Étude de cas : le Z80"
+resume: Le Z80 de Zilog en détail — architecture interne (logique d’horloge, ALU 8 bits, registre d’instruction, interface de bus, accumulateur, registres B à L, PC, SP et pile) puis externe (horloge, alimentation, bus d’adresses et de données, signaux de contrôle, interruptions, reset) et un système de base complet.
+tags: [Z80, Zilog, registres, pile, LIFO, MREQ, IORQ, RD, WR, WAIT, INT, NMI, RESET, horloge, alimentation, découplage]
+sources: ["part1.pdf p. 35", "part1.pdf p. 36", "part1.pdf p. 38", "part1.pdf p. 39", "part1.pdf p. 40", "part1.pdf p. 41", "part1.pdf p. 42", "part1.pdf p. 43", "part1.pdf p. 44", "part1.pdf p. 45", "part1.pdf p. 46", "part1.pdf p. 47", "part1.pdf p. 48", "part1.pdf p. 49", "part1.pdf p. 50", "part1.pdf p. 51", "part1.pdf p. 52", "part1.pdf p. 53", "part1.pdf p. 54", "part1.pdf p. 55", "part1.pdf p. 56", "part1.pdf p. 57", "part1.pdf p. 58"]
+---
+
+## Présentation du Z80
+
+Le **Z80** est fabriqué par **Zilog** depuis **1976**. C’est un microprocesseur **8 bits** : toutes les données qu’il traite sont codées sur 8 bits. Il descend de la famille de microprocesseurs Intel 8080 et peut être qualifié de premier circuit **évolué**. Très peu coûteux à l’époque, il a été extrêmement utilisé. Il se présente dans un boîtier DIP de 40 broches.
+
+## Architecture interne
+
+Le schéma-bloc complet du Z80 fait apparaître :
+
+- deux jeux de **registres généraux** : le jeu principal (accumulateur A, registre d’indicateurs F, et B, C, D, E, H, L) et un jeu alternatif (A', F', B', C', D', E', H', L') ;
+- des **registres spécialisés** de 16 bits : les registres d’index IX et IY, le pointeur de pile SP et le compteur programme PC, ainsi que le vecteur d’interruption I et le registre de rafraîchissement mémoire R ;
+- une **ALU 8 bits** alimentée par deux verrous (*latches*) depuis le bus de données interne ;
+- le **registre d’instruction** suivi du **décodeur d’instruction** ;
+- des tampons (*buffers*) vers le bus d’adresses externe A0–A15 et le bus de données externe D0–D7 ;
+- un bloc de **contrôle des interruptions** (entrées $\overline{NMI}$ et $\overline{INT}$) et les blocs de contrôle du bus, de lecture/écriture, de synchronisation et du système, qui gèrent les broches de contrôle.
+
+La version simplifiée suivante sert de base à la suite du chapitre.
+
+<Figure legende="Architecture interne simplifiée du Z80" page="part1.pdf p. 38">
+    <svg viewBox="0 0 500 320" role="img" aria-label="La logique d'horloge cadence l'unité de contrôle. L'unité arithmétique et logique, le registre d'instruction, l'unité de contrôle et la logique d'interface de bus sont à gauche ; les accumulateurs A et A', les registres de données et le status, le stack pointer et le program counter sont à droite ; tous sont reliés par le bus de données interne 8 bits, qui rejoint le bus système via la logique d'interface de bus.">
+        <g stroke="currentColor" stroke-width="1.2" fill="var(--paper-2)">
+            <rect x="10" y="10" width="80" height="34" />
+            <rect x="110" y="40" width="130" height="46" />
+            <rect x="110" y="100" width="130" height="40" />
+            <rect x="110" y="140" width="130" height="40" />
+            <rect x="110" y="200" width="130" height="50" />
+            <rect x="330" y="40" width="150" height="46" />
+            <rect x="330" y="100" width="150" height="46" />
+            <rect x="330" y="165" width="150" height="40" />
+            <rect x="330" y="220" width="150" height="40" />
+        </g>
+        <line x1="285" y1="40" x2="285" y2="290" stroke="var(--margin)" stroke-width="4" />
+        <path d="M277 284 L285 298 L293 284 Z" fill="var(--margin)" />
+        <line x1="40" y1="302" x2="480" y2="302" stroke="currentColor" stroke-width="2.5" />
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M90 27 H100 V120 H110" />
+            <line x1="240" y1="63" x2="285" y2="63" /><line x1="240" y1="120" x2="285" y2="120" />
+            <line x1="285" y1="63" x2="330" y2="63" /><line x1="285" y1="123" x2="330" y2="123" />
+            <line x1="285" y1="185" x2="330" y2="185" /><line x1="285" y1="240" x2="330" y2="240" />
+            <line x1="175" y1="180" x2="175" y2="200" />
+            <line x1="175" y1="250" x2="175" y2="302" />
+            <line x1="240" y1="225" x2="285" y2="225" />
+        </g>
+        <g fill="currentColor" font-size="11.5" text-anchor="middle">
+            <text x="50" y="24">Logique</text><text x="50" y="38">d’horloge</text>
+            <text x="175" y="60">Unité Arithmétique</text><text x="175" y="75">et Logique</text>
+            <text x="175" y="117">Registre</text><text x="175" y="131">d’instruction</text>
+            <text x="175" y="157">Unité</text><text x="175" y="171">de contrôle</text>
+            <text x="175" y="216">Logique</text><text x="175" y="230">d’interface</text><text x="175" y="244">de bus</text>
+            <text x="405" y="60">Accumulateurs</text><text x="405" y="75">A, A'</text>
+            <text x="405" y="118">Registres de données</text><text x="405" y="133">+ status</text>
+            <text x="405" y="182">Stack Pointer</text><text x="405" y="196">pointeur de pile</text>
+            <text x="405" y="237">Program Counter</text><text x="405" y="251">compteur de prog.</text>
+            <text x="420" y="295">Bus système</text>
+        </g>
+        <text x="279" y="270" fill="var(--margin)" font-size="10" transform="rotate(-90 279 270)">Bus de données interne 8 bits</text>
+    </svg>
+</Figure>
+
+### Logique d’horloge
+
+La logique d’horloge évite à l’utilisateur de réaliser tout un circuit d’horloge à l’extérieur : il suffit de placer un oscillateur entre les deux broches du Z80 (Vcc et CLK). Elle génère le *timing* nécessaire au bon fonctionnement et à la synchronisation interne du CPU (*Central Processing Unit*).
+
+### ALU
+
+L’**ALU** du Z80 travaille sur **8 bits**. La diapo en montre une réalisation : des opérateurs arithmétiques (addition, multiplication…), des portes ET, OU, OU exclusif et un inverseur calculent tous en parallèle sur les mêmes opérandes, et un multiplexeur choisit le résultat à transmettre à l’accumulateur (validé par le signal AccEna).
+
+### R.I. : le registre d’instruction
+
+Le registre d’instruction est un **registre 8 bits** (8 bascules D). Au début de chaque instruction :
+
+1. il prend en compte le mot qui arrive sur le bus de données, en sachant que c’est une instruction ;
+2. il le compare avec la table des instructions du Z80 ;
+3. il donne des ordres de manière séquentielle à l’unité de contrôle.
+
+<Example titre="Début de l’instruction n">
+    Le mot 1010 0000 (A0h) arrive sur le bus de données. La table d’instructions indique que A0h correspond à `AND B`, et l’unité de contrôle envoie les ordres correspondants à l’ALU.
+</Example>
+
+### Logique d’interface de bus
+
+La logique d’interface de bus isole la « substantifique moelle » du CPU par rapport au monde extérieur (voir l’interface mémoire).
+
+### A : l’accumulateur
+
+L’accumulateur A est le **registre de travail** du Z80 ; c’est un registre de 8 bits.
+
+### Les registres B, C, D, E, H, L
+
+Le Z80 possède **6 registres** : B, C, D, E, H et L. Ils jouent le rôle de **mémoires temporaires de 8 bits** et peuvent travailler **par paires** pour former des registres de 16 bits : BC, DE et HL. Une paire permet de stocker une adresse ou le résultat partiel d’une multiplication.
+
+La paire HL, notée (HL), sert dans les instructions qui font référence à un accès mémoire.
+
+<Example titre="LD REG, (HL)">
+    Le contenu de l’adresse formée par les registres H et L est transféré dans REG. Si H = 02h et L = A5h, c’est le contenu de la case mémoire 02A5h qui est envoyé dans REG.
+</Example>
+
+### P.C. : le compteur programme
+
+Le PC est un **registre 16 bits** qui assure la synchronisation des informations.
+
+- Son contenu est envoyé sur le bus d’adresses pour aller chercher le contenu des mémoires qui contiennent le programme.
+- Il est remis à zéro par le reset.
+- Il est **automatiquement incrémenté** entre chaque instruction, afin d’aller chercher l’instruction suivante de manière séquentielle.
+- Il est **automatiquement modifié** par les instructions de type JUMP ou CALL.
+
+### S.P. : le pointeur de pile
+
+Le SP est un **registre 16 bits** qui contient une adresse : celle du **dessus de la pile**.
+
+<Definition titre="Pile">
+    Une pile est une zone de mémoire RAM gérée différemment d’une mémoire classique : c’est une mémoire de type **LIFO** (*Last In, First Out*), très simple à gérer et rapide d’accès. Les cases mémoire sont comme entassées les unes sur les autres et les données sont chargées en les **empilant**.
+</Definition>
+
+<Remark titre="Ce qu’en dit une documentation constructeur (AVR)">
+    Lors des interruptions et des appels de sous-programmes, l’adresse de retour contenue dans le PC est rangée dans la pile. La pile est allouée dans la SRAM de données : sa taille n’est limitée que par la taille totale de la SRAM et par l’usage qui en est fait. Tout programme doit initialiser le SP dans la routine de reset, avant d’appeler des sous-programmes ou d’autoriser les interruptions.
+</Remark>
+
+## Architecture externe : horloge et alimentation
+
+### CLOCK
+
+L’entrée **CLOCK** est l’horloge de cadencement du microprocesseur : elle cadence (séquence) toutes les opérations internes de traitement de l’information, et synchronise les entrées-sorties, les interruptions, etc. À l’époque du Z80, il s’agissait d’une seule broche (broche 6, CLK).
+
+<Example titre="Et maintenant ? Les horloges d’un STM32">
+    Sur un microcontrôleur STM32, trois sources différentes peuvent produire l’horloge principale SYSCLK :
+
+    - un quartz externe à haute vitesse de 1 à 25 MHz (**HSE**), qui peut alimenter une PLL ;
+    - un oscillateur RC interne de 16 MHz (**HSI**), ajustable par logiciel, qui peut aussi alimenter une PLL ;
+    - un oscillateur RC interne multivitesse (**MSI**), ajustable par logiciel, capable de produire 7 fréquences : 65 kHz, 131 kHz, 262 kHz, 524 kHz, 1,05 MHz, 2,1 MHz et 4,2 MHz.
+
+    À partir de ces sources, l’arbre d’horloge du STM32 distribue, par des multiplexeurs et des diviseurs, des horloges différentes au cœur, aux bus et à chaque périphérique.
+</Example>
+
+### Alimentation
+
+À l’époque, le Z80 s’alimentait en **5 V**, comme tout circuit TTL (broches 11, Vcc, et 29, GND).
+
+Aujourd’hui, les microcontrôleurs comportent plusieurs paires de broches d’alimentation. Le schéma de connexions minimales recommandé pour un dsPIC33F impose un **condensateur de découplage sur chaque paire de broches d’alimentation**, à placer **le plus près possible des broches** ; la boucle formée entre l’alimentation et la masse doit être la plus petite possible.
+
+Les plages de tension se sont aussi élargies : un STM32L053 s’alimente entre **1,65 V et 3,6 V**, un PIC10F200 entre **2,0 V et 5,5 V**.
+
+## Architecture externe : les bus
+
+### A0 à A15 : le bus d’adresses
+
+- C’est un bus **trois états** de **16 bits**, dont les sorties sont actives à l’état haut.
+- Il est **unidirectionnel** : c’est le microprocesseur qui envoie une adresse pour choisir la case mémoire dont il veut lire le contenu.
+
+### D0 à D7 : le bus de données
+
+- C’est un bus **trois états** de **8 bits**, en entrée comme en sortie, actif à l’état haut.
+- Il est **bidirectionnel** : il sert à récupérer les instructions dans la mémoire programme, mais aussi à stocker des informations dans une mémoire que le microprocesseur aura sélectionnée par son bus d’adresses.
+
+## Architecture externe : SYSTEM CONTROL
+
+Six broches de sortie permettent au microprocesseur de commander les différents périphériques qui gravitent autour de lui. Une barre oblique après le nom (M1/, MREQ/…) indique un signal **actif à l’état bas**.
+
+| Broche | Type | Rôle |
+| --- | --- | --- |
+| M1/ | sortie, active à l’état bas | le µP est en train d’aller chercher une instruction en mémoire (*opcode fetch*) |
+| MREQ/ | sortie trois états, active à l’état bas | le bus d’adresses contient une adresse valable pour lire ou écrire en **mémoire** |
+| IORQ/ | sortie trois états, active à l’état bas | la partie basse du bus d’adresses (A0 à A7) contient l’adresse valable d’un **périphérique**, ou bien un vecteur d’interruption peut être placé sur le bus de données |
+| RD/ | sortie trois états, active à l’état bas | le CPU veut **lire** en mémoire ou sur un périphérique : le bus de données est entrant |
+| WR/ | sortie trois états, active à l’état bas | le CPU veut **écrire** en mémoire ou sur un périphérique : le bus de données est sortant |
+
+- Le signal **M1/** n’a aucun intérêt pour la compréhension du système.
+- **MREQ/** est utilisé pour le **décodage d’adresses mémoire**.
+- **IORQ/** est utilisé pour le **décodage d’adresses de la zone d’entrées/sorties**.
+- Avec **RD/**, une mémoire ou un périphérique peut envoyer une information sur le bus de données ; avec **WR/**, il peut en recevoir une.
+
+## Architecture externe : CPU CONTROL
+
+Quatre broches d’entrée et une de sortie permettent à l’opérateur ou au système de commande de contrôler **autoritairement** le fonctionnement du microprocesseur.
+
+<Warning titre="Attention">
+    En agissant sur l’une de ces entrées, on dérange le µP dans son travail : on l’arrête, on le met en attente, ou on lui ordonne de faire un autre travail plus urgent (dans ce dernier cas, il n’est pas obligé d’accepter).
+</Warning>
+
+### HALT/
+
+Sortie active à l’état bas, elle indique que le CPU a exécuté une instruction HALT.
+
+### WAIT/
+
+Entrée active à l’état bas, elle indique que la mémoire ou le périphérique n’est pas prêt à être accédé. Le µP attend que cette entrée redevienne inactive pour reprendre le cours normal de son travail.
+
+### INT/
+
+Entrée active sur **niveau bas**, elle est activée par un périphérique qui signale qu’il désire qu’on s’occupe de lui. Le µP finit l’instruction en cours d’exécution, puis accepte le dialogue avec le périphérique **si** il a été programmé pour accepter les interruptions. Cette interruption débranche le CPU à l’adresse **0038H**.
+
+### NMI/
+
+Entrée active sur **front descendant**, cette demande d’interruption est **plus prioritaire** que INT et **ne peut pas être refusée**. Elle débranche le CPU à l’adresse **0066H**. Le PC est automatiquement sauvegardé, et la sortie d’interruption ramène le PC à l’endroit où il avait été sauvegardé.
+
+### RESET/
+
+Entrée active à l’état bas, c’est **l’entrée la plus importante** du µP. Quand elle est active, le PC est mis à 0 et le CPU est initialisé : les interruptions sont invalidées. Pendant la phase de reset, les bus de données et d’adresses sont dans l’état **haute impédance** (trois états).
+
+## Architecture de base avec un Z80
+
+Un système minimal autour d’un Z80 comprend :
+
+- un **oscillateur** sur CLK ;
+- un bouton **départ** sur RESET/ ;
+- un montage « appuyer pour souffler » relié à WAIT/ ;
+- des **ordres de réquisition** sur INT/ et NMI/ ;
+- une **ROM** et une **RAM** sélectionnées par MREQ/ et le bus d’adresses (lecture par RD/, écriture dans la RAM par WR/) ;
+- un **buffer d’entrées** relié à un **clavier**, lu par IORQ/ et RD/ ;
+- un **buffer de sorties** relié à un **afficheur**, écrit par IORQ/ et WR/.
+
+<Figure legende="Architecture de base avec un Z80" page="part1.pdf p. 56">
+    <svg viewBox="0 0 540 300" role="img" aria-label="Le Z80 reçoit l'oscillateur sur CLK, le bouton départ sur RESET, le signal appuyer pour souffler sur WAIT et les ordres de réquisition sur INT et NMI. Le bus d'adresses A15 à A0 dessert la ROM et la RAM, sélectionnées par MREQ ; le bus de données D7 à D0 relie la ROM, la RAM, un buffer d'entrées relié au clavier et un buffer de sorties relié à l'afficheur ; les buffers sont sélectionnés par IORQ, lus par RD et écrits par WR.">
+        <g stroke="currentColor" stroke-width="1.2" fill="var(--paper-2)">
+            <rect x="110" y="60" width="80" height="200" fill="var(--accent)" fill-opacity="0.12" />
+            <rect x="10" y="70" width="70" height="24" /><rect x="10" y="110" width="70" height="24" />
+            <rect x="10" y="160" width="70" height="32" /><rect x="10" y="215" width="70" height="32" />
+            <rect x="240" y="135" width="70" height="44" /><rect x="330" y="135" width="70" height="44" />
+            <rect x="420" y="135" width="50" height="44" /><rect x="480" y="135" width="50" height="44" />
+            <rect x="415" y="20" width="60" height="30" /><rect x="478" y="20" width="56" height="30" />
+        </g>
+        <rect x="190" y="95" width="340" height="12" fill="var(--accent)" fill-opacity="0.3" />
+        <rect x="190" y="225" width="340" height="12" fill="var(--margin)" fill-opacity="0.3" />
+        <g stroke="currentColor" stroke-width="1.2" fill="none">
+            <line x1="80" y1="82" x2="110" y2="82" /><line x1="80" y1="122" x2="110" y2="122" />
+            <line x1="80" y1="176" x2="110" y2="176" /><line x1="80" y1="231" x2="110" y2="231" />
+            <line x1="275" y1="107" x2="275" y2="135" /><line x1="365" y1="107" x2="365" y2="135" />
+            <line x1="275" y1="179" x2="275" y2="225" /><line x1="365" y1="179" x2="365" y2="225" />
+            <line x1="445" y1="179" x2="445" y2="225" /><line x1="505" y1="179" x2="505" y2="225" />
+            <line x1="445" y1="50" x2="445" y2="135" /><line x1="505" y1="135" x2="505" y2="50" />
+        </g>
+        <g fill="currentColor" font-size="10.5">
+            <text x="45" y="86" text-anchor="middle">oscillateur</text>
+            <text x="45" y="126" text-anchor="middle">départ</text>
+            <text x="45" y="173" text-anchor="middle">appuyer pour</text><text x="45" y="186" text-anchor="middle">souffler</text>
+            <text x="45" y="228" text-anchor="middle">ordre de</text><text x="45" y="241" text-anchor="middle">réquisition</text>
+            <text x="114" y="86">CLK</text><text x="114" y="126">RESET/</text><text x="114" y="180">WAIT</text><text x="114" y="235">INT/ NMI/</text>
+            <text x="150" y="70" font-weight="600" font-size="12">Z80</text>
+            <text x="196" y="104">A15:A0 · MREQ/ — adresses</text>
+            <text x="196" y="234">D7:D0 · RD/ · WR/ — données</text>
+            <text x="275" y="155" text-anchor="middle" font-weight="600">ROM</text><text x="275" y="170" text-anchor="middle">CS/ RD/</text>
+            <text x="365" y="155" text-anchor="middle" font-weight="600">RAM</text><text x="365" y="170" text-anchor="middle">CS/ RD/ WR/</text>
+            <text x="445" y="152" text-anchor="middle">Buffer</text><text x="445" y="166" text-anchor="middle">entrées</text>
+            <text x="505" y="152" text-anchor="middle">Buffer</text><text x="505" y="166" text-anchor="middle">sorties</text>
+            <text x="445" y="40" text-anchor="middle">CLAVIER</text><text x="506" y="40" text-anchor="middle" font-size="9">AFFICHEUR</text>
+            <text x="440" y="195" font-size="9">IORQ/ RD/</text><text x="490" y="195" font-size="9">IORQ/ WR/</text>
+        </g>
+    </svg>
+</Figure>
+
+{/* AJOUT : schémas-blocs simplifiés redessinés à partir des schémas électriques ; capacités 8 Ko / 32 Ko déduites des références 27C64 et 62256 */}
+
+Les deux dernières diapos donnent le schéma électrique complet d’une carte construite autour du Z80. En voici l’organisation.
+
+- **Horloge** : un oscillateur à quartz de 3,579 MHz réalisé avec deux inverseurs 74LS14 produit le signal XTAL ; une bascule D 74HC74, dont la sortie $\overline{Q}$ est rebouclée sur l’entrée D, en divise la fréquence par deux pour fournir CPU_CLK.
+- **Reset** : un bouton RESET et un circuit RC (10 kΩ, 10 µF) attaquent une seconde bascule 74HC74, qui synchronise le signal RESET envoyé au Z80 et aux circuits d’entrées/sorties.
+- **Signaux de contrôle** : des résistances de rappel de 10 kΩ maintiennent WAIT/, BUSRQ/ et INT/ inactifs ; un bouton INTR permet de déclencher une interruption, et une LED commandée par un transistor BC557 s’allume quand le Z80 est en HALT.
+- **Mémoires** : une EPROM 27C64 (programme, sélectionnée par ROMCE, lue par RD/) et une RAM HM62256 (sélectionnée par RAMCE, lue par RD/, écrite par WR/).
+- **Décodage d’adresses** : un circuit logique programmable GAL16V8 reçoit MREQ/, IORQ/ et des bits d’adresse (A0, A1, A6, A7, A12 à A15) et produit les sélections ROMCE, RAMCE, PORT0 à PORT2, GPIO1, SCLK et LCD_E.
+- **Alimentation** : une entrée continue passe par une diode 1N4007 puis un régulateur LM7805 qui fournit le VCC de 5 V, avec des condensateurs de découplage et une LED POWER.
+
+<Figure legende="Carte Z80 : processeur, mémoires, décodage et alimentation (schéma-bloc simplifié)" page="part1.pdf p. 57">
+    <svg viewBox="0 0 560 360" role="img" aria-label="Carte Z80, partie processeur : un oscillateur à quartz de 3,579 MHz suivi d'une bascule 74HC74 montée en diviseur par 2 fournit CPU_CLK au Z80 ; un bouton RESET avec un circuit RC, synchronisé par une seconde bascule 74HC74, fournit RESET ; des résistances de rappel et un bouton INTR tiennent WAIT, BUSRQ et INT ; la sortie HALT allume une LED. Le Z80 est relié par les bus d'adresses et de données à une EPROM 27C64 de 8 Ko et à une RAM HM62256 de 32 Ko, sélectionnées par ROMCE et RAMCE ; ces signaux et les sélections des ports viennent d'un décodeur d'adresses GAL16V8 qui reçoit MREQ, IORQ et des bits d'adresse. Un régulateur LM7805 fournit le 5 V."><rect x="200" y="40" width="90" height="210" fill="var(--accent)" fill-opacity="0.12" stroke="currentColor" stroke-width="1.2" /><text x="245.0" y="149.6" text-anchor="middle" font-size="13" fill="currentColor" font-weight="600">Z80</text><rect x="10" y="20" width="130" height="40" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="75.0" y="36.7" text-anchor="middle" font-size="11" fill="currentColor" font-weight="600">Oscillateur à quartz</text><text x="75.0" y="51.0" text-anchor="middle" font-size="10" fill="currentColor">3,579 MHz (74LS14)</text><rect x="10" y="80" width="130" height="34" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="75.0" y="93.7" text-anchor="middle" font-size="11" fill="currentColor" font-weight="600">Bascule 74HC74</text><text x="75.0" y="108.0" text-anchor="middle" font-size="10" fill="currentColor">diviseur par 2</text><line x1="75" y1="60" x2="75" y2="80" stroke="currentColor" stroke-width="1.2" /><polygon points="75.0,80.0 71.5,73.0 78.5,73.0" fill="currentColor" /><text x="80" y="73" font-size="9.5" fill="currentColor" text-anchor="start">XTAL</text><line x1="140" y1="97" x2="200" y2="97" stroke="currentColor" stroke-width="1.2" /><polygon points="200.0,97.0 193.0,100.5 193.0,93.5" fill="currentColor" /><text x="145" y="92" font-size="9.5" fill="currentColor" text-anchor="start">CPU_CLK</text><text x="204" y="101" font-size="9" fill="currentColor" text-anchor="start">CLK</text><rect x="10" y="130" width="130" height="40" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="75.0" y="146.7" text-anchor="middle" font-size="11" fill="currentColor" font-weight="600">Bouton RESET</text><text x="75.0" y="161.0" text-anchor="middle" font-size="10" fill="currentColor">RC 10 kΩ / 10 µF</text><rect x="10" y="182" width="130" height="30" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="75.0" y="200.8" text-anchor="middle" font-size="11" fill="currentColor" font-weight="600">74HC74 (synchro.)</text><line x1="75" y1="170" x2="75" y2="182" stroke="currentColor" stroke-width="1.2" /><polygon points="75.0,182.0 71.5,175.0 78.5,175.0" fill="currentColor" /><line x1="140" y1="197" x2="200" y2="197" stroke="currentColor" stroke-width="1.2" /><polygon points="200.0,197.0 193.0,200.5 193.0,193.5" fill="currentColor" /><text x="204" y="201" font-size="9" fill="currentColor" text-anchor="start">RESET/</text><rect x="10" y="228" width="130" height="40" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="75.0" y="244.7" text-anchor="middle" font-size="11" fill="currentColor" font-weight="600">Rappels 10 kΩ</text><text x="75.0" y="259.0" text-anchor="middle" font-size="10" fill="currentColor">bouton INTR</text><line x1="140" y1="240" x2="200" y2="240" stroke="currentColor" stroke-width="1.2" /><polygon points="200.0,240.0 193.0,243.5 193.0,236.5" fill="currentColor" /><text x="143" y="225" font-size="8" fill="currentColor">WAIT/ BUSRQ/</text><text x="143" y="235" font-size="8" fill="currentColor">INT/</text><rect x="200" y="275" width="90" height="40" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="245.0" y="292.0" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">LED HALT</text><text x="245.0" y="305.0" text-anchor="middle" font-size="9" fill="currentColor">(transistor BC557)</text><line x1="245" y1="250" x2="245" y2="275" stroke="currentColor" stroke-width="1.2" /><polygon points="245.0,275.0 241.5,268.0 248.5,268.0" fill="currentColor" /><text x="250" y="265" font-size="9" fill="currentColor" text-anchor="start">HALT/</text><rect x="290" y="52" width="260" height="10" fill="var(--accent)" fill-opacity="0.35" /><text x="300" y="48" font-size="10" fill="currentColor" text-anchor="start">Bus d’adresses A0–A15</text><rect x="290" y="198" width="260" height="10" fill="var(--margin)" fill-opacity="0.35" /><text x="300" y="222" font-size="10" fill="currentColor" text-anchor="start">Bus de données D0–D7</text><rect x="320" y="85" width="100" height="72" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="370.0" y="104.2" text-anchor="middle" font-size="10.5" fill="currentColor" font-weight="600">EPROM 27C64</text><text x="370.0" y="117.9" text-anchor="middle" font-size="9.5" fill="currentColor">8 Ko, A0–A12</text><text x="370.0" y="131.5" text-anchor="middle" font-size="9.5" fill="currentColor">CE/ = ROMCE</text><text x="370.0" y="145.2" text-anchor="middle" font-size="9.5" fill="currentColor">OE/ = RD/</text><rect x="440" y="85" width="110" height="72" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="495.0" y="104.2" text-anchor="middle" font-size="10.5" fill="currentColor" font-weight="600">RAM HM62256</text><text x="495.0" y="117.9" text-anchor="middle" font-size="9.5" fill="currentColor">32 Ko, A0–A14</text><text x="495.0" y="131.5" text-anchor="middle" font-size="9.5" fill="currentColor">CE/ = RAMCE</text><text x="495.0" y="145.2" text-anchor="middle" font-size="9.5" fill="currentColor">OE/ = RD/, WE/ = WR/</text><line x1="370" y1="62" x2="370" y2="85" stroke="currentColor" stroke-width="1.2" /><line x1="370" y1="157" x2="370" y2="198" stroke="currentColor" stroke-width="1.2" /><line x1="495" y1="62" x2="495" y2="85" stroke="currentColor" stroke-width="1.2" /><line x1="495" y1="157" x2="495" y2="198" stroke="currentColor" stroke-width="1.2" /><rect x="325" y="240" width="228" height="62" fill="var(--accent)" fill-opacity="0.2" stroke="currentColor" stroke-width="1.2" /><text x="439" y="261.0" text-anchor="middle" font-size="10.5" fill="currentColor" font-weight="600">Décodeur d’adresses GAL16V8</text><text x="439" y="274.7" text-anchor="middle" font-size="8.5" fill="currentColor">entrées : MREQ/, IORQ/, A0, A1, A6, A7, A12–A15</text><text x="439" y="288.3" text-anchor="middle" font-size="8.5" fill="currentColor">sorties : ROMCE, RAMCE, PORT0–2, GPIO1, SCLK, LCD_E</text><path d="M290 230 H306 V271 H318" stroke="currentColor" stroke-width="1.2" fill="none" /><polygon points="325,271 318,267.5 318,274.5" fill="currentColor" /><text x="292" y="290" font-size="8" fill="currentColor">MREQ/</text><text x="292" y="300" font-size="8" fill="currentColor">IORQ/</text><rect x="320" y="315" width="233" height="40" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="436" y="331" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">Alimentation</text><text x="436" y="345" text-anchor="middle" font-size="9" fill="currentColor">DC → 1N4007 → LM7805 → VCC 5 V</text><text x="10" y="340" font-size="9.5" fill="currentColor" text-anchor="start">+ condensateurs de découplage, LED POWER</text></svg>
+</Figure>
+
+La seconde page montre les **entrées/sorties**, toutes branchées sur le bus de données. Chaque circuit est validé par une porte NOR 4001 qui combine le signal de lecture ou d’écriture avec la sortie correspondante du décodeur : un verrou 74HC573 ne mémorise les données que lorsque WR/ et son signal PORTx sont actifs ensemble (tous deux à l’état bas).
+
+- Au port **0x02**, un verrou 74HC573 commande les segments A à G et le point (DP) de deux afficheurs 7 segments à 4 chiffres LTC-4727JR.
+- Au port **0x01**, un autre 74HC573 choisit le chiffre allumé (PC0 à PC5) et commande les signaux BREAK et SPEAKER (haut-parleur piloté par un transistor BC327, avec une LED TONE).
+- Au port **0x00**, un buffer 74HC541, validé par RD/ et PORT0, place sur le bus les entrées PA0 à PA6 (avec des résistances de rappel de 10 kΩ), le bouton BP et RXD.
+- Un dernier 74HC573, validé par WR/ et GPIO1, commande 8 LED.
+
+<Figure legende="Carte Z80 : entrées/sorties sur le bus de données (schéma-bloc simplifié)" page="part1.pdf p. 58">
+    <svg viewBox="0 0 560 320" role="img" aria-label="Carte Z80, partie entrées-sorties : le bus de données D0 à D7 dessert quatre circuits. Un verrou 74HC573 au port 0x02, validé par WR et PORT2 à travers une porte NOR 4001, commande les segments A à G et le point de deux afficheurs 4 chiffres. Un verrou 74HC573 au port 0x01, validé par WR et PORT1, choisit le chiffre allumé (PC0 à PC5), et commande BREAK et le haut-parleur. Un buffer 74HC541 au port 0x00, validé par RD et PORT0, lit les entrées PA0 à PA6, le bouton BP et RXD. Un verrou 74HC573 validé par WR et GPIO1 commande 8 LED."><rect x="140" y="15" width="8" height="300" fill="var(--margin)" fill-opacity="0.45" /><text x="122" y="12" font-size="10" fill="currentColor" text-anchor="start">D0–D7</text><rect x="10" y="25" width="118" height="44" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="69.0" y="44.0" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">NOR 4001</text><text x="69.0" y="57.0" text-anchor="middle" font-size="9" fill="currentColor">WR/ + PORT2</text><rect x="175" y="25" width="100" height="44" fill="var(--accent)" fill-opacity="0.15" stroke="currentColor" stroke-width="1.2" /><text x="225.0" y="43.8" text-anchor="middle" font-size="10.5" fill="currentColor" font-weight="600">74HC573</text><text x="225.0" y="57.5" text-anchor="middle" font-size="9.5" fill="currentColor">port 0x02</text><rect x="320" y="25" width="230" height="44" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="435.0" y="44.0" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">Segments A–G, DP</text><text x="435.0" y="57.0" text-anchor="middle" font-size="9" fill="currentColor">2 afficheurs LTC-4727JR (4 chiffres)</text><path d="M128 59 H160 V75" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3 2" /><path d="M160 75 H225 V69" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3 2" /><polygon points="225,69 221.5,76 228.5,76" fill="currentColor" /><text x="232" y="83" font-size="8.5" fill="currentColor" text-anchor="start">LE</text><line x1="148" y1="39" x2="175" y2="39" stroke="var(--margin)" stroke-width="1.2" /><polygon points="175.0,39.0 168.0,42.5 168.0,35.5" fill="var(--margin)" /><line x1="275" y1="47" x2="320" y2="47" stroke="currentColor" stroke-width="1.2" /><polygon points="320.0,47.0 313.0,50.5 313.0,43.5" fill="currentColor" /><rect x="10" y="100" width="118" height="44" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="69.0" y="119.0" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">NOR 4001</text><text x="69.0" y="132.0" text-anchor="middle" font-size="9" fill="currentColor">WR/ + PORT1</text><rect x="175" y="100" width="100" height="44" fill="var(--accent)" fill-opacity="0.15" stroke="currentColor" stroke-width="1.2" /><text x="225.0" y="118.8" text-anchor="middle" font-size="10.5" fill="currentColor" font-weight="600">74HC573</text><text x="225.0" y="132.5" text-anchor="middle" font-size="9.5" fill="currentColor">port 0x01</text><rect x="320" y="100" width="230" height="44" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="435.0" y="119.0" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">PC0–PC5 : choix du chiffre allumé</text><text x="435.0" y="132.0" text-anchor="middle" font-size="9" fill="currentColor">PC6 : BREAK · PC7 : haut-parleur (BC327)</text><path d="M128 134 H160 V150" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3 2" /><path d="M160 150 H225 V144" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3 2" /><polygon points="225,144 221.5,151 228.5,151" fill="currentColor" /><text x="232" y="158" font-size="8.5" fill="currentColor" text-anchor="start">LE</text><line x1="148" y1="114" x2="175" y2="114" stroke="var(--margin)" stroke-width="1.2" /><polygon points="175.0,114.0 168.0,117.5 168.0,110.5" fill="var(--margin)" /><line x1="275" y1="122" x2="320" y2="122" stroke="currentColor" stroke-width="1.2" /><polygon points="320.0,122.0 313.0,125.5 313.0,118.5" fill="currentColor" /><rect x="10" y="175" width="118" height="44" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="69.0" y="194.0" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">NOR 4001 + 74LS14</text><text x="69.0" y="207.0" text-anchor="middle" font-size="9" fill="currentColor">RD/ + PORT0</text><rect x="175" y="175" width="100" height="44" fill="var(--accent)" fill-opacity="0.15" stroke="currentColor" stroke-width="1.2" /><text x="225.0" y="193.9" text-anchor="middle" font-size="10.5" fill="currentColor" font-weight="600">74HC541</text><text x="225.0" y="207.5" text-anchor="middle" font-size="9.5" fill="currentColor">port 0x00</text><rect x="320" y="175" width="230" height="44" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="435.0" y="194.0" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">PA0–PA6 (rappels 10 kΩ), BP,</text><text x="435.0" y="207.0" text-anchor="middle" font-size="9" fill="currentColor">RXD : entrées</text><path d="M128 209 H160 V225" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3 2" /><path d="M160 225 H225 V219" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3 2" /><polygon points="225,219 221.5,226 228.5,226" fill="currentColor" /><text x="232" y="233" font-size="8.5" fill="currentColor" text-anchor="start">G1/ G2/</text><line x1="175" y1="189" x2="148" y2="189" stroke="var(--margin)" stroke-width="1.2" /><polygon points="148.0,189.0 155.0,185.5 155.0,192.5" fill="var(--margin)" /><line x1="320" y1="197" x2="275" y2="197" stroke="currentColor" stroke-width="1.2" /><polygon points="275.0,197.0 282.0,193.5 282.0,200.5" fill="currentColor" /><rect x="10" y="250" width="118" height="44" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="69.0" y="269.0" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">NOR 4001</text><text x="69.0" y="282.0" text-anchor="middle" font-size="9" fill="currentColor">WR/ + GPIO1</text><rect x="175" y="250" width="100" height="44" fill="var(--accent)" fill-opacity="0.15" stroke="currentColor" stroke-width="1.2" /><text x="225.0" y="268.9" text-anchor="middle" font-size="10.5" fill="currentColor" font-weight="600">74HC573</text><text x="225.0" y="282.5" text-anchor="middle" font-size="9.5" fill="currentColor">(GPIO1)</text><rect x="320" y="250" width="230" height="44" fill="var(--paper-2)" stroke="currentColor" stroke-width="1.2" /><text x="435.0" y="275.5" text-anchor="middle" font-size="10" fill="currentColor" font-weight="600">8 LED (D6 à D13)</text><path d="M128 284 H160 V300" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3 2" /><path d="M160 300 H225 V294" stroke="currentColor" stroke-width="1" fill="none" stroke-dasharray="3 2" /><polygon points="225,294 221.5,301 228.5,301" fill="currentColor" /><text x="232" y="308" font-size="8.5" fill="currentColor" text-anchor="start">LE</text><line x1="148" y1="264" x2="175" y2="264" stroke="var(--margin)" stroke-width="1.2" /><polygon points="175.0,264.0 168.0,267.5 168.0,260.5" fill="var(--margin)" /><line x1="275" y1="272" x2="320" y2="272" stroke="currentColor" stroke-width="1.2" /><polygon points="320.0,272.0 313.0,275.5 313.0,268.5" fill="currentColor" /></svg>
+</Figure>
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Z80">
+        Zilog, 1976, 8 bits, descendant de l’Intel 8080, architecture Von Neumann, CISC (158 instructions).
+    </Formula>
+    <Formula label="Registres">
+        A (accumulateur, 8 bits) ; B, C, D, E, H, L (8 bits, en paires BC, DE, HL) ; PC et SP (16 bits) ; F (indicateurs).
+    </Formula>
+    <Formula label="(HL)">
+        Case mémoire dont l’adresse est formée par H (poids fort) et L (poids faible).
+    </Formula>
+    <Formula label="Bus">
+        A0–A15 : 16 bits, unidirectionnel. D0–D7 : 8 bits, bidirectionnel. Tous deux trois états.
+    </Formula>
+    <Formula label="Contrôle système">
+        MREQ/ décodage mémoire ; IORQ/ décodage E/S (A0–A7) ; RD/ lecture ; WR/ écriture ; M1/ opcode fetch.
+    </Formula>
+    <Formula label="CPU control">
+        HALT/ (sortie), WAIT/, INT/ (niveau bas, masquable, 0038H), NMI/ (front descendant, non masquable, 0066H), RESET/ (PC = 0, interruptions invalidées).
+    </Formula>
+</Formulas>

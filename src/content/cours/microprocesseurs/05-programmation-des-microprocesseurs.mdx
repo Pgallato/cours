@@ -1,0 +1,186 @@
+---
+titre: Programmation des microprocesseurs
+resume: Du langage machine aux langages évolués, la chaîne de compilation (compilateur, assembleur, éditeur de liens), atouts et limites du microprogrammé, jeu d’instructions, format d’une instruction en assembleur et familles d’instructions du Z80.
+tags: [langage machine, assembleur, langage évolué, compilation, édition de liens, jeu d'instructions, code opératoire, mnémonique, opérande, Z80]
+sources: ["part2.pdf p. 5", "part2.pdf p. 6", "part2.pdf p. 7", "part2.pdf p. 8", "part2.pdf p. 9", "part2.pdf p. 10", "part2.pdf p. 11", "part2.pdf p. 12", "part2.pdf p. 13", "part2.pdf p. 14", "part2.pdf p. 15", "part2.pdf p. 16", "part2.pdf p. 17"]
+---
+
+## De l’algorithme au langage machine
+
+Chaque étape d’un algorithme est réalisée par une ou plusieurs **instructions** écrites dans un langage de programmation, choisi ou imposé. On distingue trois niveaux de langage.
+
+<Definition titre="Langage machine">
+    C’est le **seul langage compris par les microprocesseurs**. Chaque instruction y est codée en hexadécimal (ou en binaire) et stockée dans la mémoire programme.
+</Definition>
+
+Son inconvénient est d’être très difficile à utiliser directement.
+
+<Definition titre="Langage assembleur">
+    L’assembleur remplace le code machine par des **mnémoniques**, plus lisibles et plus pratiques pour le programmeur.
+</Definition>
+
+Il a pour inconvénients de ne pas être universel et de devenir lourd dès que l’algorithme est complexe.
+
+<Definition titre="Langages évolués">
+    Les langages évolués (ou de haut niveau), comme le C, le C++ ou Java, sont plus simples à utiliser pour le programmeur.
+</Definition>
+
+En contrepartie, l’exécution est plus lente et les programmes obtenus sont souvent plus longs.
+
+## Les niveaux de langage
+
+Les niveaux de langage s’empilent comme une pyramide, du matériel au haut niveau.
+
+| Niveau | Caractéristiques |
+| --- | --- |
+| Matériel informatique (la « machine ») | unité centrale, mémoires (vive, morte…), disques durs, entrées et sorties |
+| Langage machine | code binaire (0 et 1), dépendant de la machine |
+| Langage assembleur | utilise des termes anglais pour représenter le code binaire ; dépendant de la machine |
+| Langages de haut niveau | similaires aux langages courants ; portables |
+
+- En **langage machine**, on écrit directement le binaire, qui est illisible pour un humain et propre à chaque µP : c’est ce code qu’on programme dans la mémoire du microcontrôleur et que le CPU exécute.
+- En **assembleur**, le programme est lisible par un humain mais reste propre à chaque µP ; il est compilé en code exécutable binaire ou hexadécimal.
+- En **langage de haut niveau**, le programme est **portable** : le même code sert sur plusieurs µP.
+
+<Example titre="Avantage de la programmation haut niveau">
+    Sur un PIC, la seule ligne `TRISA=0x00;` (configurer les broches du port A en sorties) devient trois instructions en assembleur :
+
+    ```asm
+    BSF  STATUS,5
+    BCF  STATUS,6
+    CLRF TRISA
+    ```
+
+    De la même façon, chaque ligne d’un programme écrit en Basic se décompose en plusieurs instructions assembleur lors de la compilation.
+</Example>
+
+## La chaîne de compilation
+
+<Figure legende="Chaîne de compilation : des fichiers source au fichier de sortie programmé dans le microcontrôleur" page="part2.pdf p. 7">
+    <svg viewBox="0 0 540 250" role="img" aria-label="Les fichiers source C (.c, .cpp) passent par le compilateur C (prétraitement, analyse, génération de code, assemblage) qui produit des fichiers objets .obj ; les fichiers source assembleur .asm passent par l'assembleur qui produit aussi des .obj. L'éditeur de liens réunit les fichiers objets, les bibliothèques .lib ou .a et le script d'édition de liens, et produit les fichiers de sortie .elf, .hex ou .cof, chargés dans le microcontrôleur par un programmateur ou un débogueur.">
+        <g stroke="currentColor" stroke-width="1.2" fill="var(--paper-2)">
+            <rect x="10" y="30" width="80" height="40" /><rect x="10" y="130" width="80" height="40" />
+            <path d="M110 20 H210 L235 50 L210 80 H110 Z" fill="var(--accent)" fill-opacity="0.15" />
+            <path d="M110 125 H210 L235 150 L210 175 H110 Z" fill="var(--accent)" fill-opacity="0.15" />
+            <rect x="255" y="30" width="70" height="40" /><rect x="255" y="130" width="70" height="40" />
+            <rect x="255" y="185" width="70" height="30" /><rect x="255" y="222" width="70" height="24" />
+            <path d="M345 20 H385 L405 130 L385 240 H345 Z" fill="var(--accent)" fill-opacity="0.25" />
+            <rect x="430" y="105" width="100" height="50" />
+        </g>
+        <g stroke="currentColor" stroke-width="1.2" fill="none">
+            <line x1="90" y1="50" x2="110" y2="50" /><line x1="90" y1="150" x2="110" y2="150" />
+            <line x1="235" y1="50" x2="255" y2="50" /><line x1="235" y1="150" x2="255" y2="150" />
+            <line x1="325" y1="50" x2="345" y2="50" /><line x1="325" y1="150" x2="345" y2="150" />
+            <line x1="325" y1="200" x2="350" y2="200" /><line x1="325" y1="234" x2="350" y2="234" />
+            <line x1="405" y1="130" x2="430" y2="130" />
+        </g>
+        <g fill="currentColor" font-size="11" text-anchor="middle">
+            <text x="50" y="22">Source C</text><text x="50" y="54">.c .cpp</text>
+            <text x="50" y="122">Source asm</text><text x="50" y="154">.asm</text>
+            <text x="168" y="38">Compilateur C</text>
+            <text x="168" y="52" font-size="9.5">prétraite, analyse,</text><text x="168" y="64" font-size="9.5">génère, assemble</text>
+            <text x="168" y="154">Assembleur</text>
+            <text x="290" y="22">Objets</text><text x="290" y="54">.obj</text>
+            <text x="290" y="122">Objets</text><text x="290" y="154">.obj</text>
+            <text x="290" y="205">.lib .a</text><text x="290" y="238" font-size="9.5">script de liens</text>
+            <text x="375" y="134">Link</text>
+            <text x="480" y="97">Sortie</text><text x="480" y="134">.elf .hex .cof</text>
+            <text x="480" y="180" font-size="10">→ programmateur</text><text x="480" y="194" font-size="10">ou débogueur</text>
+        </g>
+    </svg>
+</Figure>
+
+- Les **fichiers source C** (`.c`, `.cpp`) passent par le **compilateur C**, qui effectue le prétraitement (*preprocess*), l’analyse (*parse*), la génération de code puis l’assemblage, et produit des **fichiers objets** (`.obj`).
+- Les **fichiers source assembleur** (`.asm`) passent par l’**assembleur**, qui produit aussi des fichiers objets.
+- L’**éditeur de liens** (*linker*) réunit ces fichiers objets, les **bibliothèques** (`.lib`, `.a`) et le **script d’édition de liens** (*linker script*), et produit les **fichiers de sortie** (`.elf`, `.hex`, `.cof`).
+- Ces fichiers sont ensuite chargés dans le microcontrôleur par un **programmateur** ou un **débogueur**.
+
+## Le microprogrammé : atouts et limites
+
+<Property titre="Avantage">
+    Un même matériel réalise des fonctions différentes : il suffit de **changer le programme**.
+</Property>
+
+<Warning titre="Inconvénient : le déroulement est séquentiel">
+    Il faut décomposer une fonction pour pouvoir la « programmer », et les temps d’exécution sont importants (contrairement à un FPGA).
+</Warning>
+
+La puissance du logiciel d’un µP dépend de deux choses : son **jeu d’instructions** (*instruction set*) et ses **modes d’adressage**.
+
+## Le jeu d’instructions d’un µP
+
+<Definition titre="Jeu d’instructions">
+    Le jeu d’instructions est l’ensemble des instructions que le µP **sait exécuter**. Chaque constructeur le publie en assembleur, avec **un mnémonique pour un code opératoire**.
+</Definition>
+
+Le problème est qu’il n’existe **aucune normalisation** : il y a autant d’assembleurs que de microprocesseurs. Par exemple, pour charger la valeur 72h dans l’accumulateur, on écrit :
+
+| Microprocesseur | Instruction |
+| --- | --- |
+| Zilog Z80 | `LD A,72h` |
+| Motorola 68HC11 | `LDAA #$72` |
+| Philips 8051 | `MOV A,#72h` |
+| Microchip PIC16F84 | `MOVLW 0x72` |
+
+## Format d’une instruction en assembleur
+
+Une ligne d’assembleur comporte quatre champs :
+
+```asm
+LABEL   OPCODE  OPERANDES       COMMENTAIRES
+SIZE    EQU     0x0200          ; Define SIZE as 0x0200 value
+LOOP    MOV     R0, #SIZE       ; R0=0x0200
+```
+
+- **LABEL** est une étiquette symbolique ;
+- **OPCODE** est le code opératoire, sous forme de mnémonique ;
+- **OPERANDES** désigne un registre, une valeur ou une adresse.
+
+En langage machine, l’instruction est codée par un **code opératoire** (*opcode*) de $n$ bits, suivi de la spécification des **opérandes** ; l’ensemble occupe $x$ octets.
+
+<Example titre="Exemple Z80 : lire la table des instructions">
+    La table des instructions du Z80 donne, pour chaque instruction, son code hexadécimal, son nombre de cycles et son effet sur le registre d’indicateurs. Le code opératoire est parfois suivi d’opérandes : `n` désigne un octet de donnée, `nn mm` une valeur de 16 bits.
+
+    | Instruction | Code hexa | Cycles |
+    | --- | --- | --- |
+    | `LD B,n` | `06` `nn` | 2 |
+    | `LD DE,mn` | `11` `nn` `mm` | 3 |
+    | `LD C,B` | `48` | 1 |
+    | `OR C` | `B1` | 1 |
+    | `PUSH BC` | `C5` | 3 |
+    | `RET` | `C9` | 3 |
+
+    `OR C` tient sur un seul octet (le code opératoire), `LD B,n` sur deux (code opératoire + opérande), `LD DE,mn` sur trois.
+</Example>
+
+## Les familles d’instructions du Z80
+
+| Famille | Exemples de code Z80 |
+| --- | --- |
+| Mouvement de données | `LD A,B` ; `LD A,(HL)` |
+| Arithmétique binaire | `ADD A,B` ; `SUB 5` |
+| Logique | `AND 0Fh` ; `OR B` |
+| Décalage, rotation | `RR A` |
+| Manipulation de bit | `BIT 7,A` |
+| Branchement | `JP 2025h` ; `CALL 3000h` |
+| Contrôle de programme | `HALT` (arrêt jusqu’à une interruption) |
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Niveaux">
+        Langage machine (binaire, propre au µP) → assembleur (mnémoniques, propre au µP) → haut niveau (portable, plus lent).
+    </Formula>
+    <Formula label="Compilation">
+        .c → compilateur → .obj ; .asm → assembleur → .obj ; éditeur de liens (+ .lib, script) → .elf / .hex.
+    </Formula>
+    <Formula label="Microprogrammé">
+        Même matériel, fonctions différentes ; mais séquentiel et plus lent qu’un FPGA.
+    </Formula>
+    <Formula label="Puissance du soft">
+        Dépend du jeu d’instructions et des modes d’adressage ; aucune normalisation entre µP.
+    </Formula>
+    <Formula label="Instruction">
+        LABEL OPCODE OPERANDES ; COMMENTAIRES — codée en code opératoire + opérandes.
+    </Formula>
+</Formulas>

@@ -58,7 +58,7 @@ Le tracé de l'évolution du module et de la phase en fonction de la fréquence 
 <Property titre="Caractéristiques de la réponse fréquentielle des filtres numériques">
     - Elle est **périodique** de période $f_e$.
     - L'analyse et le tracé se limitent à la plage de fréquences $\left[0, \frac{f_e}{2}\right]$.
-    - Pas de pente particulière au niveau du diagramme de Bode (contrairement aux systèmes en temps continu).
+    - Le diagramme de Bode ne présente pas de pente particulière, contrairement à celui des systèmes en temps continu.
 </Property>
 
 ## Fréquence de coupure
@@ -156,8 +156,8 @@ La sortie du filtre est donc le produit de convolution du signal d'entrée par l
     $$
 
     - Le filtre RIF est **toujours stable**, car $H(z)$ n'admet pas de pôles.
-    - Un filtre RIF d'ordre $N$ aura besoin de $N + 1$ coefficients.
-    - Réponse en fréquences : $H(f) = (H(z))_{z = e^{j2\pi f T_e}} = |H(f)| \exp(j\varphi(f))$.
+    - Un filtre RIF d'ordre $N$ a besoin de $N + 1$ coefficients.
+    - Sa réponse en fréquence s'obtient en posant $z = e^{j2\pi f T_e}$ : $H(f) = (H(z))_{z = e^{j2\pi f T_e}} = |H(f)| \exp(j\varphi(f))$.
     - $\varphi(f)$ est **linéaire** lorsque $h[n]$ est **symétrique**.
 </Theorem>
 
@@ -287,11 +287,12 @@ La sortie du filtre est donc le produit de convolution du signal d'entrée par l
 </Figure>
 
 <Remark titre="Synthèse de filtres RIF">
-    - **Méthode de la fenêtre** : utilisée pour limiter la durée de la réponse impulsionnelle, en la multipliant par une « fenêtre » de dimension finie.
-    - Optimisation par la méthode des moindres carrés.
-    - Calcul des coefficients par approximation de Tchebychev.
-    - Par TFD récursive.
-    - Etc.
+    Plusieurs méthodes permettent de synthétiser un filtre RIF :
+
+    - la **méthode de la fenêtre**, qui limite la durée de la réponse impulsionnelle en la multipliant par une « fenêtre » de dimension finie ;
+    - l'optimisation par la méthode des moindres carrés ;
+    - le calcul des coefficients par approximation de Tchebychev ;
+    - la TFD récursive, entre autres.
 </Remark>
 
 ## Filtres RII
@@ -323,14 +324,9 @@ $$
 </Figure>
 
 <Remark titre="Principe de synthèse de filtres RII">
-    - Calculer un filtre analogique $H(j\omega)$.
-    - Transformer le filtre analogique en un filtre numérique équivalent $H(z)$.
+    On commence par calculer un filtre analogique $H(j\omega)$, puis on le transforme en un filtre numérique équivalent $H(z)$. La transformation doit conserver la stabilité du filtre, c'est-à-dire garder les pôles à l'intérieur du cercle unité.
 
-    Contrainte : conserver la stabilité du filtre (pôles situés à l'intérieur du cercle unité).
-
-    - Zone utile d'analyse du filtrage : $\left[0, \frac{f_e}{2}\right]$.
-    - Pas de phase linéaire.
-    - Utilisation d'un logiciel (Matlab par exemple) pour tracer la réponse fréquentielle.
+    L'analyse du filtrage se limite à la zone utile $\left[0, \frac{f_e}{2}\right]$. Un filtre RII n'a pas de phase linéaire. On utilise en général un logiciel (Matlab par exemple) pour tracer sa réponse fréquentielle.
 </Remark>
 
 ## Exemple de filtre RII

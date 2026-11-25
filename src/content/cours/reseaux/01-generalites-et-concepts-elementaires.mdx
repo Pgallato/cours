@@ -11,42 +11,42 @@ sources: ["reseaux.pdf p. 4–62"]
     Ensemble des liaisons entre les équipements numériques.
 </Definition>
 
-D'autres réseaux : routier, sanguin, social…
+Le mot « réseau » ne se limite pas à l'informatique : on parle aussi de réseau routier, de réseau sanguin ou de réseau social.
 
-Sont concernés : ordinateurs, switches, modems…
+En informatique, un réseau relie des équipements comme les ordinateurs, les switches ou les modems.
 
 <Definition titre="Norme">
     Harmonisation de pratiques dans un domaine particulier régies par une organisation.
 </Definition>
 
-- Portée d'une norme : pays, continent, technologie…
-- Emploi : Système International ; lois + constitutions + décrets… ; linguistique…
+- La portée d'une norme peut être un pays, un continent ou une technologie.
+- Les normes s'emploient dans de nombreux domaines : le Système International d'unités, le droit (lois, constitution, décrets…) ou encore la linguistique.
 
 <Definition titre="Standard">
     Ensemble de recommandations suivies par un groupe de personnes.
 </Definition>
 
-- Standards courants : PC, PostScript, écartement des voies…
-- Hypothèses de débat : avantage, souplesse d'évolution ? Inconvénient, frein à l'innovation ? Supériorité norme vs standard ?
+- Parmi les standards courants, on peut citer le PC, le langage PostScript ou l'écartement des voies ferrées.
+- Plusieurs questions font débat : un standard est-il un avantage, grâce à sa souplesse d'évolution, ou un frein à l'innovation ? Une norme est-elle supérieure à un standard ?
 
 <Remark titre="Norme vs. standard">
-    - Pas de différence sémantique en anglais.
-    - Standard généralement piloté par des organisations privées.
+    - En anglais, les deux mots ne se distinguent pas : on parle de *standard* dans les deux cas.
+    - Un standard est généralement piloté par des organisations privées.
 </Remark>
 
 <Definition titre="Protocole">
     Règles à respecter pour communiquer entre deux systèmes.
 </Definition>
 
-Dans ce cours : Internet Protocol (IP), Transmission Control Protocol (TCP), Internet Group Management Protocol (IGMP), HyperText Coffee Pot Control Protocol (HTCPCP)…
+Ce cours aborde notamment Internet Protocol (IP), Transmission Control Protocol (TCP) et Internet Group Management Protocol (IGMP), ainsi que HyperText Coffee Pot Control Protocol (HTCPCP), un protocole humoristique.
 
 ### Émission vs. réception
 
 <Definition titre="Émission et réception">
-    « L'émission » c'est envoyer de la donnée… « la réception » c'est recevoir de la donnée. (Merci Captain Obvious !)
+    L'**émission** consiste à envoyer des données ; la **réception** consiste à en recevoir.
 </Definition>
 
-Comme dans la vraie vie ! Quand quelqu'un parle, si on veut l'écouter, on ne parle pas par-dessus ! La plupart du temps, il s'agit d'un dialogue, où émission et réception alternent.
+Comme dans une conversation, on n'écoute pas quelqu'un en parlant en même temps que lui : la plupart des échanges sont des dialogues, où émission et réception alternent.
 
 ### Client vs. serveur
 
@@ -54,7 +54,7 @@ Comme dans la vraie vie ! Quand quelqu'un parle, si on veut l'écouter, on ne pa
     Les réseaux informatiques sont de type **client - serveur**.
 </Theorem>
 
-Subtilité : une machine peut être à la fois client et serveur ! Mieux encore : un client émet et reçoit ! Tout comme un serveur !
+Une même machine peut cependant être à la fois client et serveur. De plus, un client émet et reçoit des données, tout comme un serveur.
 
 <Theorem type="Second principe fondamental">
     Le réseau relie des **hôtes** entre eux.
@@ -104,82 +104,82 @@ Le modèle **Open Systems Interconnection** (OSI) découpe la communication en 7
 ### Couche 1 : Physique
 
 <Definition titre="La couche Physique">
-    Définit les signaux et le support de communication. On y trouve bien évidemment tout le matériel.
+    Elle définit les signaux et le support de communication ; elle comprend donc tout le matériel.
 </Definition>
 
 <Theorem type="Important">
-    Unité de mesure : **bit / symbole**. Portée : **locale**.
+    L'unité de mesure est le **bit** (ou le **symbole**) et la portée est **locale**.
 </Theorem>
 
 ### Couche 2 : Liaison de données
 
 <Definition titre="La couche Liaison de Données">
-    Définit l'organisation des bits de données sur la couche physique.
+    Elle définit l'organisation des bits de données sur la couche physique.
 </Definition>
 
-Principales notions apportées :
+Elle apporte principalement les notions suivantes :
 
-- assemble des bits par octet (éventuellement) ;
-- bande d'appel, séquence de début, de fin… ;
-- contrôle de cohérence.
+- le regroupement des bits en octets (éventuellement) ;
+- le marquage des trames : bande d'appel, séquence de début, séquence de fin… ;
+- le contrôle de cohérence.
 
 <Theorem type="Important">
-    Unité de mesure : **trame**. Portée : **locale**.
+    L'unité de mesure est la **trame** et la portée est **locale**.
 </Theorem>
 
 ### Couche 3 : Réseau
 
 <Definition titre="La couche Réseau">
-    Acheminer de l'information, éventuellement via des nœuds de transfert.
+    Elle achemine l'information, éventuellement en passant par des nœuds de transfert.
 </Definition>
 
-Principales notions apportées : contrôle de flux, routage, adressage, avec ou sans connexion.
+Elle apporte principalement le contrôle de flux, le routage et l'adressage, en mode connecté ou non connecté.
 
 <Theorem type="Important">
-    Unité de mesure : **paquet**. Portée : **locale / globale**.
+    L'unité de mesure est le **paquet** et la portée est **locale ou globale**.
 </Theorem>
 
 ### Couche 4 : Transport
 
 <Definition titre="La couche Transport">
-    Transporter l'information de « l'utilisateur ».
+    Elle transporte l'information de « l'utilisateur ».
 </Definition>
 
-Principales notions apportées : qualité de service, contrôle de congestion.
+Elle apporte principalement la qualité de service et le contrôle de congestion.
 
 <Theorem type="Important">
-    Unité de mesure : **segment / datagramme**. Portée : **locale / globale**.
+    L'unité de mesure est le **segment** (ou le **datagramme**) et la portée est **locale ou globale**.
 </Theorem>
 
 ### Couche 5 : Session
 
 <Definition titre="La couche Session">
-    Établir, maintenir, exploiter et libérer une connexion.
+    Elle établit, maintient, exploite et libère une connexion.
 </Definition>
 
-Principales notions apportées : synchronisation ; interruption et redémarrage ; remise en correspondance des sessions établies.
+Elle apporte principalement la synchronisation, l'interruption et le redémarrage des échanges, ainsi que la remise en correspondance des sessions établies.
 
 <Theorem type="Important">
-    N'est plus strictement dans le périmètre de la communication.
+    Cette couche ne relève plus strictement de la communication.
 </Theorem>
 
 ### Couche 6 : Présentation
 
 <Definition titre="La couche Présentation">
-    Décrit la **syntaxe** d'une communication.
+    Elle décrit la **syntaxe** d'une communication.
 </Definition>
 
-Exemples de services offerts : encodage / décodage, compression / décompression, chiffrement / déchiffrement.
+Elle offre par exemple des services d'encodage et de décodage, de compression et de décompression, de chiffrement et de déchiffrement.
 
 ### Couche 7 : Application
 
 <Definition titre="La couche Application">
-    Décrit la **sémantique** d'une communication.
+    Elle décrit la **sémantique** d'une communication.
 </Definition>
 
-C'est l'extrémité de la communication, donc la raison d'être de toutes les couches qui se trouvent en dessous ! En connaissez-vous ? À votre imagination !
+C'est l'extrémité de la communication, et donc la raison d'être de toutes les couches inférieures.
 
-Bon… mais ça c'est en théorie !
+Ce découpage en sept couches reste toutefois théorique : la section suivante montre comment il s'applique en pratique.
 
 ## Le modèle OSI appliqué dans la réalité
 
@@ -212,19 +212,19 @@ Exemples de protocoles et technologies rangés par couche :
 <Definition titre="Diffusion">
     Tous les hôtes reçoivent l'information émise par l'un d'entre eux.
 
-    Exemples : télévision hertzienne, WiFi, Ethernet Bus, GPON…
+    C'est le cas, par exemple, de la télévision hertzienne, du WiFi, d'Ethernet en bus ou du GPON.
 </Definition>
 
 <Definition titre="Répéteur">
     Dispositif qui réémet un signal (donc le rediffuse).
 
-    Exemples : répéteur radio, hub Ethernet…
+    C'est le cas, par exemple, d'un répéteur radio ou d'un hub Ethernet.
 </Definition>
 
 <Definition titre="Commutation">
     Chaque hôte reçoit le trafic qui l'intéresse (lorsque possible).
 
-    Exemples : Ethernet commuté, téléphonie…
+    C'est le cas, par exemple, d'Ethernet commuté ou de la téléphonie.
 </Definition>
 
 <Animation type="hub-switch" titre="Diffusion (hub) ou commutation (switch) ?" params={{mode: 'hub'}} />
@@ -294,25 +294,25 @@ Plusieurs techniques existent :
 {/* CORRIGÉ (reseaux.pdf p. 30 : la diapositive indiquait un canal D à 16 kbps (valeur du BRI)). */}
 
 <Example titre="Réseaux Numériques à Intégration de Services (RNIS ; ISDN)">
-    PRI : 30 x 64 kbps données (B) + 1 x 64 kbps signaux (D).
+    Un accès primaire (PRI) offre 30 canaux de données (B) à 64 kbps et 1 canal de signalisation (D) à 64 kbps.
 </Example>
 
 ### Unicast, broadcast, multicast
 
 <Definition titre="Unicast">
-    Transmission de données d'un point vers un autre. C'est donc le peer-to-peer ! (Merci Captain Obvious !)
+    Transmission de données d'un point vers un autre, comme dans une communication pair à pair (*peer-to-peer*).
 </Definition>
 
 <Definition titre="Broadcast">
     Transmission de données à tous ceux qui sont à l'écoute.
 
-    Exemples : enseignant dans une salle, radio et télé classique…
+    C'est le cas, par exemple, d'un enseignant qui s'adresse à toute une salle, ou de la radio et de la télévision classiques.
 </Definition>
 
 <Definition titre="Multicast">
     Transmission de données à certains destinataires seulement.
 
-    Exemple : information de dernière minute comme un changement de salle uniquement pour un groupe d'étudiants.
+    Par exemple, une information de dernière minute, comme un changement de salle, n'est envoyée qu'à un groupe d'étudiants.
 </Definition>
 
 <Warning titre="Attention">
@@ -341,85 +341,79 @@ Plusieurs techniques existent :
 
 ### Switching vs. routing
 
-En réseau, il est très important de différencier les deux !
+En réseau, il est essentiel de bien distinguer ces deux notions.
 
 <Definition titre="Switching">
-    Généralement de niveau 2, donc adhérente au support. Le paquet IP ou la trame Ethernet ne sont **pas** modifiés.
+    La commutation (*switching*) se fait généralement au niveau 2 : elle dépend donc du support. Le paquet IP ou la trame Ethernet ne sont **pas** modifiés.
 </Definition>
 
 <Definition titre="Routing">
-    Généralement de niveau 3 ou plus, implique une décapsulation et une encapsulation (changement de support), voire une modification des données (par exemple : NAT).
+    Le routage (*routing*) se fait généralement au niveau 3 ou au-dessus. Il implique une décapsulation puis une encapsulation (changement de support), voire une modification des données (par exemple avec le NAT).
 </Definition>
 
 ### Contrôle d'intégrité
 
 <Definition titre="Contrôle d'intégrité">
-    Ajout d'une somme de contrôle pour détecter les erreurs de transmission.
+    On ajoute une somme de contrôle aux données pour détecter les erreurs de transmission.
 </Definition>
 
-Quelques notions autour de l'intégrité : bit de parité, somme de contrôle, détection d'erreur, auto-correction d'erreur.
+Plusieurs notions sont liées à l'intégrité : le bit de parité, la somme de contrôle, la détection d'erreurs et l'autocorrection d'erreurs.
 
 ## Les organismes de normalisation
 
 <Definition titre="IEEE">
-    **Institute of Electrical and Electronics Engineers.** Missions principales : publications scientifiques ; promotion de l'ingénierie en électricité, électronique, informatique… ; établissement de normes internationales.
+    **Institute of Electrical and Electronics Engineers.** Ses missions principales sont la publication d'articles scientifiques, la promotion de l'ingénierie en électricité, en électronique et en informatique, et l'établissement de normes internationales.
 
-    Exemples : 802 (LAN), 1003 (POSIX), 1394 (FireWire), 1474 (CTBC).
+    On lui doit par exemple les normes 802 (LAN), 1003 (POSIX), 1394 (FireWire) et 1474 (CTBC).
 </Definition>
 
 <Definition titre="IETF">
-    **Internet Engineering Task Force** ; « filiale » de l'Internet Society (ISoc). Fonctionnement :
+    **Internet Engineering Task Force**, une « filiale » de l'Internet Society (ISoc). Sa mission est d'établir des standards pour un Internet ouvert. C'est un organisme informel qui fonctionne par groupes de travail : chacun y apporte ses contributions, généralement sur des listes de diffusion, et les décisions sont prises par consensus. L'IETF publie les **Request For Comments** (RFC).
 
-    - mission : établir des standards pour un Internet ouvert ;
-    - organisme informel : fonctionne avec des groupes de travail ;
-    - apport par contribution, généralement sur mailing-list ;
-    - décision par consensus ;
-    - établit les **Request For Comments** (RFC).
-
-    Exemples de RFC fondamentales : 765 (FTP), 768 (UDP), 791 (IP), 792 (ICMP), 821 (SMTP), 822 (Mail), 1034 et 1035 (DNS), 2460 (IPv6), 2549 (IPoAC).
+    Parmi les RFC fondamentales, on peut citer : 765 (FTP), 768 (UDP), 791 (IP), 792 (ICMP), 821 (SMTP), 822 (Mail), 1034 et 1035 (DNS), 2460 (IPv6) et 2549 (IPoAC).
 </Definition>
 
 <Definition titre="ANSI">
-    **American National Standards Institute** ; équivalent américain de l'Agence Française de Normalisation (AFNOR).
+    **American National Standards Institute**, l'équivalent américain de l'Agence Française de Normalisation (AFNOR).
 
-    Exemples de normes initialement ANSI : langage C, ASCII, SCSI, ATA.
+    Le langage C, l'ASCII, le SCSI et l'ATA ont d'abord été des normes ANSI.
 </Definition>
 
 <Definition titre="ISO">
-    **International Organization for Standardization.** Objectif : produire des normes internationales dans les domaines industriels et commerciaux.
+    **International Organization for Standardization.** Son objectif est de produire des normes internationales dans les domaines industriels et commerciaux.
 
-    Exemples de normes ISO : 1000 (unités SI), 7498 (modèle réseau), 9001 (assurance qualité), 9660 (CD), 9899 (langage C), 27000 (sécurité de l'information).
+    On lui doit par exemple les normes 1000 (unités SI), 7498 (modèle réseau), 9001 (assurance qualité), 9660 (CD), 9899 (langage C) et 27000 (sécurité de l'information).
 </Definition>
 
 <Definition titre="OASIS">
-    **Organization for the Advancement of Structured Information Standards.** Consortium constitué de grandes entreprises et d'organisations importantes.
+    **Organization for the Advancement of Structured Information Standards.** C'est un consortium constitué de grandes entreprises et d'organisations importantes.
 
-    Exemples de normes OASIS : OpenDocument, SAML, AMQP, ebXML et UBL.
+    Il a normalisé par exemple OpenDocument, SAML, AMQP, ebXML et UBL.
 </Definition>
 
 <Definition titre="W3C">
-    **World Wide Web Consortium.** Fondé par Tim Berners-Lee ; chargé de promouvoir la compatibilité des technologies du Web.
+    **World Wide Web Consortium.** Fondé par Tim Berners-Lee, il est chargé de promouvoir la compatibilité des technologies du Web.
 
-    Exemples de normes W3C : HTML, XML, CSS, PNG, SVG, SOAP.
+    On lui doit par exemple HTML, XML, CSS, PNG, SVG et SOAP.
 </Definition>
 
 <Definition titre="ITU (UIT)">
-    **International Telecommunication Union.** Agence appartenant à l'ONU ; la plus ancienne organisation chargée des télécoms.
+    **International Telecommunication Union.** Cette agence de l'ONU est la plus ancienne organisation chargée des télécommunications.
 
-    Exemples de normes UIT : V.24 (RS232), V.90 (modem dit « 56k »), X.25 (réseaux par paquets), X.400 (courriers électroniques), X.500 (annuaires).
+    On lui doit par exemple les normes V.24 (RS232), V.90 (modem dit « 56k »), X.25 (réseaux par paquets), X.400 (courrier électronique) et X.500 (annuaires).
 </Definition>
 
 <Definition titre="3GPP">
-    **3rd Generation Partnership Project.** Coopération internationale entre organismes de normalisation en télécommunications.
+    **3rd Generation Partnership Project.** C'est une coopération internationale entre organismes de normalisation en télécommunications.
 
-    Exemples de spécifications proposées par le 3GPP : GSM (2G), UMTS (3G), LTE (4G), 5G NR.
+    Le 3GPP a notamment spécifié le GSM (2G), l'UMTS (3G), le LTE (4G) et la 5G NR.
 </Definition>
 
 ## Les différentes topologies
 
 ### Topologie en bus
 
-Usage : répandue dans les systèmes embarqués et systèmes industriels.
+Elle est répandue dans les systèmes embarqués et les systèmes industriels.
 
 <Figure legende="Topologie en bus" page="reseaux.pdf p. 49">
 <svg viewBox="0 0 260 110" role="img" aria-label="Cinq stations A à E branchées sur une même ligne horizontale">
@@ -431,7 +425,7 @@ Usage : répandue dans les systèmes embarqués et systèmes industriels.
 
 ### Topologie en étoile
 
-Usage : répandue dans les réseaux locaux.
+Elle est répandue dans les réseaux locaux.
 
 <Figure legende="Topologie en étoile" page="reseaux.pdf p. 50">
 <svg viewBox="0 0 260 110" role="img" aria-label="Cinq stations A à E reliées chacune à un équipement central">
@@ -444,7 +438,7 @@ Usage : répandue dans les réseaux locaux.
 
 ### Topologie en anneau
 
-Usage : parfois utilisée dans les systèmes industriels, a tendance à être remplacée par du bus.
+Elle est parfois utilisée dans les systèmes industriels, mais tend à être remplacée par le bus.
 
 <Figure legende="Topologie en anneau" page="reseaux.pdf p. 51">
 <svg viewBox="0 0 260 150" role="img" aria-label="Cinq stations A, B, C, E, D reliées en boucle, chacune reliée aussi à un anneau central">
@@ -456,7 +450,7 @@ Usage : parfois utilisée dans les systèmes industriels, a tendance à être re
 
 ### Topologie en maille
 
-Usage : représente par exemple les interconnexions de réseaux sur Internet.
+Elle représente par exemple les interconnexions de réseaux sur Internet.
 
 <Figure legende="Topologie en maille" page="reseaux.pdf p. 52">
 <svg viewBox="0 0 260 150" role="img" aria-label="Cinq stations reliées par plusieurs liens : A-B, A-E, B-C, B-D, C-E, D-E">
@@ -468,7 +462,7 @@ Usage : représente par exemple les interconnexions de réseaux sur Internet.
 
 ### Topologie hiérarchique
 
-Usage : représente par exemple les interconnexions d'un campus vers le routeur de bordure du site.
+Elle représente par exemple les interconnexions d'un campus jusqu'au routeur de bordure du site.
 
 <Figure legende="Topologie hiérarchique" page="reseaux.pdf p. 53">
 <svg viewBox="0 0 260 150" role="img" aria-label="Arbre : B à la racine, relié à A et C ; A relié à F et D ; C relié à E et G">
@@ -480,7 +474,7 @@ Usage : représente par exemple les interconnexions d'un campus vers le routeur 
 
 ### Topologie linéaire
 
-Usage : utilisée pour des réseaux de proche en proche.
+Elle est utilisée pour des réseaux de proche en proche.
 
 <Figure legende="Topologie linéaire" page="reseaux.pdf p. 54">
 <svg viewBox="0 0 260 60" role="img" aria-label="Cinq stations A, B, C, D, E alignées et reliées de proche en proche">
@@ -492,7 +486,7 @@ Usage : utilisée pour des réseaux de proche en proche.
 
 ### Topologies hybrides
 
-Usage : association de techniques, un LAN Ethernet et un WiFi par exemple.
+Elles associent plusieurs techniques, par exemple un LAN Ethernet et un réseau WiFi.
 
 <Figure legende="Topologie hybride : un bus (A à E) relié à une étoile autour de F (G, H, I)" page="reseaux.pdf p. 55">
 <svg viewBox="0 0 300 120" role="img" aria-label="Bus horizontal portant les stations A à E, prolongé par une étoile centrée sur F qui relie G, H et I">
@@ -505,39 +499,30 @@ Usage : association de techniques, un LAN Ethernet et un WiFi par exemple.
 ### Topologie physique vs. logique
 
 <Warning titre="Attention !">
-    La topologie physique ne représente pas forcément la topologie logique !
+    La topologie physique ne représente pas forcément la topologie logique. Par exemple :
 
-    - réseau hiérarchique physiquement mais en bus à cause d'Ethernet ;
-    - anneau TokenRing mais physiquement en étoile avec un concentrateur ;
-    - bus Ethernet mais physiquement en étoile autour d'un commutateur ;
-    - …
+    - un réseau peut être hiérarchique physiquement, mais en bus du point de vue logique à cause d'Ethernet ;
+    - un anneau TokenRing peut être physiquement en étoile autour d'un concentrateur ;
+    - un bus Ethernet peut être physiquement en étoile autour d'un commutateur.
 </Warning>
 
 ## Classification par taille
 
-Les réseaux se répartissent dans des catégories communément définies : PAN / BAN ; LAN / WLAN ; CAN / MAN / RAN ; WAN / WWAN ; Internet.
+Les réseaux se répartissent en catégories communément admises, de la plus petite à la plus grande : PAN / BAN, LAN / WLAN, CAN / MAN / RAN, WAN / WWAN et enfin Internet.
 
 <Definition titre="Personal Area Network (PAN)">
-    Réseaux de proximité, généralement de rayon 10 mètres, par exemple :
+    Réseaux de proximité, d'un rayon de 10 mètres en général. Ils peuvent être :
 
-    - filaire (PAN) : USB, Thunderbolt, Firewire, RS485, CAN, MODBUS ;
+    - filaires (PAN) : USB, Thunderbolt, Firewire, RS485, CAN, MODBUS ;
     - sans fil (WPAN) : Bluetooth, ZigBee, LiFi.
 </Definition>
 
 <Definition titre="Local Area Network (LAN)">
-    Réseaux locaux domestiques et d'entreprise.
-
-    - Généralement de niveau « bâtiment » : maison / appartement ; bâtiment (ou groupe de bâtiments voisins) d'entreprise ; plateaux modulaires d'entreprise (ex. : dans les tours de la Défense).
-    - Relient des équipements locaux (ordinateurs, imprimantes…).
-    - Généralement IEEE 802.3 et / ou IEEE 802.11.
+    Réseaux locaux domestiques et d'entreprise. Ils s'étendent généralement à l'échelle d'un bâtiment : une maison ou un appartement, un bâtiment d'entreprise (ou un groupe de bâtiments voisins), ou encore des plateaux modulaires d'entreprise (par exemple dans les tours de la Défense). Ils relient des équipements locaux (ordinateurs, imprimantes…) et reposent généralement sur les normes IEEE 802.3 et / ou IEEE 802.11.
 </Definition>
 
 <Definition titre="Campus / Metropolitan Area Network (CAN / MAN)">
-    Réseaux à l'échelle d'une métropole, ou d'un campus universitaire.
-
-    - un MAN relie plusieurs LAN ;
-    - un MAN peut donner accès à un ou plusieurs WAN ;
-    - un MAN laisse une certaine autonomie à chaque LAN… sinon c'est juste un « gros » LAN !
+    Réseaux à l'échelle d'une métropole ou d'un campus universitaire. Un MAN relie plusieurs LAN et peut donner accès à un ou plusieurs WAN. Il laisse une certaine autonomie à chaque LAN : sinon, ce ne serait qu'un « gros » LAN.
 </Definition>
 
 <Definition titre="Wide Area Network (WAN)">
@@ -545,16 +530,12 @@ Les réseaux se répartissent dans des catégories communément définies : PAN 
 </Definition>
 
 <Warning titre="Attention">
-    On n'est pas encore tout à fait sur Internet ! Le WAN reste à l'échelle d'une organisation, par exemple un FAI.
+    Le WAN n'est pas encore tout à fait Internet : il reste à l'échelle d'une organisation, par exemple un FAI.
 </Warning>
 
 <Definition titre="L'Internet">
     Fédération des réseaux de toutes échelles (s'ils sont reliés).
 </Definition>
-
-<Remark titre="Hypothèse">
-    Il faudra peut-être inventer une autre échelle si l'Humain arrive à conquérir l'Univers !
-</Remark>
 
 ## Fiche récapitulative
 

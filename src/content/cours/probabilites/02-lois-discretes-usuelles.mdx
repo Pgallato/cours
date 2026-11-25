@@ -5,7 +5,7 @@ tags: [uniforme, Bernoulli, binomiale, géométrique, Poisson]
 sources: [4, 5, 6]
 ---
 
-Lois discrètes usuelles, avec les VAD (variables aléatoires discrètes).
+Ce chapitre présente les lois usuelles des variables aléatoires discrètes (VAD).
 
 ## Loi uniforme discrète
 
@@ -14,7 +14,7 @@ Lois discrètes usuelles, avec les VAD (variables aléatoires discrètes).
     \Omega = \{1, 2, 3, \dots, n\}
     $$
 
-    Équiprobabilité :
+    Toutes les issues sont équiprobables :
 
     $$
     P(X = k) = \frac{1}{n}
@@ -55,7 +55,7 @@ Lois discrètes usuelles, avec les VAD (variables aléatoires discrètes).
 ## Loi de Bernoulli
 
 <Definition titre="Loi de Bernoulli">
-    2 résultats : succès ou échec.
+    L'expérience n'a que deux résultats possibles : succès ou échec.
 
     $$
     X = \begin{cases} 1 & \text{succès} \\ 0 & \text{échec} \end{cases}
@@ -75,13 +75,13 @@ Lois discrètes usuelles, avec les VAD (variables aléatoires discrètes).
 ## Loi binomiale
 
 <Definition titre="Loi binomiale">
-    On répète $n$ fois une expérience de Bernoulli :
+    On répète $n$ fois une expérience de Bernoulli, à condition que :
 
-    - succès ou échec ;
-    - expériences indépendantes ;
-    - probabilité de succès toujours identique.
+    - chaque expérience n'ait que deux issues, succès ou échec ;
+    - les expériences soient indépendantes ;
+    - la probabilité de succès soit toujours la même.
 
-    Variable $X$ = nombre de succès parmi les $n$.
+    La variable $X$ compte le nombre de succès parmi les $n$ expériences.
 
     $$
     X \sim \mathcal{B}(n, p)
@@ -107,7 +107,7 @@ $$
 <Example titre="QCM répondu au hasard">
     Un QCM comporte 10 questions à 4 propositions dont une seule est juste ; on répond au hasard. Le nombre $X$ de bonnes réponses suit $\mathcal{B}(10,\, 0{,}25)$ : 10 épreuves indépendantes, chacune réussie avec la même probabilité $p = 0{,}25$.
 
-    Probabilité d'avoir exactement 3 bonnes réponses, et au moins une ?
+    Quelle est la probabilité d'avoir exactement 3 bonnes réponses ? Et d'en avoir au moins une ?
 
     <Solution titre="Détail du calcul">
         $$
@@ -162,7 +162,7 @@ $$
 {/* AJOUT : exemple résolu (dé jusqu'au premier 6) */}
 
 <Example titre="Lancer un dé jusqu'à obtenir un 6">
-    $X$ = rang du premier 6 : $X \sim \mathcal{G}\!\left(\dfrac{1}{6}\right)$. Probabilité que le premier 6 sorte au 3ᵉ lancer ? Nombre moyen de lancers ? Sachant que 6 lancers n'ont donné aucun 6, probabilité d'en attendre encore plus de 6 ?
+    Soit $X$ le rang du premier 6 : $X \sim \mathcal{G}\!\left(\dfrac{1}{6}\right)$. Quelle est la probabilité que le premier 6 sorte au 3ᵉ lancer ? Combien de lancers faut-il en moyenne ? Sachant que 6 lancers n'ont donné aucun 6, quelle est la probabilité de devoir en attendre encore plus de 6 ?
 
     <Solution titre="Détail du calcul">
         $$
@@ -213,7 +213,7 @@ $$
 {/* AJOUT : exemple résolu (serveur web) */}
 
 <Example titre="Serveur web : changer de durée">
-    Le serveur reçoit en moyenne 30 requêtes par seconde. Probabilité de ne recevoir **aucune** requête pendant 0,1 s ? **au plus 2** ?
+    Le serveur reçoit en moyenne 30 requêtes par seconde. Quelle est la probabilité de ne recevoir **aucune** requête pendant 0,1 s ? D'en recevoir **au plus 2** ?
 
     <Solution titre="Détail du calcul">
         Le paramètre est la moyenne **dans la durée considérée** : sur 0,1 s, $\lambda = 30 \times 0{,}1 = 3$, donc $X \sim \mathcal{P}(3)$.
