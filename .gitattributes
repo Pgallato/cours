@@ -1,0 +1,17 @@
+# Normaliser automatiquement tous les fichiers texte en LF dans le dépôt
+* text=auto
+
+# Forcer LF pour les scripts shell et les fichiers exécutables sous Linux
+*.sh text eol=lf
+*.bash text eol=lf
+Dockerfile text eol=lf
+Makefile text eol=lf
+
+# Forcer CRLF pour les fichiers batch Windows
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Marquer les binaires pour éviter les conversions
+*.png binary
+*.jpg binary
+*.exe binary   
