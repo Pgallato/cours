@@ -1,0 +1,8 @@
+{
+  "titre": "Architecture d’un système à microprocesseur",
+  "matiere": "Microprocesseurs",
+  "semestre": "S1",
+  "annee": "2026-2027",
+  "description": "Du circuit logique au microprocesseur : bus, décodage d’adresses, architectures Von Neumann et Harvard, étude du Z80 (registres, broches), niveaux de langage, jeu d’instructions et exécution d’une instruction.",
+  "brouillon": false
+}

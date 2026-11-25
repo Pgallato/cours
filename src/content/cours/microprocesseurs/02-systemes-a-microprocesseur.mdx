@@ -1,0 +1,189 @@
+---
+titre: Systèmes à microprocesseur
+resume: Où l’on trouve des microprocesseurs, l’architecture matérielle typique d’un système (mémoires, décodeur d’adresses, périphériques), le décodage d’adresses par chip select, les trois bus et la classification RISC / CISC.
+tags: [système embarqué, architecture matérielle, décodage d'adresses, chip select, bus d'adresses, bus de données, bus de contrôle, RISC, CISC]
+sources: ["part1.pdf p. 13", "part1.pdf p. 14", "part1.pdf p. 15", "part1.pdf p. 16", "part1.pdf p. 17", "part1.pdf p. 18", "part1.pdf p. 19", "part2.pdf p. 1"]
+---
+
+## Des microprocesseurs partout
+
+Les systèmes à microprocesseur sont omniprésents : montres et téléphones connectés, ampoules connectées, cafetières, ordinateurs portables, téléviseurs, baladeurs, voitures, lave-linge, tablettes, box internet ou encore tondeuses robots.
+
+<Example titre="L’électronique d’une voiture">
+    Une voiture embarque par exemple un **boîtier de servitude intelligent** (BSI) : une carte électronique organisée autour d’un microcontrôleur, qui dialogue avec les autres calculateurs par plusieurs réseaux.
+
+    - Le **réseau LIN** relie par exemple les essuie-glaces avant et arrière.
+    - Le **réseau CAN haute vitesse** (réseau moteur) relie la suspension pilotée, l’ABS/ESP, la boîte automatique, l’injection, la direction assistée et la détection de sous-gonflage.
+    - Le **réseau CAN basse vitesse** (réseau confort) relie l’autoradio, la climatisation, les portes conducteur et passager, l’aide au stationnement, l’écran multifonction et le chargeur CD.
+</Example>
+
+## Architecture matérielle typique
+
+Un système à microprocesseur s’organise autour du microprocesseur, qui reçoit une **alimentation** (*supply voltage*), une **horloge** (*clock*), un signal de **réinitialisation** (*reset*) et des demandes d’**interruption** (*interrupt*). Il dialogue avec :
+
+- la **mémoire programme**, qui contient les instructions ;
+- la **mémoire de données** ;
+- les **périphériques**, qui gèrent les entrées et les sorties et peuvent à leur tour émettre des interruptions vers le microprocesseur.
+
+Un **décodeur d’adresses** placé entre le microprocesseur et ces composants sélectionne celui auquel s’adresse chaque accès.
+
+<Figure legende="Architecture matérielle typique d’un système à microprocesseur" page="part1.pdf p. 15">
+    <svg viewBox="0 0 520 300" role="img" aria-label="Le microprocesseur reçoit l'alimentation, l'horloge, le reset et les interruptions ; il est relié à la mémoire programme et, via le décodeur d'adresses, à la mémoire de données et aux périphériques ; les périphériques sont reliés aux entrées-sorties et renvoient des interruptions au microprocesseur">
+        <g stroke="currentColor" stroke-width="1.3" fill="var(--paper-2)">
+            <rect x="140" y="20" width="80" height="30" />
+            <rect x="20" y="70" width="80" height="28" />
+            <rect x="20" y="125" width="80" height="28" />
+            <rect x="20" y="215" width="80" height="28" />
+            <rect x="140" y="70" width="90" height="190" fill="var(--accent)" fill-opacity="0.12" />
+            <rect x="270" y="130" width="90" height="50" />
+            <rect x="400" y="40" width="100" height="50" />
+            <rect x="400" y="130" width="100" height="50" />
+            <rect x="400" y="215" width="100" height="50" fill="var(--accent)" fill-opacity="0.25" />
+        </g>
+        <g fill="currentColor" font-size="12" text-anchor="middle">
+            <text x="180" y="40">Alimentation</text>
+            <text x="60" y="89">Horloge</text>
+            <text x="60" y="144">Reset</text>
+            <text x="60" y="234">Interruption</text>
+            <text x="185" y="160">Micro-</text><text x="185" y="175">processeur</text>
+            <text x="315" y="152">Décodeur</text><text x="315" y="167">d’adresses</text>
+            <text x="450" y="62">Mémoire</text><text x="450" y="77">programme</text>
+            <text x="450" y="152">Mémoire</text><text x="450" y="167">de données</text>
+            <text x="450" y="245">Périphériques</text>
+            <text x="450" y="290">Entrées / sorties</text>
+        </g>
+        <g stroke="currentColor" stroke-width="1.3" fill="none">
+            <line x1="180" y1="50" x2="180" y2="66" />
+            <path d="M176 62 L180 68 L184 62" />
+            <line x1="100" y1="84" x2="136" y2="84" /><path d="M132 80 L138 84 L132 88" />
+            <line x1="100" y1="139" x2="136" y2="139" /><path d="M132 135 L138 139 L132 143" />
+            <line x1="100" y1="229" x2="136" y2="229" /><path d="M132 225 L138 229 L132 233" />
+            <line x1="230" y1="65" x2="396" y2="65" stroke-width="3" stroke="var(--accent)" />
+            <line x1="230" y1="155" x2="266" y2="155" /><path d="M262 151 L268 155 L262 159" />
+            <line x1="360" y1="150" x2="396" y2="150" /><path d="M392 146 L398 150 L392 154" />
+            <line x1="360" y1="165" x2="396" y2="230" /><path d="M389 228 L397 232 L396 223" />
+            <line x1="450" y1="265" x2="450" y2="278" />
+            <path d="M400 240 H380 V285 H60 V247" />
+            <path d="M56 251 L60 245 L64 251" />
+        </g>
+    </svg>
+</Figure>
+
+## Le décodage d’adresses
+
+<Definition titre="Décodage d’adresses">
+    Le décodage d’adresses consiste à générer, à partir du bus d’adresses, un signal de sélection de boîtier $\overline{CS}$ (*chip select*) pour chaque composant du système. Il fait correspondre l’adresse **locale** d’un composant à une adresse du **processeur**.
+</Definition>
+
+Dans l’exemple du cours, le processeur a un bus d’adresses de 16 bits ($A_{15} \dots A_0$). Les quatre bits de poids fort $A_{15} \dots A_{12}$ entrent dans un décodeur dont chaque sortie sélectionne un composant, tandis que les bits $A_{11} \dots A_0$ sont reliés directement à tous les composants :
+
+- la sortie 0 active $CS_1$ et sélectionne la **ROM** pour les adresses processeur de $(0000)_H$ à $(0\text{FFF})_H$ ;
+- la sortie 1 active $CS_2$ et sélectionne la **RAM** pour les adresses $(1000)_H$ à $(1\text{FFF})_H$ ;
+- la sortie 2 active $CS_3$ et sélectionne le circuit d’**entrées/sorties** aux adresses $(2000)_H$, $(2002)_H$, $(2004)_H$…
+
+Vues de l’intérieur de chaque composant, la ROM et la RAM occupent toutes les deux les adresses locales $(0000)_H$ à $(0\text{FFF})_H$ (0x0000 à 0x0FFF) : c’est le décodeur qui les place à des endroits différents de l’espace du processeur. Le circuit d’entrées/sorties n’est accessible qu’aux adresses paires, pour lesquelles $A_0 = 0$.
+
+<Figure legende="Décodage d’adresses : A15…A12 choisissent le composant, A11…A0 l’adresse locale" page="part1.pdf p. 16">
+    <svg viewBox="0 0 520 250" role="img" aria-label="Les bits A15 à A12 entrent dans un décodeur à trois sorties. La sortie 0 active CS1 de la ROM (0000h à 0FFFh), la sortie 1 active CS2 de la RAM (1000h à 1FFFh), la sortie 2 active CS3 du circuit d'entrées-sorties (2000h, 2002h, 2004h…). Les bits A11 à A0 arrivent sur chaque composant.">
+        <g stroke="currentColor" stroke-width="1.3">
+            <rect x="110" y="40" width="100" height="180" fill="var(--accent)" fill-opacity="0.15" />
+            <rect x="330" y="20" width="90" height="56" fill="var(--paper-2)" />
+            <rect x="330" y="97" width="90" height="56" fill="var(--paper-2)" />
+            <rect x="330" y="174" width="90" height="56" fill="var(--paper-2)" />
+        </g>
+        <g stroke="currentColor" stroke-width="1.3" fill="none">
+            <line x1="40" y1="130" x2="106" y2="130" /><path d="M102 126 L108 130 L102 134" />
+            <line x1="210" y1="48" x2="326" y2="48" /><path d="M322 44 L328 48 L322 52" />
+            <line x1="210" y1="125" x2="326" y2="125" /><path d="M322 121 L328 125 L322 129" />
+            <line x1="210" y1="202" x2="326" y2="202" /><path d="M322 198 L328 202 L322 206" />
+            <line x1="500" y1="48" x2="424" y2="48" /><path d="M428 44 L422 48 L428 52" />
+            <line x1="500" y1="125" x2="424" y2="125" /><path d="M428 121 L422 125 L428 129" />
+            <line x1="500" y1="202" x2="424" y2="202" /><path d="M428 198 L422 202 L428 206" />
+        </g>
+        <g fill="currentColor" font-size="12">
+            <text x="38" y="122">A15…A12</text>
+            <text x="160" y="134" text-anchor="middle">Décodeur</text>
+            <text x="198" y="52">0</text><text x="198" y="129">1</text><text x="198" y="206">2</text>
+            <text x="300" y="42">CS1</text><text x="300" y="119">CS2</text><text x="300" y="196">CS3</text>
+            <text x="375" y="44" text-anchor="middle" font-weight="600">ROM</text>
+            <text x="375" y="121" text-anchor="middle" font-weight="600">RAM</text>
+            <text x="375" y="198" text-anchor="middle" font-weight="600">E/S</text>
+            <text x="375" y="66" text-anchor="middle" font-size="10">local 0000h–0FFFh</text>
+            <text x="375" y="143" text-anchor="middle" font-size="10">local 0000h–0FFFh</text>
+            <text x="375" y="220" text-anchor="middle" font-size="10">A0 = 0</text>
+            <text x="440" y="40" font-size="11">A11…A0</text><text x="440" y="117" font-size="11">A11…A0</text><text x="440" y="194" font-size="11">A11…A0</text>
+            <text x="225" y="68" font-size="10" fill="var(--accent)">0000h → 0FFFh</text>
+            <text x="225" y="145" font-size="10" fill="var(--accent)">1000h → 1FFFh</text>
+            <text x="215" y="222" font-size="10" fill="var(--accent)">2000h, 2002h, 2004h…</text>
+        </g>
+    </svg>
+</Figure>
+
+## Le microprocesseur et ses bus
+
+<Definition titre="Microprocesseur (MPU)">
+    Le microprocesseur (*microprocessor unit*, MPU) est un circuit intégré qui réunit les fonctions de l’unité centrale de traitement (*Central Processing Unit*, CPU) d’un ordinateur.
+</Definition>
+
+Il contient une **unité arithmétique et logique** (ALU), un **ensemble de registres** (*register array*) et une **section de contrôle et de synchronisation** (*control and timing section*). Il communique avec l’extérieur par trois bus.
+
+- Le **bus de données** (*data bus*) est **bidirectionnel** : ses sorties sont à **trois états** (*tri-state*), ce qui permet à une même broche d’être tantôt une sortie (validée par *Output Enable*), tantôt une entrée.
+- Le **bus d’adresses** (*address bus*) est **unidirectionnel**.
+- Le **bus de contrôle** (*control bus*) transporte des signaux de synchronisation, en entrée ou en sortie, qui coordonnent le processeur avec les autres composants (mémoires, entrées…).
+
+<Figure legende="Une broche d’entrée/sortie bidirectionnelle à sortie trois états" page="part1.pdf p. 18">
+    <svg viewBox="0 0 360 150" role="img" aria-label="Un tampon de sortie trois états, commandé par Output Enable, envoie Output Data vers la broche d'entrée-sortie ; un tampon d'entrée ramène le niveau de la broche vers l'intérieur du circuit">
+        <g fill="none" stroke="currentColor" stroke-width="1.3">
+            <rect x="135" y="30" width="175" height="110" stroke-dasharray="6 4" />
+            <path d="M160 40 L160 80 L195 60 Z" fill="var(--accent)" fill-opacity="0.15" />
+            <path d="M195 95 L195 125 L165 110 Z" />
+            <line x1="10" y1="60" x2="160" y2="60" />
+            <line x1="10" y1="22" x2="177" y2="22" /><line x1="177" y1="22" x2="177" y2="50" />
+            <line x1="195" y1="60" x2="240" y2="60" /><line x1="240" y1="60" x2="240" y2="110" />
+            <line x1="195" y1="110" x2="290" y2="110" />
+            <line x1="10" y1="110" x2="165" y2="110" />
+            <rect x="290" y="100" width="20" height="20" />
+            <line x1="290" y1="100" x2="310" y2="120" /><line x1="310" y1="100" x2="290" y2="120" />
+        </g>
+        <circle cx="240" cy="110" r="3" fill="currentColor" />
+        <g fill="currentColor" font-size="11">
+            <text x="14" y="17">Output Enable</text>
+            <text x="14" y="55">Output Data</text>
+            <text x="14" y="105">vers l’intérieur</text>
+            <text x="318" y="114">I/O Pin</text>
+        </g>
+    </svg>
+</Figure>
+
+{/* AJOUT : « vers l'intérieur » nomme le chemin d'entrée, non légendé sur la diapo */}
+
+## Classification des microprocesseurs
+
+On classe d’abord les microprocesseurs selon la **taille de leur bus de données** : on parle de microprocesseurs 8 bits, 16 bits, 32 bits, etc.
+
+On les distingue ensuite selon leur jeu d’instructions.
+
+<Definition titre="RISC (Reduced Instruction Set Computer)">
+    Un processeur RISC utilise des modes d’adressage simples et un jeu d’instructions réduit (35 instructions pour le PIC16F). Cette simplicité le rend idéal pour le pipeline.
+</Definition>
+
+<Definition titre="CISC (Complex Instruction Set Computer)">
+    Un processeur CISC dispose d’un jeu d’instructions très complet (158 instructions pour le Z80) et de modes d’adressage complexes. Ses instructions ont donc un temps d’exécution variable.
+</Definition>
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Système">
+        Microprocesseur + horloge, reset, alimentation, interruptions ; mémoire programme, mémoire de données, périphériques (E/S) ; décodeur d’adresses.
+    </Formula>
+    <Formula label="Décodage">
+        Les bits de poids fort de l’adresse génèrent un $\overline{CS}$ par composant ; les bits de poids faible donnent l’adresse locale.
+    </Formula>
+    <Formula label="Bus">
+        Données : bidirectionnel, trois états. Adresses : unidirectionnel. Contrôle : synchronisation.
+    </Formula>
+    <Formula label="RISC / CISC">
+        RISC : peu d’instructions, adressage simple, adapté au pipeline (PIC16F : 35). CISC : jeu complet, adressage complexe, temps d’exécution variable (Z80 : 158).
+    </Formula>
+</Formulas>

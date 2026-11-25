@@ -1,0 +1,193 @@
+---
+titre: Prérequis et historique
+resume: Rappels de logique numérique (portes, bascule D, registre, mémoire RAM, cartographie mémoire d’un Cortex-M0) puis les premiers microprocesseurs, de l’Intel 4004 au Core i9.
+tags: [portes logiques, bascule D, registre, mémoire, cartographie mémoire, Intel 4004, Intel 8008]
+sources: ["part1.pdf p. 5", "part1.pdf p. 6", "part1.pdf p. 7", "part1.pdf p. 8", "part1.pdf p. 9", "part1.pdf p. 10", "part1.pdf p. 11"]
+---
+
+Un microprocesseur est construit à partir de briques de logique numérique : portes, bascules, registres et mémoires. Ce chapitre les rappelle avant de retracer brièvement l’histoire des microprocesseurs.
+
+## Les portes logiques
+
+Les quatre portes de base et leur équation sont les suivantes.
+
+| Porte | Équation | Sortie à 1 quand… |
+| --- | --- | --- |
+| AND (ET) | $X = A \cdot B$ | $A$ et $B$ valent 1 |
+| OR (OU) | $X = A + B$ | $A$ ou $B$ vaut 1 |
+| NOT (NON) | $X = \overline{A}$ | $A$ vaut 0 |
+| XOR (OU exclusif) | $X = A \oplus B$ | $A$ et $B$ sont différents |
+
+{/* AJOUT : colonne « Sortie à 1 quand… » (la diapo ne donne que le nom, l'équation et le symbole) */}
+
+<Figure legende="Symboles des portes AND, OR, NOT et XOR" page="part1.pdf p. 5">
+    <svg viewBox="0 0 520 110" role="img" aria-label="Symboles normalisés américains des portes AND, OR, NOT et XOR, chacune avec ses entrées A et B à gauche et sa sortie X à droite">
+        <g fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M30 30 H55 A22 22 0 0 1 55 74 H30 Z" fill="var(--accent)" fill-opacity="0.12" />
+            <line x1="12" y1="40" x2="30" y2="40" /><line x1="12" y1="64" x2="30" y2="64" /><line x1="77" y1="52" x2="95" y2="52" />
+            <path d="M150 30 Q170 52 150 74 Q190 74 208 52 Q190 30 150 30 Z" fill="var(--accent)" fill-opacity="0.12" />
+            <line x1="135" y1="40" x2="157" y2="40" /><line x1="135" y1="64" x2="157" y2="64" /><line x1="208" y1="52" x2="226" y2="52" />
+            <path d="M285 34 L285 70 L318 52 Z" fill="var(--accent)" fill-opacity="0.12" />
+            <circle cx="322" cy="52" r="4" />
+            <line x1="267" y1="52" x2="285" y2="52" /><line x1="326" y1="52" x2="344" y2="52" />
+            <path d="M405 30 Q425 52 405 74 Q445 74 463 52 Q445 30 405 30 Z" fill="var(--accent)" fill-opacity="0.12" />
+            <path d="M397 30 Q417 52 397 74" />
+            <line x1="380" y1="40" x2="410" y2="40" /><line x1="380" y1="64" x2="410" y2="64" /><line x1="463" y1="52" x2="481" y2="52" />
+        </g>
+        <g fill="currentColor" font-size="12">
+            <text x="45" y="100" text-anchor="middle">AND</text>
+            <text x="180" y="100" text-anchor="middle">OR</text>
+            <text x="305" y="100" text-anchor="middle">NOT</text>
+            <text x="435" y="100" text-anchor="middle">XOR</text>
+            <text x="4" y="44">A</text><text x="4" y="68">B</text><text x="98" y="56">X</text>
+            <text x="126" y="44">A</text><text x="126" y="68">B</text><text x="230" y="56">X</text>
+            <text x="258" y="56">A</text><text x="348" y="56">X</text>
+            <text x="371" y="44">A</text><text x="371" y="68">B</text><text x="485" y="56">X</text>
+        </g>
+    </svg>
+</Figure>
+
+## La bascule D
+
+<Definition titre="Bascule D (D flip-flop)">
+    Une bascule D recopie son entrée $D$ sur sa sortie $Q$ au **front montant** de l’horloge $CLK$, puis conserve cette valeur jusqu’au front suivant : c’est un élément de mémoire d’un bit. Elle dispose aussi d’une sortie complémentée $\overline{Q}$.
+</Definition>
+
+La diapo prend l’exemple du circuit SN74HC574 de Texas Instruments, qui regroupe huit bascules D à sortie trois états. Sa table de fonctionnement (pour chaque bascule) est la suivante, où $\overline{OE}$ est l’entrée de validation des sorties, active à l’état bas.
+
+| $\overline{OE}$ | $CLK$ | $D$ | Sortie $Q$ |
+| --- | --- | --- | --- |
+| L | ↑ | H | H |
+| L | ↑ | L | L |
+| L | H ou L | X | $Q_0$ |
+| H | X | X | Z |
+
+Lorsque $\overline{OE}$ est à l’état bas, un front montant d’horloge recopie $D$ sur $Q$, et en l’absence de front la sortie garde sa valeur précédente $Q_0$. Lorsque $\overline{OE}$ est à l’état haut, la sortie est en **haute impédance** (Z), quel que soit l’état des autres entrées.
+
+{/* AJOUT : phrase de lecture de la table */}
+
+## Le registre
+
+<Definition titre="Registre">
+    Un registre de $n$ bits est formé de $n$ bascules D qui partagent la même horloge. Sur l’exemple de la diapo, quatre bascules mémorisent les entrées $D_0$ à $D_3$ sur les sorties $Q_0$ à $Q_3$ lorsqu’on active le signal commun « Mémo » : on obtient des **entrées mémorisées**.
+</Definition>
+
+<Figure legende="Registre 4 bits : quatre bascules D commandées par le même signal de mémorisation" page="part1.pdf p. 7">
+    <svg viewBox="0 0 380 230" role="img" aria-label="Quatre bascules D empilées ; chaque entrée D0 à D3 arrive sur l'entrée D d'une bascule, dont la sortie donne Q0 à Q3 ; un signal Mémo commun est relié à l'entrée d'horloge des quatre bascules">
+        <g fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="150" y="10" width="60" height="40" fill="var(--paper-2)" />
+            <rect x="150" y="62" width="60" height="40" fill="var(--paper-2)" />
+            <rect x="150" y="114" width="60" height="40" fill="var(--paper-2)" />
+            <rect x="150" y="166" width="60" height="40" fill="var(--paper-2)" />
+            <line x1="60" y1="22" x2="150" y2="22" /><line x1="60" y1="74" x2="150" y2="74" />
+            <line x1="60" y1="126" x2="150" y2="126" /><line x1="60" y1="178" x2="150" y2="178" />
+            <line x1="210" y1="30" x2="290" y2="30" /><line x1="210" y1="82" x2="290" y2="82" />
+            <line x1="210" y1="134" x2="290" y2="134" /><line x1="210" y1="186" x2="290" y2="186" />
+            <path d="M60 222 H120 V40 H150 M120 92 H150 M120 144 H150 M120 196 H150" stroke="var(--accent)" />
+            <path d="M150 35 L157 40 L150 45 M150 87 L157 92 L150 97 M150 139 L157 144 L150 149 M150 191 L157 196 L150 201" />
+        </g>
+        <g fill="currentColor" font-size="12">
+            <text x="30" y="26">D0</text><text x="30" y="78">D1</text><text x="30" y="130">D2</text><text x="30" y="182">D3</text>
+            <text x="156" y="26">D</text><text x="156" y="78">D</text><text x="156" y="130">D</text><text x="156" y="182">D</text>
+            <text x="196" y="34">Q</text><text x="196" y="86">Q</text><text x="196" y="138">Q</text><text x="196" y="190">Q</text>
+            <text x="296" y="34">Q0</text><text x="296" y="86">Q1</text><text x="296" y="138">Q2</text><text x="296" y="190">Q3</text>
+            <text x="12" y="226" fill="var(--accent)">Mémo</text>
+        </g>
+    </svg>
+</Figure>
+
+La diapo montre aussi le symbole compact d’un registre 4 bits : une entrée de données $D$ sur 4 bits, une entrée d’écriture $WE$ (*write enable*) commandée par « Mem », et la sortie $Q$ sur 4 bits.
+
+## La mémoire
+
+Une mémoire RAM est un ensemble de registres (les **mots**) dont un seul est sélectionné à la fois par une **adresse**. La diapo montre une RAM de 4 mots de 4 bits (RAM 4 × 4) :
+
+- l’adresse $A$ (de 0 à 3) choisit le mot ;
+- l’entrée **Write enable** autorise l’écriture du mot sélectionné ;
+- l’entrée **Output enable** autorise la lecture du mot sélectionné sur la sortie ;
+- l’horloge $C1$ cadence l’écriture.
+
+Un composant réel cité en exemple est la mémoire statique Cypress CY62128E de 1 Mbit, organisée en 128 K mots de 8 bits (128 K × 8).
+
+## Cartographie mémoire : exemple du Cortex-M0
+
+<Definition titre="Cartographie mémoire (memory map)">
+    La cartographie mémoire indique quelle zone de l’espace d’adressage du processeur est occupée par quel type de ressource : code, mémoire vive, périphériques, ou zone réservée.
+</Definition>
+
+{/* AJOUT : définition rédigée pour introduire la figure (la diapo ne contient que la figure) */}
+
+<Figure legende="Début de la cartographie mémoire d’un Cortex-M0 : CODE, SRAM et périphériques" page="part1.pdf p. 9">
+    <svg viewBox="0 0 360 290" role="img" aria-label="Pile de zones mémoire de bas en haut : région 0 à partir de 0x0000 0000 contenant le CODE ; région 1 à partir de 0x2000 0000 commençant par la SRAM puis réservée ; région 2 à partir de 0x4000 0000 commençant par les périphériques puis réservée ; régions 3 (0x6000 0000) et 4 (0x8000 0000) réservées">
+        <g stroke="currentColor" stroke-width="1.2" font-size="11">
+            <rect x="150" y="10" width="110" height="46" fill="var(--paper-2)" />
+            <rect x="150" y="56" width="110" height="52" fill="var(--paper-2)" />
+            <rect x="150" y="108" width="110" height="40" fill="var(--paper-2)" />
+            <rect x="150" y="148" width="110" height="16" fill="var(--accent)" fill-opacity="0.35" />
+            <rect x="150" y="164" width="110" height="40" fill="var(--paper-2)" />
+            <rect x="150" y="204" width="110" height="16" fill="var(--accent)" fill-opacity="0.35" />
+            <rect x="150" y="220" width="110" height="56" fill="var(--accent)" fill-opacity="0.15" />
+        </g>
+        <g fill="currentColor" font-size="11" text-anchor="middle">
+            <text x="205" y="37">Reserved</text>
+            <text x="205" y="86">Reserved</text>
+            <text x="205" y="132">Reserved</text>
+            <text x="205" y="160">Peripherals</text>
+            <text x="205" y="188">Reserved</text>
+            <text x="205" y="216">SRAM</text>
+            <text x="205" y="252">CODE</text>
+        </g>
+        <g fill="currentColor" font-size="10.5" font-family="var(--font-mono)" text-anchor="end">
+            <text x="140" y="60">0x8000 0000</text>
+            <text x="140" y="112">0x6000 0000</text>
+            <text x="140" y="168">0x4000 0000</text>
+            <text x="140" y="224">0x2000 0000</text>
+            <text x="140" y="280">0x0000 0000</text>
+        </g>
+        <g fill="currentColor" font-size="11" fill-opacity="0.7">
+            <text x="272" y="37">4</text><text x="272" y="86">3</text><text x="272" y="160">2</text><text x="272" y="216">1</text><text x="272" y="252">0</text>
+        </g>
+    </svg>
+</Figure>
+
+## Un peu d’histoire
+
+### Le premier microprocesseur : l’Intel 4004
+
+Le premier microprocesseur est l’**Intel 4004**, sorti en **1971**. C’est un processeur **4 bits** destiné à équiper des calculatrices de bureau ; il compte **2250 transistors** et il est cadencé à **740 kHz**. Ses performances sont les suivantes :
+
+- 46 instructions ;
+- un temps d’addition entre registres de 8 µs ;
+- un espace adressable de 4 ko de ROM et de 640 octets de RAM ;
+- 16 registres de 4 bits.
+
+### Le premier 8 bits : l’Intel 8008
+
+L’**Intel 8008**, sorti en **1972**, est le premier microprocesseur 8 bits. Il compte 48 instructions, additionne deux registres en 12,5 à 20 µs, adresse 16 ko, possède 7 registres de 8 bits et 3500 transistors, et il est cadencé à 500 kHz.
+
+### Aujourd’hui
+
+Un processeur actuel comme le **Core i9** contient plus de 3 milliards de transistors, fonctionne sur **64 bits** et est cadencé à plus de 5 GHz.
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Portes">
+        AND $X = A\cdot B$, OR $X = A + B$, NOT $X = \overline{A}$, XOR $X = A \oplus B$.
+    </Formula>
+    <Formula label="Bascule D">
+        Recopie $D$ sur $Q$ au front montant de l’horloge, sinon garde $Q_0$ ; sortie trois états : Z quand $\overline{OE}$ = H.
+    </Formula>
+    <Formula label="Registre">
+        $n$ bascules D sur une horloge commune = un mot de $n$ bits mémorisé.
+    </Formula>
+    <Formula label="Mémoire">
+        Ensemble de mots sélectionnés par une adresse ; Write enable pour écrire, Output enable pour lire.
+    </Formula>
+    <Formula label="Cortex-M0">
+        CODE à 0x0000 0000, SRAM à 0x2000 0000, périphériques à 0x4000 0000.
+    </Formula>
+    <Formula label="Histoire">
+        Intel 4004 (1971) : 4 bits, 2250 transistors, 740 kHz. Intel 8008 (1972) : premier 8 bits, 3500 transistors. Core i9 : 64 bits, plus de 3 milliards de transistors, plus de 5 GHz.
+    </Formula>
+</Formulas>

@@ -1,0 +1,235 @@
+---
+titre: Exécution d’une instruction
+resume: Séquencement interne d’un microprocesseur — une instruction comme suite d’actions élémentaires, les trois phases (recherche, décodage, exécution), l’opcode fetch, l’évolution du PC, le décodage d’un programme Z80 à partir de la table des opcodes et l’endianness.
+tags: [séquencement, opcode fetch, décodage, exécution, microcode, registre d'instruction, compteur programme, Z80, opcodes, endianness, little-endian, big-endian]
+sources: ["part2.pdf p. 18", "part2.pdf p. 19", "part2.pdf p. 20", "part2.pdf p. 21", "part2.pdf p. 22", "part2.pdf p. 23", "part2.pdf p. 24", "part2.pdf p. 25", "part2.pdf p. 26", "part2.pdf p. 27", "part2.pdf p. 28", "part2.pdf p. 29", "part2.pdf p. 30", "part1.pdf p. 37"]
+---
+
+## Séquencement interne
+
+Un microprocesseur est un **système préprogrammé** : il répond de façon prédéfinie aux ordres qui arrivent dans son **registre d’instruction** (RI). Un ordre est ici une instruction.
+
+<Definition titre="Instruction">
+    Une instruction est une **somme d’actions élémentaires**. Elle est formée d’un **code opératoire**, éventuellement suivi d’un ou plusieurs **opérandes**. Selon le processeur, sa taille va de **1 à 8 octets**.
+</Definition>
+
+## Exemple de programme Z80
+
+| Instruction | Effet |
+| --- | --- |
+| `ADD A,B` | $A \leftarrow A + B$ |
+| `LD A,3Ah` | $A \leftarrow 3Ah$ |
+| `INC A` | $A \leftarrow A + 1$ |
+| `NOP` | aucune opération |
+| `JP 2025h` | $PC \leftarrow 2025h$ |
+
+Sur le Z80, une adresse de 16 bits est rangée **octet de poids faible en premier** : `JP 2025h` s’écrit `C3h 25h 20h` en mémoire.
+
+<Exercise titre="Compléter les codes opératoires" niveau={1}>
+    À l’aide de la table des instructions du Z80, donner le code opératoire et les opérandes de chaque instruction du tableau ci-dessus.
+
+    <Solution>
+        {/* AJOUT : correction (colonnes laissées vides sur la diapo) ; codes tirés de la table des opcodes Z80 */}
+
+        | Instruction | Code opératoire | Opérande(s) |
+        | --- | --- | --- |
+        | `ADD A,B` | `80` | — |
+        | `LD A,3Ah` | `3E` | `3A` |
+        | `INC A` | `3C` | — |
+        | `NOP` | `00` | — |
+        | `JP 2025h` | `C3` | `25 20` |
+
+        Le code `80h` de `ADD A,B` est celui donné plus bas dans « Déroulement interne d’une instruction » ; celui de `JP 2025h` est donné par la remarque sur l’ordre des octets.
+    </Solution>
+</Exercise>
+
+## Exemple d’ordre : additionner A et B
+
+L’instruction `ADD A,B` additionne A et B et met le résultat dans A. Cette **seule instruction** correspond à **quatre actions élémentaires** :
+
+1. envoyer A dans l’ALU ;
+2. envoyer B dans l’ALU ;
+3. lancer l’opération ADD ;
+4. mettre le résultat dans A.
+
+## Les trois phases d’une instruction
+
+<Definition titre="Phase 1 — Recherche (OPCODE FETCH)">
+    Le µP va chercher le code de l’instruction dans la **mémoire programme** (externe), puis il charge ce code dans son RI.
+</Definition>
+
+<Definition titre="Phase 2 — Décodage (DECODE)">
+    L’**unité de contrôle** décode le code contenu dans le RI, puis elle repère dans sa table interne les **microcodes** (µcodes) de l’instruction.
+</Definition>
+
+<Definition titre="Phase 3 — Exécution (EXECUTE)">
+    Le µP exécute les µcodes correspondants : il envoie des ordres à l’ALU, aux registres et à la mémoire.
+</Definition>
+
+Le µP enchaîne les trois phases, instruction après instruction : recherche, décodage et exécution de l’instruction $n$, puis recherche, décodage et exécution de l’instruction $n+1$, etc.
+
+## Déroulement interne d’une instruction
+
+Chaque instruction a sa propre suite de **microcodes**, rangée dans une table interne qu’utilise l’unité de contrôle.
+
+1. Le registre d’instruction (RI) contient le code opératoire. Pour `ADD A,B`, RI = 80h.
+2. L’unité de contrôle **décode le RI** et pointe sur le premier microcode de l’instruction dans la table des µcodes (qui contient, à la suite, les µcodes de `DEC A`, de `ADD A,B`, etc.).
+3. L’unité de contrôle **pilote l’exécution séquentielle** des µcodes en envoyant les ordres aux sous-systèmes (ALU…).
+
+## Détail de la phase 1 : l’opcode fetch
+
+1. Le contenu du **PC** est envoyé sur le **bus d’adresses**.
+2. L’unité de contrôle envoie le signal de **lecture mémoire** (RD).
+3. L’octet rangé à l’adresse égale au PC est placé sur le **bus de données**.
+4. Le **RI** récupère cet octet : c’est le **code opératoire**.
+5. Le **séquencement interne** peut alors débuter.
+
+Cette phase s’appelle l’**OPCODE FETCH**.
+
+<Figure legende="L’opcode fetch : adresse, lecture, donnée, code opératoire" page="part2.pdf p. 23">
+    <svg viewBox="0 0 440 230" role="img" aria-label="À gauche le microprocesseur contient le PC, l'unité de contrôle et le RI ; à droite la mémoire programme. Flèche 1 : le PC envoie l'adresse vers la mémoire. Flèche 2 : l'unité de contrôle envoie RD vers la mémoire. Flèche 3 : la mémoire renvoie la donnée vers le RI. Étape 4 : le RI contient le code opératoire.">
+        <g stroke="currentColor" stroke-width="1.2">
+            <rect x="20" y="10" width="160" height="210" fill="var(--accent)" fill-opacity="0.07" />
+            <rect x="40" y="35" width="120" height="32" fill="var(--paper)" />
+            <rect x="40" y="95" width="120" height="44" fill="var(--ink)" />
+            <rect x="40" y="165" width="120" height="32" fill="var(--paper)" stroke="var(--accent)" stroke-width="1.8" />
+            <rect x="320" y="10" width="100" height="210" fill="var(--paper-2)" />
+        </g>
+        <g fill="none" stroke="currentColor" stroke-width="1.3">
+            <line x1="160" y1="51" x2="314" y2="51" /><path d="M308 46 L316 51 L308 56" />
+            <line x1="160" y1="117" x2="314" y2="117" /><path d="M308 112 L316 117 L308 122" />
+            <line x1="320" y1="181" x2="166" y2="181" /><path d="M172 176 L164 181 L172 186" />
+        </g>
+        <g font-size="12" text-anchor="middle">
+            <text x="30" y="28" text-anchor="start" fill="currentColor" font-weight="600">µP</text>
+            <text x="100" y="56" fill="currentColor" font-weight="600">PC</text>
+            <text x="100" y="114" fill="var(--paper)">Unité de</text><text x="100" y="129" fill="var(--paper)">contrôle</text>
+            <text x="100" y="186" fill="currentColor" font-weight="600">RI</text>
+            <text x="100" y="214" fill="var(--accent)" font-size="11">4 code op.</text>
+            <text x="370" y="110" fill="currentColor">Mémoire</text><text x="370" y="125" fill="currentColor">programme</text>
+            <text x="235" y="44" fill="var(--accent)">1 Adresse</text>
+            <text x="235" y="110" fill="var(--accent)">2 RD</text>
+            <text x="235" y="174" fill="var(--accent)">3 Données</text>
+        </g>
+    </svg>
+</Figure>
+
+## Séquencement : le compteur programme (PC)
+
+Une instruction occupe 8, 16 ou 24 bits : l’unité de commande lit en mémoire les octets suivants si besoin. C’est l’unité de commande qui pilote tout ce séquencement.
+
+<Property titre="Cas général : séquentiel">
+    $$
+    PC \leftarrow PC + 1
+    $$
+
+    Le PC pointe sur le mot suivant de la mémoire programme. Exemple Z80 : à l’adresse 2000h, `LD A,B` donne ensuite PC = 2001h ; à 2001h, `INC A` donne PC = 2002h.
+</Property>
+
+<Property titre="Exception : JUMP, CALL…">
+    $$
+    PC \leftarrow @\,\text{cible}
+    $$
+
+    L’instruction charge l’adresse cible dans le PC. Exemple Z80 : à l’adresse 2002h, `JP 2025h` donne PC = 2025h, au lieu de 2005h (PC + 3).
+</Property>
+
+{/* AJOUT : animation pas à pas (programme d'exemple construit à partir des instructions du tableau « Exemple de programme Z80 ») */}
+
+<Animation type="execution-instruction" titre="Recherche, décodage, exécution : un programme Z80 pas à pas" />
+
+## Exercice : retrouver le programme
+
+<Exercise titre="Décoder un binaire Z80" niveau={2}>
+    On lit en mémoire, à partir de l’adresse 0000h, les octets suivants :
+
+    ```
+    47 48 3E 15 4F C3 50 10
+    ```
+
+    Pour chaque adresse, retrouver la fonction de l’octet (code opératoire ou opérande) et l’instruction assembleur correspondante, à l’aide de la table des opcodes du Z80. Dans cette table, `n` désigne un octet de donnée et `nn` une adresse de 16 bits, **octet de poids faible en premier**.
+
+    <Solution>
+        {/* AJOUT : correction (la diapo de correction est vide) ; le même programme apparaît dans la capture du simulateur, part1.pdf p. 37 */}
+
+        | Adresse | Code (hexa) | Fonction | Assembleur |
+        | --- | --- | --- | --- |
+        | 0000h | 47 | code opératoire | `LD B,A` |
+        | 0001h | 48 | code opératoire | `LD C,B` |
+        | 0002h | 3E | code opératoire | `LD A,15h` |
+        | 0003h | 15 | opérande (n) | |
+        | 0004h | 4F | code opératoire | `LD C,A` |
+        | 0005h | C3 | code opératoire | `JP 1050h` |
+        | 0006h | 50 | opérande (poids faible de nn) | |
+        | 0007h | 10 | opérande (poids fort de nn) | |
+
+        Le programme copie A dans B, puis B dans C, charge 15h dans A, copie A dans C et saute à l’adresse 1050h.
+    </Solution>
+</Exercise>
+
+## L’endianness
+
+<Definition titre="Endianness">
+    L’endianness est l’**ordre des octets en mémoire** d’une valeur qui en occupe plusieurs.
+
+    - **Big-Endian** : l’octet de poids fort est rangé en premier.
+    - **Little-Endian** : l’octet de poids faible est rangé en premier.
+    - **Bi-Endian** : l’ordre est configurable.
+</Definition>
+
+<Example titre="La valeur (A1B2C3D4)h en mémoire">
+    | Adresse | +0 | +1 | +2 | +3 |
+    | --- | --- | --- | --- | --- |
+    | Big-Endian | A1 | B2 | C3 | D4 |
+    | Little-Endian | D4 | C3 | B2 | A1 |
+</Example>
+
+| Endianness | Microprocesseurs | Systèmes d’exploitation |
+| --- | --- | --- |
+| Little-Endian | Intel x86, Zilog Z80 | Android, iOS, Windows sur x86 et MIPS |
+| Big-Endian | Motorola 68000, Atmel AVR32 | Mac OS sur PowerPC, Linux sur MIPS |
+| Bi-Endian | ARM, MIPS | — |
+
+## Exercice : expliquer un programme
+
+<Exercise titre="Trouver et expliquer le programme" niveau={3}>
+    Le contenu de la mémoire, vu dans l’éditeur mémoire du simulateur, est le suivant à partir de l’adresse 0000h :
+
+    ```
+    0000: 79 EE FF F6 10 4F E6 80 C2 27 20 00 00 00 00 00
+    ```
+
+    Trouver et expliquer le programme correspondant.
+
+    <Solution>
+        | Adresse | Octets | Z80 | Effet |
+        | --- | --- | --- | --- |
+        | 0000 | 79 | `LD A,C` | A ← C |
+        | 0001 | EE FF | `XOR FFh` | A ← complément de A |
+        | 0003 | F6 10 | `OR 10h` | met le bit 4 à 1 |
+        | 0005 | 4F | `LD C,A` | C ← A |
+        | 0006 | E6 80 | `AND 80h` | teste le bit 7 |
+        | 0008 | C2 27 20 | `JP NZ,2027h` | saute si le bit 7 vaut 1 |
+        | 000B | 00 | `NOP` | |
+    </Solution>
+</Exercise>
+
+## Fiche récapitulative
+
+<Formulas titre="À retenir">
+    <Formula label="Instruction">
+        Code opératoire (+ opérandes), 1 à 8 octets ; une instruction = plusieurs actions élémentaires (µcodes).
+    </Formula>
+    <Formula label="3 phases">
+        Recherche (opcode fetch) → décodage (µcodes) → exécution.
+    </Formula>
+    <Formula label="Opcode fetch">
+        PC → bus d’adresses ; RD ; octet → bus de données → RI.
+    </Formula>
+    <Formula label="PC">
+        $PC \leftarrow PC + 1$ en général ; $PC \leftarrow @\,\text{cible}$ pour JP, CALL.
+    </Formula>
+    <Formula label="Endianness">
+        Big-Endian : poids fort en premier (68000) ; Little-Endian : poids faible en premier (x86, Z80) ; Bi-Endian : ARM, MIPS.
+    </Formula>
+</Formulas>
