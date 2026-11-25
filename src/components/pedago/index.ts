@@ -15,6 +15,10 @@ import Formula from './Formula.astro';
 import Animation from './Animation.astro';
 import Figure from './Figure.astro';
 import Todo from './Todo.astro';
+import Quiz from './Quiz.astro';
+import Flashcards from './Flashcards.astro';
+import Ordonner from './Ordonner.astro';
+import Checklist from './Checklist.astro';
 
 export const composantsPedago = {
     Definition,
@@ -30,4 +34,8 @@ export const composantsPedago = {
     Animation,
     Figure,
     Todo,
+    Quiz,
+    Flashcards,
+    Ordonner,
+    Checklist,
 };

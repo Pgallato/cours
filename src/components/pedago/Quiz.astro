@@ -1,0 +1,73 @@
+---
+/**
+ * Quiz auto-corrigé (QCM à une ou plusieurs réponses, ou réponse à saisir). Exemple MDX :
+ *   <Quiz titre="IPv4" questions={questions.filter((q) => q.theme === 'ipv4')} />
+ *   <Quiz titre="Examen blanc" questions={questions} nombre={20} />   (tirage aléatoire de 20 questions)
+ * Format des questions : voir src/lib/revision.ts.
+ */
+import {empreinte, enLigne, type Question} from '~/lib/revision';
+
+interface Props {
+    questions: Question[];
+    titre?: string;
+    /** Nombre de questions tirées au hasard (toutes si absent). */
+    nombre?: number;
+}
+const {questions, titre = 'Quiz', nombre} = Astro.props;
+const id = 'quiz-' + empreinte(titre + questions.map((q) => q.q).join('|'));
+const total = nombre ? Math.min(nombre, questions.length) : questions.length;
+---
+
+<section class="quiz"data-quiz={id} data-nombre={nombre} aria-label={`Quiz : ${titre}`}
+         data-pagefind-ignore>
+    <header class="quiz-tete">
+        <span class="etiquette">Quiz</span>
+        <span class="font-display font-semibold">{titre}</span>
+        <span class="quiz-compte">{total} question{total > 1 && 's'}{nombre && ` tirées parmi ${questions.length}`}</span>
+    </header>
+    <ol class="quiz-liste">
+        {questions.map((q) => {
+            const bonnes = q.saisie ? [] : [q.bonne ?? 0].flat();
+            const type = q.saisie ? 'saisie' : bonnes.length > 1 ? 'multi' : 'qcm';
+            return (
+                <li class="quiz-q" data-type={type} data-bonnes={bonnes.join(',')}
+                    data-saisie={q.saisie ? JSON.stringify(q.saisie) : undefined}>
+                    <p class="quiz-enonce" set:html={enLigne(q.q)}/>
+                    {type === 'multi' && <p class="quiz-aide">Plusieurs réponses possibles.</p>}
+                    {q.choix && (
+                        <div class="quiz-choix" role="group" aria-label="Propositions">
+                            {q.choix.map((c, j) => (
+                                <button type="button" class="quiz-option" data-i={j}
+                                        data-bonne={bonnes.includes(j) ? '' : undefined}
+                                        aria-pressed={type === 'multi' ? 'false' : undefined} set:html={enLigne(c)}/>
+                            ))}
+                        </div>
+                    )}
+                    {type === 'saisie' && (
+                        <input type="text" class="quiz-champ" aria-label="Votre réponse" autocomplete="off"
+                               spellcheck="false" placeholder="Votre réponse"/>
+                    )}
+                    {type !== 'qcm' && <button type="button" class="quiz-bouton quiz-valider">Valider</button>}
+                    <div class="quiz-expl" hidden>
+                        <p class="quiz-verdict"></p>
+                        {q.saisie && <p class="quiz-attendu">Réponse attendue : <strong set:html={enLigne(q.saisie[0])}/></p>}
+                        <p set:html={enLigne(q.explication)}/>
+                    </div>
+                </li>
+            );
+        })}
+    </ol>
+    <footer class="quiz-pied">
+        <p class="quiz-score" aria-live="polite">Répondez aux questions : la correction s'affiche aussitôt.</p>
+        <div class="quiz-boutons">
+            <button type="button" class="quiz-bouton quiz-erreurs" hidden>Refaire mes erreurs</button>
+            <button type="button" class="quiz-bouton quiz-recommencer">{nombre ? 'Nouveau tirage' : 'Recommencer'}</button>
+        </div>
+    </footer>
+</section>
+
+<script>
+    import {monterQuiz} from '../../scripts/revision/quiz';
+
+    monterQuiz();
+</script>

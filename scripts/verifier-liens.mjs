@@ -21,7 +21,9 @@ for (const page of pages) {
     for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
         if (/^(https?:|mailto:|data:)/.test(href)) continue;
         total++;
-        const [chemin, ancre] = href.split('#');
+        const [chemin, brute] = href.split('#');
+        // les liens Markdown encodent les ancres accentuées (#r%C3%A9seau) : les navigateurs les décodent
+        const ancre = brute && decodeURIComponent(brute);
         if (chemin === '') {
             if (ancre && !ids.has(ancre)) erreurs.push(`${page} → ancre absente ${href}`);
             continue;

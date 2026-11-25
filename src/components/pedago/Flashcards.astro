@@ -1,0 +1,73 @@
+---
+/**
+ * Paquet de flashcards (recto → verso), avec filtre par thème, mélange, « Je savais » / « À revoir »
+ * mémorisés dans le navigateur. Exemple MDX :
+ *   <Flashcards titre="Réseaux" cartes={cartes} themes={{ipv4: 'IPv4', ipv6: 'IPv6'}} />
+ * Clavier (paquet sélectionné) : Espace/Entrée retourne, ← → naviguent, 1 = à revoir, 2 = je savais.
+ */
+import {empreinte, enLigne, type Carte} from '~/lib/revision';
+
+interface Props {
+    cartes: Carte[];
+    titre?: string;
+    /** Libellés des thèmes (clé = Carte.theme), dans l'ordre d'affichage du filtre. */
+    themes?: Record<string, string>;
+}
+const {cartes, titre = 'Flashcards', themes = {}} = Astro.props;
+const id = 'flashcards-' + empreinte(titre);
+const donnees = cartes.map((c) => ({t: c.theme ?? '', r: enLigne(c.recto), v: enLigne(c.verso), k: empreinte(c.recto)}));
+const json = JSON.stringify(donnees).replace(/</g, '\\u003c');
+const presents = Object.entries(themes).filter(([t]) => cartes.some((c) => c.theme === t));
+---
+
+<section class="fc" data-flashcards={id} aria-label={`Flashcards : ${titre}`} data-pagefind-ignore>
+    <header class="quiz-tete">
+        <span class="etiquette">Flashcards</span>
+        <span class="font-display font-semibold">{titre}</span>
+        <span class="quiz-compte">{cartes.length} cartes</span>
+    </header>
+    <div class="fc-corps" hidden>
+        <div class="fc-barre">
+            {presents.length > 1 && (
+                <label>
+                    <span>Thème</span>
+                    <select class="fc-theme">
+                        <option value="">Tous les thèmes</option>
+                        {presents.map(([t, nom]) => <option value={t}>{nom}</option>)}
+                    </select>
+                </label>
+            )}
+            <label class="fc-case"><input type="checkbox" class="fc-revoir"/> À revoir seulement</label>
+            <label class="fc-case"><input type="checkbox" class="fc-inverse"/> Réponse d'abord</label>
+            <button type="button" class="quiz-bouton fc-melanger">Mélanger</button>
+        </div>
+        <button type="button" class="fc-carte" aria-describedby={`${id}-aide`}>
+            <span class="fc-face fc-recto"></span>
+            <span class="fc-face fc-verso"></span>
+        </button>
+        <p class="fc-aide" id={`${id}-aide`}>Touchez la carte (ou Espace) pour la retourner ; ← → pour naviguer.</p>
+        <div class="fc-actions">
+            <button type="button" class="quiz-bouton fc-prec" aria-label="Carte précédente">◀</button>
+            <button type="button" class="quiz-bouton fc-non">✗ À revoir</button>
+            <button type="button" class="quiz-bouton fc-oui">✓ Je savais</button>
+            <button type="button" class="quiz-bouton fc-suiv" aria-label="Carte suivante">▶</button>
+        </div>
+        <p class="fc-etat" aria-live="polite"></p>
+        <p class="fc-reinit-ligne"><button type="button" class="fc-lien fc-reinit">Effacer mon suivi de ce paquet</button></p>
+    </div>
+    <dl class="fc-liste">
+        {cartes.map((c) => (
+            <div>
+                <dt set:html={enLigne(c.recto)}/>
+                <dd set:html={enLigne(c.verso)}/>
+            </div>
+        ))}
+    </dl>
+    <script is:inline type="application/json" class="fc-donnees" set:html={json}/>
+</section>
+
+<script>
+    import {monterFlashcards} from '../../scripts/revision/flashcards';
+
+    monterFlashcards();
+</script>

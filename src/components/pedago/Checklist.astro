@@ -1,0 +1,67 @@
+---
+/**
+ * Liste de notions à cocher (« je maîtrise »), mémorisée dans le navigateur. Exemple MDX :
+ *   <Checklist titre="À savoir pour l'évaluation" items={[{texte: 'Modèle OSI', lien: '/cours/…/#…'}]} />
+ */
+import {empreinte, enLigne, type ElementChecklist} from '~/lib/revision';
+
+interface Props {
+    items: ElementChecklist[];
+    titre?: string;
+}
+const {items, titre = 'Ce que je maîtrise'} = Astro.props;
+const id = 'checklist-' + empreinte(titre);
+---
+
+<section class="checklist" data-checklist={id} aria-label={`Liste à cocher : ${titre}`}>
+    <header class="quiz-tete">
+        <span class="etiquette">Auto-évaluation</span>
+        <span class="font-display font-semibold">{titre}</span>
+        <span class="quiz-compte checklist-compte" aria-live="polite">{items.length} notions</span>
+    </header>
+    <div class="checklist-barre" aria-hidden="true"><span></span></div>
+    <ul class="checklist-liste">
+        {items.map((it) => (
+            <li>
+                <label>
+                    <input type="checkbox" data-cle={empreinte(it.texte)}/>
+                    <span set:html={enLigne(it.texte)}/>
+                </label>
+                {it.lien && <a class="checklist-lien" href={it.lien}>fiche</a>}
+            </li>
+        ))}
+    </ul>
+    <p class="fc-reinit-ligne"><button type="button" class="fc-lien checklist-reinit">Tout décocher</button></p>
+</section>
+
+<script>
+    import {ecrireStockage, lireStockage} from '../../scripts/revision/outils';
+
+    for (const bloc of document.querySelectorAll<HTMLElement>('[data-checklist]')) {
+        const cle = `carnet:${bloc.dataset.checklist}`;
+        const cases = [...bloc.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
+        const compte = bloc.querySelector<HTMLElement>('.checklist-compte')!;
+        const barre = bloc.querySelector<HTMLElement>('.checklist-barre > span')!;
+        let etat = lireStockage<Record<string, boolean>>(cle, {});
+        const maj = () => {
+            const n = cases.filter((c) => c.checked).length;
+            compte.textContent = `${n} / ${cases.length} maîtrisée${n > 1 ? 's' : ''}`;
+            barre.style.width = `${(100 * n) / cases.length}%`;
+        };
+        cases.forEach((c) => {
+            c.checked = !!etat[c.dataset.cle!];
+            c.addEventListener('change', () => {
+                etat[c.dataset.cle!] = c.checked;
+                ecrireStockage(cle, etat);
+                maj();
+            });
+        });
+        bloc.querySelector('.checklist-reinit')!.addEventListener('click', () => {
+            etat = {};
+            ecrireStockage(cle, etat);
+            cases.forEach((c) => (c.checked = false));
+            maj();
+        });
+        maj();
+    }
+</script>

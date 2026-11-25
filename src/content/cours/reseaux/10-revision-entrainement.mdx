@@ -1,0 +1,152 @@
+---
+titre: "Révision : entraînement et examen blanc"
+resume: Les outils pour s'entraîner avant l'évaluation — liste d'auto-évaluation des notions à savoir, flashcards par thème, échanges à remettre dans l'ordre, calcul de sous-réseau sur des adresses tirées au hasard, reconnaissance des plages IPv4 et IPv6, et examen blanc de 20 questions.
+tags: [révision, évaluation, flashcards, examen blanc, CIDR, sous-réseau, adresses IPv6, DHCP, TCP, SLAAC, DNS]
+sources: ["A savoir.txt", "chapitres 01 à 08"]
+---
+
+import {cartes, checklist, questions, themes} from './revision/donnees';
+
+{/* AJOUT : chapitre de révision entier (outils d'entraînement), à partir de « A savoir.txt » et des chapitres 01 à 08. */}
+
+## Mode d'emploi
+
+Ce chapitre complète les [fiches et quiz par notion](/cours/reseaux/revision-fiches-et-quiz/). Tout ce que vous faites ici (cases cochées, cartes sues ou à revoir, meilleur score) reste **dans votre navigateur** : rien n'est envoyé, et vous retrouvez votre avancement en revenant sur la page, même hors ligne une fois le site installé.
+
+Un ordre de travail possible :
+
+1. cochez dans la liste ci-dessous les notions que vous savez déjà **réexpliquer sans regarder** ;
+2. révisez les autres avec leur fiche, puis avec les flashcards (filtre par thème, puis « À revoir seulement ») ;
+3. entraînez-vous sur les calculs (sous-réseaux, plages d'adresses) et les échanges à remettre dans l'ordre ;
+4. terminez par l'examen blanc, à refaire jusqu'au sans-faute (chaque tirage est différent).
+
+## Auto-évaluation
+
+<Checklist titre="Les notions à savoir pour l'évaluation" items={checklist} />
+
+## Flashcards
+
+Lisez la question, répondez dans votre tête, retournez la carte (clic ou Espace), puis soyez honnête : « Je savais » ou « À revoir ». Cochez ensuite « À revoir seulement » pour ne retravailler que les cartes manquées, jusqu'à ce que le paquet soit vide. L'option « Réponse d'abord » inverse le sens, pour s'entraîner à retrouver la notion à partir de sa définition.
+
+<Flashcards titre="Réseaux : l'essentiel" cartes={cartes} themes={themes} />
+
+## Remettre dans l'ordre
+
+Pour chaque exercice, déplacez les étapes avec les flèches ↑ ↓, puis cliquez sur « Vérifier ».
+
+<Ordonner titre="Les couches du modèle OSI" etapes={['Physique (bit)', 'Liaison de données (trame)', 'Réseau (paquet)', 'Transport (segment)', 'Session', 'Présentation', 'Application']}>
+    Rangez les couches de la plus basse (couche 1) à la plus haute (couche 7).
+</Ordonner>
+
+<Ordonner titre="Les champs de la trame Ethernet" etapes={['Préambule', 'SFD (délimiteur de début)', 'Adresse MAC de destination', 'Adresse MAC source', 'Type (ou taille)', 'Données (46 à 1500 octets)', 'FCS (contrôle d’intégrité, CRC)']}>
+    Dans quel ordre les champs d'une trame Ethernet passent-ils sur le câble ?
+</Ordonner>
+
+<Ordonner titre="Acquisition d'une adresse en DHCPv4" etapes={['DHCPDISCOVER : le client cherche un serveur (broadcast)', 'DHCPOFFER : le serveur propose une adresse', 'DHCPREQUEST : le client réserve l’adresse proposée', 'DHCPACK : le serveur confirme et envoie la configuration']}>
+    Remettez les messages DHCP dans l'ordre de l'échange.
+</Ordonner>
+
+<Ordonner titre="Ouverture puis fermeture d'une connexion TCP" etapes={['Client → serveur : SYN', 'Serveur → client : SYN + ACK', 'Client → serveur : ACK', 'Échange des données', 'Client → serveur : FIN', 'Serveur → client : FIN + ACK', 'Client → serveur : ACK']}>
+    Reconstituez la vie complète d'une connexion TCP, de l'ouverture à la fermeture.
+</Ordonner>
+
+<Ordonner titre="Démarrage d'un hôte IPv6 (SLAAC)" etapes={['L’hôte prend une adresse Link-Local (fe80::)', 'Il lance DAD sur cette adresse', 'Il émet un Router Solicitation (RS)', 'Le routeur répond par un Router Advertisement (RA)', 'L’hôte choisit son numéro d’hôte dans le préfixe annoncé', 'Il ajoute les routes indiquées dans le RA']}>
+    Dans quel ordre un hôte IPv6 s'autoconfigure-t-il ?
+</Ordonner>
+
+<Ordonner titre="Résolution DNS de www.free.fr" etapes={['Le client demande www.free.fr à son résolveur', 'Le résolveur interroge un serveur racine', 'La racine le renvoie vers l’autorité de .fr', 'Le serveur .fr le renvoie vers l’autorité de free.fr', 'Les serveurs de Free donnent l’adresse', 'Le résolveur renvoie la réponse au client']}>
+    Retracez le chemin d'une requête DNS quand le résolveur n'a rien en cache.
+</Ordonner>
+
+<Ordonner titre="Encapsulation d'une requête Web à l'émission" etapes={['L’application produit la requête HTTP', 'TCP ajoute son en-tête : on obtient un segment', 'IP ajoute son en-tête : on obtient un paquet', 'Ethernet ajoute en-tête et FCS : on obtient une trame', 'La couche physique émet les bits sur le câble']}>
+    Remettez dans l'ordre les étapes de l'encapsulation, de l'application jusqu'au câble.
+</Ordonner>
+
+## Calculer un sous-réseau
+
+<Theorem type="Méthode">
+    Pour une adresse `a.b.c.d/n` :
+
+    1. écrire le masque : $n$ bits à 1 puis des 0 (/26 → 255.255.255.192) ;
+    2. repérer l'**octet où passe la frontière** (celui dont le masque n'est ni 255 ni 0) et l'écrire en binaire, ainsi que l'octet correspondant de l'adresse ;
+    3. **réseau** : garder les bits de réseau de l'adresse et mettre les bits d'hôte à 0 (ET logique) ;
+    4. **diffusion** : mettre les bits d'hôte à 1 ;
+    5. **nombre d'hôtes** : $2^{32-n} - 2$.
+</Theorem>
+
+{/* AJOUT : raccourci du « pas » (taille de bloc), classique mais absent du cours */}
+
+<Remark titre="Raccourci : le pas du sous-réseau">
+    Dans l'octet frontière, les réseaux avancent par pas de $256 - \text{masque}$. Pour /26 (masque 192), le pas vaut 64 : les réseaux commencent à 0, 64, 128, 192. L'adresse 192.168.1.130 tombe dans le bloc qui commence à 128 : réseau .128, diffusion .191 (128 + 64 − 1).
+</Remark>
+
+<Exercise titre="10.20.37.200/20" niveau={2}>
+    Donnez le masque, le numéro de réseau, l'adresse de diffusion et le nombre d'hôtes.
+
+    <Solution>
+        /20 = 8 + 8 + 4 : le masque est **255.255.240.0** et la frontière passe dans le 3e octet. Le pas vaut $256 - 240 = 16$ : les blocs commencent à 0, 16, 32, 48… et 37 tombe dans le bloc 32 à 47.
+
+        - Réseau : **10.20.32.0** ;
+        - Diffusion : **10.20.47.255** ;
+        - Hôtes : $2^{12} - 2 = 4094$.
+    </Solution>
+</Exercise>
+
+<Exercise titre="172.16.5.77/27" niveau={1}>
+    Donnez le masque, le numéro de réseau, l'adresse de diffusion et la plage des hôtes.
+
+    <Solution>
+        /27 : masque **255.255.255.224**, pas de $256 - 224 = 32$. Les blocs commencent à 0, 32, 64, 96… et 77 est dans le bloc 64 à 95.
+
+        - Réseau : **172.16.5.64** ;
+        - Diffusion : **172.16.5.95** ;
+        - Hôtes : de 172.16.5.65 à 172.16.5.94, soit $2^5 - 2 = 30$ adresses.
+    </Solution>
+</Exercise>
+
+<Exercise titre="Même réseau ou non ?" niveau={2}>
+    Les hôtes 192.168.10.62/26 et 192.168.10.65/26 peuvent-ils communiquer directement, sans routeur ?
+
+    <Solution>
+        Le pas vaut 64 : 62 est dans le bloc 0 à 63 (réseau 192.168.10.0), 65 dans le bloc 64 à 127 (réseau 192.168.10.64). Les deux hôtes sont dans **deux réseaux différents** : chacun doit passer par sa passerelle par défaut.
+    </Solution>
+</Exercise>
+
+À vous, sur des adresses tirées au hasard (la correction détaille le calcul en binaire) :
+
+<Animation type="entrainement-cidr" titre="Entraînement : masque, réseau, diffusion et nombre d'hôtes" params={{min: 16, max: 30}} />
+
+## Reconnaître une adresse
+
+Une adresse IPv4 ou IPv6 s'affiche : à quelle catégorie appartient-elle ? La plage correspondante est rappelée après chaque réponse. Attention aux pièges, comme 172.32.x.x ou 192.169.x.x.
+
+<Animation type="nature-adresse" titre="Quelle est la nature de cette adresse ?" />
+
+## Examen blanc
+
+Vingt questions tirées au hasard parmi toutes celles des fiches. Faites-le d'une traite, sans regarder le cours, puis « Refaire mes erreurs » et enfin « Nouveau tirage ». Votre meilleur score est mémorisé.
+
+<Quiz titre="Examen blanc" questions={questions} nombre={20} />
+
+## Fiche récapitulative
+
+<Formulas titre="Les réflexes à avoir">
+    <Formula label="Une unité ?">
+        bit (1) · trame (2) · paquet (3) · segment / datagramme (4)
+    </Formula>
+    <Formula label="Un masque /n ?">
+        n bits à 1 ; pas = 256 − octet du masque ; hôtes = 2^(32 − n) − 2
+    </Formula>
+    <Formula label="Une adresse IPv4 ?">
+        10/8, 172.16/12 (16 à 31), 192.168/16 privées · 127/8 loopback · 169.254/16 APIPA · 224 à 239 multicast
+    </Formula>
+    <Formula label="Une adresse IPv6 ?">
+        fe8… lien local · fc/fd… locale · 2…/3… publique · ff… multicast · :: indéfinie · ::1 bouclage
+    </Formula>
+    <Formula label="Un échange ?">
+        TCP : SYN, SYN + ACK, ACK … FIN, FIN + ACK, ACK · DHCP : DORA · SLAAC : RS → RA · ping : Echo Request → Echo Reply
+    </Formula>
+    <Formula label="Une résolution ?">
+        IP → MAC : ARP (IPv4) / NDP (IPv6) · nom → IP : DNS (A, AAAA) · IP → nom : PTR
+    </Formula>
+</Formulas>

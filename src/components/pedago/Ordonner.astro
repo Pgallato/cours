@@ -1,0 +1,49 @@
+---
+/**
+ * Exercice « remettre dans l'ordre » : les étapes (données dans le bon ordre) sont mélangées à l'affichage,
+ * on les déplace avec ↑ ↓ puis on vérifie. Exemple MDX :
+ *   <Ordonner titre="Acquisition DHCP" etapes={['DHCPDISCOVER', 'DHCPOFFER', 'DHCPREQUEST', 'DHCPACK']}>Consigne…</Ordonner>
+ */
+import {enLigne} from '~/lib/revision';
+
+interface Props {
+    etapes: string[];
+    titre?: string;
+}
+const {etapes, titre = "Remettre dans l'ordre"} = Astro.props;
+---
+
+<section class="ordo" data-ordonner aria-label={`Remettre dans l'ordre : ${titre}`} data-pagefind-ignore>
+    <header class="quiz-tete">
+        <span class="etiquette">Dans l'ordre</span>
+        <span class="font-display font-semibold">{titre}</span>
+    </header>
+    <div class="ordo-consigne">
+        <slot/>
+    </div>
+    <ol class="ordo-liste">
+        {etapes.map((e, i) => (
+            <li class="ordo-item" data-rang={i}>
+                <span class="ordo-texte" set:html={enLigne(e)}/>
+                <span class="ordo-fleches">
+                    <button type="button" class="ordo-fleche" data-sens="-1" aria-label="Monter">↑</button>
+                    <button type="button" class="ordo-fleche" data-sens="1" aria-label="Descendre">↓</button>
+                </span>
+            </li>
+        ))}
+    </ol>
+    <footer class="quiz-pied">
+        <p class="quiz-score" aria-live="polite"></p>
+        <div class="quiz-boutons">
+            <button type="button" class="quiz-bouton ordo-melanger">Mélanger</button>
+            <button type="button" class="quiz-bouton ordo-solution">Solution</button>
+            <button type="button" class="quiz-bouton ordo-verifier">Vérifier</button>
+        </div>
+    </footer>
+</section>
+
+<script>
+    import {monterOrdonner} from '../../scripts/revision/ordonner';
+
+    monterOrdonner();
+</script>

@@ -23,6 +23,8 @@ const registre: Record<string, () => Promise<{ default: Monteur }>> = {
     'masque-ip': () => import('./masque-ip'),
     permissions: () => import('./permissions'),
     'execution-instruction': () => import('./execution-instruction'),
+    'entrainement-cidr': () => import('./entrainement-cidr'),
+    'nature-adresse': () => import('./nature-adresse'),
 };
 
 export function animationsDisponibles() {

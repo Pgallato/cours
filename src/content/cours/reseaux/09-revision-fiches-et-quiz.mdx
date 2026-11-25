@@ -1,0 +1,603 @@
+---
+titre: "Révision : fiches et quiz par notion"
+resume: Les notions exigées à l'évaluation, notion par notion — modèle OSI et unités, encapsulation, modes de transmission, topologies, Ethernet (CSMA/CD, ARP, VLAN), IPv4 et CIDR, IPv6, TCP et UDP, ICMP, DHCP, NDP, SLAAC et DNS — chacune avec une fiche courte, ses pièges et un quiz auto-corrigé.
+tags: [révision, évaluation, quiz, modèle OSI, encapsulation, CSMA/CD, ARP, VLAN, CIDR, IPv6, TCP, UDP, DHCP, SLAAC, DNS]
+sources: ["A savoir.txt", "chapitres 01 à 08"]
+---
+
+import {quizDe} from './revision/donnees';
+
+{/* AJOUT : chapitre de révision entier, rédigé à partir de la liste « A savoir.txt » de l'enseignant et des chapitres 01 à 08. Les compléments absents du cours sont signalés « (complément) ». */}
+
+## Comment réviser avec ce chapitre
+
+Chaque section reprend une ligne (ou un groupe de lignes) de la liste des notions à savoir pour l'évaluation. On y trouve une fiche à retenir, les pièges classiques, un lien vers le chapitre détaillé, puis un **quiz auto-corrigé** : la correction s'affiche dès que vous répondez, et le bouton « Refaire mes erreurs » ne repropose que les questions manquées.
+
+Le chapitre suivant, [Révision : entraînement](/cours/reseaux/revision-entrainement/), rassemble les outils transversaux : liste à cocher, flashcards, exercices de calcul de sous-réseau, remise en ordre des échanges et examen blanc.
+
+<Remark titre="Méthode conseillée">
+    Lisez la fiche, fermez les yeux et redites-la, puis faites le quiz. Une notion n'est acquise que si vous savez la **réexpliquer sans regarder** : cochez-la alors dans la [liste d'auto-évaluation](/cours/reseaux/revision-entrainement/#auto-évaluation).
+</Remark>
+
+## Le modèle OSI et l'encapsulation
+
+<Theorem type="À retenir">
+    Le modèle OSI découpe la communication en **7 couches**. Pour les quatre premières, les plus importantes, il faut connaître l'**unité de mesure** (on dit aussi PDU, *Protocol Data Unit*).
+</Theorem>
+
+| N° | Couche | Unité de mesure | Portée | Exemples |
+| --- | --- | --- | --- | --- |
+| 7 | Application | — | — | HTTP, SSH, DHCP, DNS |
+| 6 | Présentation | — | — | TLS, MIME, Unicode |
+| 5 | Session | — | — | NetBIOS, RPC |
+| 4 | Transport | **segment** (ou datagramme) | locale ou globale | TCP, UDP |
+| 3 | Réseau | **paquet** | locale ou globale | IPv4, IPv6, ICMP |
+| 2 | Liaison | **trame** | locale | Ethernet, Wi-Fi |
+| 1 | Physique | **bit** (ou symbole) | locale | câble, fibre, codage NRZ |
+
+{/* AJOUT : moyen mnémotechnique */}
+
+Pour retenir l'ordre de 1 à 7 : « **P**our **L**e **R**éseau, **T**out **S**e **P**asse **A**utomatiquement ». On parle de **segment** pour TCP et de **datagramme** pour UDP.
+
+<Definition titre="Encapsulation">
+    À l'émission, chaque couche ajoute ses propres informations (un en-tête, parfois un en-queue) autour des données reçues de la couche supérieure. À la réception, chaque couche retire ce que son homologue avait ajouté : c'est la **décapsulation**, dans l'ordre inverse.
+</Definition>
+
+Concrètement, une requête Web devient un segment TCP (en-tête TCP + données), placé dans un paquet IP (en-tête IP + segment), lui-même placé dans une trame Ethernet (en-tête Ethernet + paquet + FCS), transmise en bits sur le câble.
+
+<Animation type="encapsulation" titre="Encapsulation puis décapsulation d'un message" />
+
+<Warning titre="Pièges">
+    - Ne pas confondre **trame** (couche 2) et **paquet** (couche 3) : un switch commute des trames, un routeur route des paquets.
+    - L'en-tête de la couche la plus basse est ajouté **en dernier** : il est donc à l'extérieur, et retiré **en premier** à la réception.
+</Warning>
+
+Pour revoir en détail : [Généralités et concepts élémentaires](/cours/reseaux/generalites-et-concepts-elementaires/#le-modèle-osi--théorie).
+
+<Quiz titre="Modèle OSI et encapsulation" questions={quizDe('osi')} />
+
+## Modes de transmission
+
+### Simplex, half-duplex, full-duplex
+
+| Mode | Principe | Cas d'usage |
+| --- | --- | --- |
+| **Simplex** | un seul sens, de l'émetteur vers le récepteur | radio FM, télévision hertzienne, fibre « simplex » |
+| **Half-duplex** | les deux sens, mais **chacun son tour** | talkie-walkie, Ethernet sur hub (10BaseT) |
+| **Full-duplex** | émission et réception **simultanées** | téléphone, Ethernet commuté (switch) |
+
+{/* AJOUT : schéma des trois tours de parole */}
+
+<Figure legende="Les trois tours de parole entre deux stations A et B">
+<svg viewBox="0 0 420 130" role="img" aria-label="Simplex : une flèche de A vers B. Half-duplex : une flèche de A vers B puis une de B vers A, l'une après l'autre. Full-duplex : deux flèches simultanées en sens opposés.">
+    <defs>
+        <marker id="rev-duplex-fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)" />
+        </marker>
+    </defs>
+    <g fill="none" stroke="currentColor" stroke-width="1.2">
+        <rect x="10" y="30" width="30" height="24" rx="4" />
+        <rect x="100" y="30" width="30" height="24" rx="4" />
+        <rect x="150" y="30" width="30" height="24" rx="4" />
+        <rect x="240" y="30" width="30" height="24" rx="4" />
+        <rect x="290" y="30" width="30" height="24" rx="4" />
+        <rect x="380" y="30" width="30" height="24" rx="4" />
+    </g>
+    <g font-size="12" text-anchor="middle" fill="currentColor">
+        <text x="25" y="46">A</text>
+        <text x="115" y="46">B</text>
+        <text x="165" y="46">A</text>
+        <text x="255" y="46">B</text>
+        <text x="305" y="46">A</text>
+        <text x="395" y="46">B</text>
+    </g>
+    <g stroke="var(--accent)" stroke-width="2" fill="none" marker-end="url(#rev-duplex-fl)">
+        <line x1="44" y1="42" x2="94" y2="42" />
+        <line x1="184" y1="36" x2="234" y2="36" />
+        <line x1="236" y1="50" x2="186" y2="50" stroke-dasharray="4 3" />
+        <line x1="324" y1="36" x2="374" y2="36" />
+        <line x1="376" y1="50" x2="326" y2="50" />
+    </g>
+    <g font-size="12" text-anchor="middle" fill="currentColor" font-weight="600">
+        <text x="70" y="85">Simplex</text>
+        <text x="210" y="85">Half-duplex</text>
+        <text x="350" y="85">Full-duplex</text>
+    </g>
+    <g font-size="10" text-anchor="middle" fill="currentColor" opacity="0.75">
+        <text x="70" y="102">un seul sens</text>
+        <text x="210" y="102">chacun son tour</text>
+        <text x="350" y="102">en même temps</text>
+    </g>
+</svg>
+</Figure>
+
+### Les méthodes de multiplexage
+
+<Definition titre="Multiplexage">
+    Partage d'un moyen de communication entre plusieurs utilisateurs. Le démultiplexage consiste à retrouver chaque communication à l'arrivée.
+</Definition>
+
+- **Temporel** : la ressource est divisée en fentes de temps à taille fixe ; une ou plusieurs fentes sont allouées à chaque communication (exemple : le RNIS, avec 30 canaux B à 64 kbps et un canal D de signalisation).
+- **Fréquentiel** : le support exploite plusieurs fréquences, sur chacune desquelles on peut à nouveau faire du multiplexage temporel (canaux radio, canaux Wi-Fi).
+- **Par bande passante** : tant que le support est libre, des données peuvent circuler ; aucun créneau n'est réservé.
+
+{/* AJOUT : lien avec la couche transport */}
+
+On retrouve la même idée plus haut dans la pile : les **ports** TCP et UDP multiplexent plusieurs communications sur un même hôte.
+
+### Unicast, broadcast, multicast
+
+| Mode | Destinataires | Exemples |
+| --- | --- | --- |
+| **Unicast** | un seul | connexion SSH, réponse ARP |
+| **Broadcast** | tous ceux qui écoutent | requête ARP (`FF:FF:FF:FF:FF:FF`), DHCPDISCOVER, `255.255.255.255` |
+| **Multicast** | un groupe d'abonnés | IPTV, `224.0.0.0` à `239.255.255.255`, `ff00::/8` |
+
+<Warning titre="Pièges">
+    - « Recevoir » ne signifie pas « être concerné » : sur un hub ou en Wi-Fi, tout le monde reçoit, mais seul le destinataire traite la trame.
+    - (Complément) Il n'y a **pas de broadcast en IPv6** : il est remplacé par du multicast (`ff02::1`, tous les systèmes du lien).
+</Warning>
+
+Pour revoir en détail : [Autres concepts élémentaires](/cours/reseaux/generalites-et-concepts-elementaires/#autres-concepts-élémentaires).
+
+<Quiz titre="Modes de transmission" questions={quizDe('transmission')} />
+
+## Topologies et tailles de réseau
+
+<Definition titre="Topologie en bus">
+    Toutes les stations sont branchées sur un même câble. Elle est répandue dans les systèmes embarqués et industriels, et c'était celle de l'Ethernet sur câble coaxial (10Base5, 10Base2).
+</Definition>
+
+<Definition titre="Topologie en étoile">
+    Chaque station est reliée à un équipement central (hub ou switch). C'est la topologie des réseaux locaux actuels.
+</Definition>
+
+{/* AJOUT : comparaison bus / étoile */}
+
+| | Bus | Étoile |
+| --- | --- | --- |
+| Câblage | un câble commun, des tés et des bouchons | un câble par station vers le centre |
+| Ajouter une station | il faut « ouvrir » le bus | on branche un câble de plus |
+| Point faible | une coupure du bus perturbe tout le segment | la panne de l'équipement central coupe tout |
+| Usage | embarqué, industriel, ancien Ethernet | réseaux locaux (Ethernet sur paire torsadée) |
+
+<Warning titre="Topologie physique ≠ topologie logique">
+    Un réseau Ethernet sur switch est physiquement en **étoile**, mais il garde une logique de **bus** au niveau liaison (L2).
+</Warning>
+
+### PAN et LAN
+
+- **PAN** (*Personal Area Network*) : réseau de proximité, d'un rayon de 10 mètres environ, filaire (USB, Thunderbolt) ou sans fil (Bluetooth, ZigBee).
+- **LAN** (*Local Area Network*) : réseau d'un bâtiment (maison, entreprise), qui repose sur **IEEE 802.3** (Ethernet sur cuivre ou fibre) et/ou **IEEE 802.11** (Wi-Fi, on parle alors de WLAN).
+
+Viennent ensuite, par taille croissante : CAN / MAN (campus, métropole), WAN (pays, continent) et enfin Internet, la fédération de tous les réseaux reliés.
+
+<Remark titre="Ethernet et Wi-Fi">
+    Le Wi-Fi fait transiter des **trames Ethernet** par radio : les deux normes partagent la même logique de couche 2, avec un accès au support différent (CSMA/CD contre CSMA/CA).
+</Remark>
+
+Pour revoir en détail : [Les différentes topologies](/cours/reseaux/generalites-et-concepts-elementaires/#les-différentes-topologies) et [Classification par taille](/cours/reseaux/generalites-et-concepts-elementaires/#classification-par-taille).
+
+<Quiz titre="Topologies et tailles de réseau" questions={quizDe('topologies')} />
+
+## Ethernet, CSMA, ARP et VLAN
+
+### CSMA et détection de collision (principes)
+
+<Theorem type="Principe du CSMA">
+    *Carrier Sense Multiple Access* : toutes les stations partagent le même média. Avant d'émettre, une station **écoute** : s'il y a du signal dans le câble, il y a une **porteuse**, donc quelqu'un parle et il faut attendre. Si le support est libre, elle émet.
+</Theorem>
+
+<Theorem type="Principe de la détection de collision (CSMA/CD)">
+    Deux stations peuvent malgré tout commencer à émettre en même temps. La station qui émet **écoute aussi ce qu'elle émet** : si le signal ne correspond pas, il y a collision, et elle émet un **signal de bourrage** pour que toutes les stations le détectent. (Complément : chacune réessaie ensuite après un délai aléatoire.)
+</Theorem>
+
+| Variante | Idée | Où ? |
+| --- | --- | --- |
+| CSMA/CD | on **détecte** la collision | Ethernet filaire (802.3) |
+| CSMA/CA | on **évite** la collision (trames acquittées) | Wi-Fi (802.11) |
+| CSMA/CR | on **résout** la collision par priorité | bus CAN |
+
+### La trame Ethernet et le switch
+
+La trame Ethernet commence par l'adresse de **destination**, puis l'adresse **source** :
+
+| Préambule | SFD | **Destination** | **Source** | Type / Taille | Données | FCS |
+| --- | --- | --- | --- | --- | --- | --- |
+| 7 o | 1 o | 6 o | 6 o | 2 o | 46 à 1500 o | 4 o (CRC) |
+
+{/* AJOUT : intérêt de l'ordre destination puis source pour le switch */}
+
+Cet ordre sert le switch : en lisant d'abord la destination, il sait vers quel port envoyer la trame dès les premiers octets. Le switch met les trames en mémoire, lit l'adresse MAC de destination et n'envoie la trame que sur le port concerné, ce qui élimine les collisions. (Complément : il apprend quel port mène à quelle station en lisant l'adresse **source** des trames qu'il reçoit.)
+
+<Animation type="hub-switch" titre="Hub (diffusion) ou switch (commutation) ?" params={{mode: 'switch'}} />
+
+### ARP
+
+<Definition titre="Address Resolution Protocol (ARP)">
+    ARP permet de demander l'**adresse MAC** d'une station dont on connaît l'**adresse IPv4**. La demande part en **broadcast Ethernet** (destination `FF:FF:FF:FF:FF:FF`) : « Quelle adresse MAC possède cette adresse IP ? ». La station concernée répond en **unicast**.
+</Definition>
+
+En IPv6, ARP disparaît : il est remplacé par NDP (voir plus bas).
+
+### VLAN : trunk et tag
+
+<Definition titre="VLAN (IEEE 802.1Q)">
+    Un réseau local virtuel permet de faire passer plusieurs réseaux sur le même matériel sans les mélanger : on insère dans chaque trame un « numéro » de réseau, le **tag** (4 octets, juste après les adresses : TPID `0x8100` puis TCI, qui contient le VLAN ID de 1 à 4094).
+</Definition>
+
+<Theorem type="À retenir">
+    Un lien **trunk** transporte plusieurs VLAN : dans un trunk, on fait circuler des **tags**, et chaque trame indique ainsi à quel VLAN elle appartient.
+</Theorem>
+
+{/* AJOUT : schéma d'un trunk entre deux switches ; le vocabulaire « port d'accès » est un complément */}
+
+<Figure legende="Deux switches reliés par un trunk : les trames des VLAN 10 et 20 y circulent avec leur tag">
+<svg viewBox="0 0 420 170" role="img" aria-label="Switch 1 relié aux PC A (VLAN 10) et B (VLAN 20) ; switch 2 relié aux PC C (VLAN 10) et D (VLAN 20). Entre les deux switches, un lien trunk transporte des trames étiquetées tag 10 et tag 20.">
+    <g fill="none" stroke="currentColor" stroke-width="1.2">
+        <rect x="110" y="70" width="60" height="30" rx="5" />
+        <rect x="250" y="70" width="60" height="30" rx="5" />
+        <rect x="10" y="20" width="44" height="26" rx="4" />
+        <rect x="10" y="124" width="44" height="26" rx="4" />
+        <rect x="366" y="20" width="44" height="26" rx="4" />
+        <rect x="366" y="124" width="44" height="26" rx="4" />
+        <line x1="54" y1="33" x2="110" y2="78" />
+        <line x1="54" y1="137" x2="110" y2="92" />
+        <line x1="366" y1="33" x2="310" y2="78" />
+        <line x1="366" y1="137" x2="310" y2="92" />
+    </g>
+    <line x1="170" y1="85" x2="250" y2="85" stroke="var(--accent)" stroke-width="5" />
+    <g font-size="11" text-anchor="middle" fill="currentColor">
+        <text x="140" y="89">Switch 1</text>
+        <text x="280" y="89">Switch 2</text>
+        <text x="32" y="37">A</text>
+        <text x="32" y="141">B</text>
+        <text x="388" y="37">C</text>
+        <text x="388" y="141">D</text>
+    </g>
+    <g font-size="9.5" text-anchor="middle" fill="currentColor" opacity="0.8">
+        <text x="32" y="60">VLAN 10</text>
+        <text x="32" y="116">VLAN 20</text>
+        <text x="388" y="60">VLAN 10</text>
+        <text x="388" y="116">VLAN 20</text>
+    </g>
+    <g font-size="10" text-anchor="middle">
+        <rect x="180" y="50" width="60" height="16" rx="3" fill="var(--accent)" opacity="0.18" />
+        <text x="210" y="62" fill="currentColor">trame tag 10</text>
+        <rect x="180" y="104" width="60" height="16" rx="3" fill="var(--accent)" opacity="0.18" />
+        <text x="210" y="116" fill="currentColor">trame tag 20</text>
+        <text x="210" y="140" fill="var(--accent)" font-weight="600">trunk (802.1Q)</text>
+    </g>
+</svg>
+</Figure>
+
+Côté stations, chaque port du switch appartient à un seul VLAN et les trames y circulent **sans tag** (on parle de port d'accès, complément de vocabulaire). Le tag est ajouté à l'entrée du trunk et retiré à la sortie. Deux VLAN différents sont deux réseaux distincts : pour passer de l'un à l'autre, il faut un **routeur** (c'est l'objet du TP sur les VLAN).
+
+<Warning titre="Pièges">
+    - ARP ne sert qu'à trouver une adresse **MAC** ; trouver une adresse IP à partir d'un nom, c'est le **DNS**.
+    - Le tag VLAN n'est pas dans l'en-tête IP : c'est un ajout à la **trame** (couche 2), et la FCS est recalculée.
+</Warning>
+
+Pour revoir en détail : [Le protocole Ethernet](/cours/reseaux/le-protocole-ethernet/#principes-élémentaires-de-lethernet), [ARP](/cours/reseaux/le-protocole-ethernet/#le-protocole-arp) et [VLAN](/cours/reseaux/le-protocole-ethernet/#le-réseau-local-virtuel-vlan).
+
+<Quiz titre="Ethernet, CSMA, ARP et VLAN" questions={quizDe('ethernet')} />
+
+## IPv4, adressage, masques et routage
+
+<Theorem type="À retenir">
+    Une adresse **IPv4** tient sur **32 bits** (4 octets notés en décimal, de 0 à 255). Une adresse **IPv6** tient sur **128 bits**.
+</Theorem>
+
+### Masque et notation CIDR
+
+Le masque comporte des bits à 1 (partie réseau) suivis de bits à 0 (partie hôte). La notation CIDR `/n` indique le nombre de bits à 1.
+
+- Numéro de réseau = Adresse **ET** Masque.
+- Adresse de diffusion = Réseau avec tous les bits d'hôte à 1.
+- (Complément) Nombre d'adresses d'hôtes utilisables = $2^{32-n} - 2$ : on retire le numéro de réseau et la diffusion.
+
+| CIDR | Masque | Adresses | Hôtes |
+| --- | --- | --- | --- |
+| /8 | 255.0.0.0 | 16 777 216 | 16 777 214 |
+| /16 | 255.255.0.0 | 65 536 | 65 534 |
+| /24 | 255.255.255.0 | 256 | 254 |
+| /25 | 255.255.255.128 | 128 | 126 |
+| /26 | 255.255.255.192 | 64 | 62 |
+| /27 | 255.255.255.224 | 32 | 30 |
+| /28 | 255.255.255.240 | 16 | 14 |
+| /30 | 255.255.255.252 | 4 | 2 |
+
+<Example titre="192.168.1.130/26">
+    Le masque /26 vaut 255.255.255.192. Dans le dernier octet, 130 s'écrit `1000 0010` et 192 `1100 0000`.
+
+    - Réseau : `1000 0010` ET `1100 0000` = `1000 0000`, soit **192.168.1.128**.
+    - Diffusion : les 6 bits d'hôte à 1 donnent `1011 1111`, soit **192.168.1.191**.
+    - Hôtes : de 192.168.1.129 à 192.168.1.190, soit $2^6 - 2 = 62$ adresses.
+</Example>
+
+<Animation type="masque-ip" titre="Réseau, hôte et diffusion à partir d'une adresse et d'un préfixe" params={{ip: '192.168.1.130', prefixe: 26}} />
+
+Pour vous entraîner sur des adresses tirées au hasard : [Calculer un sous-réseau](/cours/reseaux/revision-entrainement/#calculer-un-sous-réseau).
+
+### Adresses techniques
+
+| Adresse | Rôle |
+| --- | --- |
+| `0.0.0.0/0` | adresse **indéfinie** (et, comme route, la route par défaut) |
+| `255.255.255.255` | **broadcast** général |
+| `x.x.x.255/24` | broadcast limité au réseau `x.x.x.0/24` |
+| `127.0.0.0/8` | **boucle locale** (*loopback*), ex. 127.0.0.1 |
+| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` | plages **privées** |
+| `169.254.0.0/16` | APIPA (adresse automatique faute de DHCP) |
+| `224.0.0.0` à `239.255.255.255` | multicast (ancienne classe D) |
+
+### Passerelle par défaut
+
+<Definition titre="Passerelle par défaut">
+    Routeur auquel un hôte envoie les paquets destinés à un réseau pour lequel il n'a aucune route plus précise. C'est la route `0.0.0.0/0` (`default via 192.168.1.1`) : son masque est le moins précis possible, elle n'est donc choisie qu'en dernier recours.
+</Definition>
+
+Quand plusieurs routes conviennent, celle dont le masque est **le plus précis** l'emporte. (Complément : la passerelle doit se trouver dans le même réseau que l'hôte, puisqu'on la joint directement sur le lien.)
+
+### MTU
+
+<Definition titre="Maximum Transmission Unit (MTU)">
+    Nombre maximal d'octets qu'on peut transférer dans un paquet sans devoir le fragmenter. Valeurs courantes : **Ethernet 1500 octets**, PPPoE 1492, IPSec ≈ 1420. En IPv6, la MTU minimale est de 1280 octets.
+</Definition>
+
+<Warning titre="Pièges">
+    - `172.16.0.0/12` va de 172.**16** à 172.**31** : 172.32.0.1 est publique.
+    - `0.0.0.0` (indéfinie) n'est pas `255.255.255.255` (broadcast).
+    - Un tunnel (VPN, PPPoE) **réduit** la MTU, car il ajoute ses propres en-têtes.
+</Warning>
+
+Pour revoir en détail : [Le protocole IPv4](/cours/reseaux/le-protocole-ipv4/#masque-de-sous-réseau).
+
+<Quiz titre="IPv4, CIDR, adresses et routage" questions={quizDe('ipv4')} />
+
+## IPv6, les plages à connaître
+
+Une adresse IPv6 compte 8 blocs de 16 bits en hexadécimal. On l'abrège en supprimant les zéros de tête de chaque bloc et en remplaçant **une seule fois** une suite de blocs nuls par `::` : `2001:0db8:0000:0000:0000:0000:0000:0001` devient `2001:db8::1`.
+
+| Plage | Nom | Équivalent IPv4 | À retenir |
+| --- | --- | --- | --- |
+| `fe80::/10` | **Link-Local** | ≈ 169.254.0.0/16 | indispensable, **non routable**, présente sur chaque interface |
+| `fc00::/7` (`fd00::/8`) | **Unique-Local** | 10/8, 172.16/12, 192.168/16 | ≈ adresses privées, routables en interne |
+| `2000::/3` | **Global-Unicast** | adresses publiques | adresses d'Internet |
+| `::/128` | adresse **indéfinie** | 0.0.0.0 | que des zéros |
+| `::1/128` | **bouclage** | 127.0.0.1 | *loopback* |
+| `ff00::/8` | **multicast** | 224.0.0.0/4 | `ff02::1` tous, `ff02::2` routeurs |
+
+{/* AJOUT : moyen mnémotechnique */}
+
+Pour reconnaître une adresse d'un coup d'œil : elle commence par **fe8** → lien local ; par **fd** ou **fc** → locale (privée) ; par **2** ou **3** → publique ; par **ff** → multicast.
+
+<Warning titre="Pièges">
+    - `::/128` est l'adresse indéfinie, `::1/128` le bouclage, mais `::/0` désigne **toutes** les adresses (route par défaut).
+    - Une station IPv6 a **plusieurs adresses** : au minimum sa Link-Local.
+    - En IPv6, les routeurs ne fragmentent plus : la source découvre la MTU du chemin (PMTUd).
+</Warning>
+
+Pour revoir en détail : [Le protocole IPv6](/cours/reseaux/le-protocole-ipv6/#plages-remarquables-ou-réservées-en-ipv6).
+
+<Quiz titre="IPv6" questions={quizDe('ipv6')} />
+
+## TCP et UDP
+
+| | **TCP** | **UDP** |
+| --- | --- | --- |
+| Connexion | **connecté** (avec état) | **non connecté** (sans état) |
+| Délivrance | garantie (ou échec signalé) | **sans garantie** : pertes possibles |
+| Ordre | données remises **dans l'ordre**, doublons supprimés | aucun ordre garanti |
+| Coût | poignée de main, acquittements | très léger |
+| Unité | segment | datagramme |
+| Usages | fichiers, Web, SSH | **VPN, DNS, appel vocal, TV** |
+
+<Theorem type="À retenir">
+    UDP accepte de **perdre** des données ; TCP livre les données **dans l'ordre**. UDP convient quand une donnée en retard ne sert plus (voix, vidéo en direct) ou quand l'échange est court (DNS), et pour les tunnels VPN, qui laissent les couches supérieures gérer leurs propres connexions.
+</Theorem>
+
+### Ouverture et fermeture d'une connexion TCP
+
+- **Ouverture** (poignée de main en 3 temps) : client → serveur **SYN** ; serveur → client **SYN + ACK** ; client → serveur **ACK**.
+- **Fermeture** : **FIN** ; puis **FIN + ACK** ; puis **ACK**.
+- Connexion vers un port fermé : **SYN**, réponse **RST**.
+
+<Animation type="echange-sequence" titre="Ouvrir une connexion TCP" params={{scenario: 'tcp-ouverture'}} />
+
+<Animation type="echange-sequence" titre="Fermer une connexion TCP" params={{scenario: 'tcp-fermeture'}} />
+
+<Warning titre="Pièges">
+    - Le numéro d'acquittement est celui du **prochain octet attendu** (octets 257 à 512 reçus → ACK 513).
+    - Ne pas confondre l'ouverture TCP (SYN, SYN + ACK, ACK) avec DHCP (DISCOVER, OFFER, REQUEST, ACK).
+</Warning>
+
+Pour revoir en détail : [Les protocoles TCP et UDP](/cours/reseaux/les-protocoles-tcp-et-udp/#principe-et-fonctionnement-dudp).
+
+<Quiz titre="TCP et UDP" questions={quizDe('transport')} />
+
+## ICMP, DHCP, NDP et SLAAC
+
+### ICMPv4, ICMPv6 et ping
+
+<Definition titre="ICMP">
+    Protocole technique de la famille IP qui sert aux messages de **diagnostic** et au **signalement d'erreurs**. Il existe en deux versions : ICMPv4 et ICMPv6.
+</Definition>
+
+| Type ICMPv4 | Message | Usage |
+| --- | --- | --- |
+| 8 | **Echo Request** | envoyé par `ping` |
+| 0 | **Echo Reply** | réponse au ping |
+| 11 | Time Exceeded | TTL arrivé à 0 (base de `traceroute`) |
+| 3 | Destination Unreachable | réseau, hôte ou port inaccessible |
+
+<Animation type="echange-sequence" titre="ping : echo-request puis echo-reply" params={{scenario: 'ping'}} />
+
+ICMPv6 a été remanié : en plus du diagnostic (le ping existe toujours ; complément : Echo Request type 128 et Echo Reply type 129), il porte la découverte des voisins (NDP), l'abonnement multicast (MLD, qui remplace IGMP), l'autoconfiguration (SLAAC) et le message « Packet Too Big » (PMTUd). (Complément : bloquer ICMPv6 casse donc IPv6, alors que bloquer ICMPv4 a peu de conséquences.)
+
+### DHCP
+
+<Definition titre="DHCP">
+    DHCP alloue dynamiquement une adresse IP et fournit à un hôte, qui ne connaît encore rien du réseau, sa configuration : masque, routeur par défaut, serveurs DNS…
+</Definition>
+
+L'acquisition suit quatre messages, à retenir sous le nom **DORA** :
+
+1. **DHCPDISCOVER** (client → tous, en broadcast) : « Y a-t-il un serveur DHCP ? » ;
+2. **DHCPOFFER** (serveur → client) : proposition d'adresse ;
+3. **DHCPREQUEST** (client → serveur) : réservation de l'adresse proposée ;
+4. **DHCPACK** (serveur → client) : confirmation et informations supplémentaires.
+
+<Animation type="echange-sequence" titre="Acquisition d'une adresse via DHCP" params={{scenario: 'dhcp'}} />
+
+Un **relais DHCP** capte les broadcasts d'un segment et les transmet en unicast à un serveur situé ailleurs. En IPv6 avec état, l'échange devient SOLICIT → ADVERTISE → REQUEST → REPLY.
+
+### NDP remplace ARP
+
+<Definition titre="Neighbor Discovery Protocol (NDP)">
+    En IPv6, NDP **remplace ARP** : la découverte des voisins passe par des messages ICMPv6 envoyés en **multicast** (et non plus en broadcast).
+</Definition>
+
+| Type ICMPv6 | Message | Rôle |
+| --- | --- | --- |
+| 133 | Router Solicitation (**RS**) | l'hôte cherche les routeurs du lien |
+| 134 | Router Advertisement (**RA**) | le routeur annonce préfixe(s) et routes |
+| 135 | Neighbor Solicitation (NS) | « qui a cette adresse IPv6 ? » (équivalent de la requête ARP) |
+| 136 | Neighbor Advertisement (NA) | réponse du voisin |
+
+<Definition titre="Duplicate Address Detection (DAD)">
+    Mécanisme qui vérifie qu'une adresse IPv6 n'est **pas déjà utilisée** sur le réseau avant de l'adopter. Pour l'évaluation, il suffit de connaître son existence.
+</Definition>
+
+### SLAAC, RS et RA
+
+<Theorem type="SLAAC (State-Less Address Auto-Configuration)">
+    Au démarrage, un hôte IPv6 :
+
+    1. prend une adresse **Link-Local** et lance **DAD** dessus ;
+    2. émet un **Router Solicitation** (RS) ;
+    3. le routeur répond par un **Router Advertisement** (RA) ;
+    4. grâce au RA, l'hôte connaît le préfixe du réseau et **choisit lui-même** son numéro d'hôte ;
+    5. il ajoute les routes indiquées dans le RA (dont la passerelle).
+</Theorem>
+
+Différence essentielle avec DHCP : avec SLAAC, aucun serveur ne distribue d'adresses ; le routeur annonce le préfixe et l'hôte construit son adresse lui-même (« sans état »). (Complément : les routeurs envoient aussi des RA régulièrement, sans attendre de RS.)
+
+<Warning titre="Pièges">
+    - RS vient de l'**hôte** (*Solicitation* = demande), RA vient du **routeur** (*Advertisement* = annonce).
+    - ping n'utilise ni TCP ni UDP : il repose directement sur ICMP.
+</Warning>
+
+Pour revoir en détail : [ICMP, IGMP, DHCP et autoconfiguration](/cours/reseaux/icmp-igmp-dhcp-et-autoconfiguration/#le-protocole-slaac-pour-ipv6).
+
+<Quiz titre="ICMP, DHCP, NDP et SLAAC" questions={quizDe('services')} />
+
+## DNS
+
+### Une structure hiérarchique
+
+Le DNS est une **arborescence** : la racine « . » en haut, puis les domaines de premier niveau (TLD : `fr`, `com`, `org`…), puis les domaines de second niveau (`free.fr`), qui contiennent autant de sous-domaines que nécessaire (`www.free.fr`). Chaque niveau délègue l'autorité au niveau suivant.
+
+<Animation type="resolution-dns" titre="Circulation d'une requête DNS pour www.free.fr" />
+
+Le client interroge son **résolveur**, qui remonte depuis la racine : la racine le renvoie vers l'autorité de `.fr`, qui le renvoie vers l'autorité de `free.fr`, qui donne la réponse définitive ; le résolveur la transmet au client (et la garde en cache).
+
+### Les trois enregistrements de base
+
+| Type | Contenu | Exemple |
+| --- | --- | --- |
+| **A** | nom → adresse **IPv4** | `www.example.org` → 192.0.2.10 |
+| **AAAA** | nom → adresse **IPv6** | `www.example.org` → 2001:db8::10 |
+| **PTR** | adresse → nom : **résolution inverse** | 192.0.2.10 → `www.example.org` |
+
+{/* AJOUT : moyen mnémotechnique et précision sur .arpa */}
+
+« AAAA » : une adresse IPv6 est quatre fois plus longue qu'une IPv4 (128 bits contre 32). Les zones de résolution inverse se trouvent sous le TLD spécial `.arpa` (complément : `in-addr.arpa` pour IPv4, `ip6.arpa` pour IPv6).
+
+### systemd-resolved
+
+<Definition titre="systemd-resolved">
+    Client DNS de systemd, sous Linux. Il agrège les différentes sources de noms, **émule un résolveur local**, fait du **cache** et de la vérification de signatures, et remplace `/etc/resolv.conf` par un lien symbolique. On l'interroge et on le pilote avec `resolvectl`.
+</Definition>
+
+<Example titre="Configuration simple (/etc/systemd/resolved.conf)">
+    ```ini
+    [Resolve]
+    DNS=192.168.1.254
+    Cache=yes
+    DNSStubListener=yes
+    ReadEtcHosts=yes
+    ```
+</Example>
+
+<Warning titre="Pièges">
+    - Le DNS traduit des **noms** en adresses ; ARP traduit des adresses **IP** en adresses **MAC**.
+    - `.local` est réservé à Zeroconf (mDNS) : ne pas l'utiliser pour un réseau interne ; `.lan` est courant mais non officiel.
+    - Le DNS utilise le port **53** (UDP pour les requêtes courantes).
+</Warning>
+
+Pour revoir en détail : [Le protocole DNS](/cours/reseaux/dns-vrrp-ipsec-et-http/#le-protocole-dns).
+
+<Quiz titre="DNS" questions={quizDe('dns')} />
+
+## Fiche récapitulative
+
+<Formulas titre="L'essentiel pour l'évaluation">
+    <Formula label="OSI (1 → 7)">
+        Physique · Liaison · Réseau · Transport · Session · Présentation · Application
+    </Formula>
+    <Formula label="Unités (couches 1 à 4)">
+        bit / symbole · trame · paquet · segment (TCP) ou datagramme (UDP)
+    </Formula>
+    <Formula label="Encapsulation">
+        chaque couche ajoute son en-tête à l'émission et le retire à la réception (ordre inverse)
+    </Formula>
+    <Formula label="Tour de parole">
+        simplex (un sens) · half-duplex (alternance) · full-duplex (simultané)
+    </Formula>
+    <Formula label="Multiplexage">
+        temporel · fréquentiel · par bande passante
+    </Formula>
+    <Formula label="Destinataires">
+        unicast (un) · broadcast (tous) · multicast (un groupe)
+    </Formula>
+    <Formula label="Topologies">
+        bus (un câble commun) · étoile (équipement central) ; PAN ≈ 10 m, LAN = 802.3 + 802.11
+    </Formula>
+    <Formula label="CSMA/CD">
+        écouter la porteuse avant d'émettre ; écouter en émettant ; collision → bourrage
+    </Formula>
+    <Formula label="Trame Ethernet">
+        destination puis source (6 o chacune) ; données 46 à 1500 o ; FCS
+    </Formula>
+    <Formula label="ARP / VLAN">
+        ARP : MAC demandée en broadcast `FF:FF:FF:FF:FF:FF` · VLAN : dans un trunk circulent des tags 802.1Q
+    </Formula>
+    <Formula label="IP">
+        IPv4 32 bits · IPv6 128 bits · /n = n bits à 1 · réseau = adresse ET masque
+    </Formula>
+    <Formula label="Adresses IPv4">
+        0.0.0.0 indéfinie · 255.255.255.255 broadcast · 127/8 loopback · 10/8, 172.16/12, 192.168/16 privées
+    </Formula>
+    <Formula label="Adresses IPv6">
+        fe80::/10 Link-Local · fc00::/7 Unique-Local · 2000::/3 Global-Unicast · ::/128 · ::1/128 · ff00::/8
+    </Formula>
+    <Formula label="Routage / MTU">
+        passerelle par défaut = route 0.0.0.0/0 · MTU Ethernet 1500 o (IPv6 min. 1280)
+    </Formula>
+    <Formula label="TCP / UDP">
+        TCP : ordre, fiabilité · UDP : pertes possibles (VPN, DNS, voix, TV)
+    </Formula>
+    <Formula label="Connexion TCP">
+        SYN → SYN + ACK → ACK · FIN → FIN + ACK → ACK
+    </Formula>
+    <Formula label="ICMP / DHCP">
+        ping : Echo Request (8) → Echo Reply (0) · DORA : DISCOVER → OFFER → REQUEST → ACK
+    </Formula>
+    <Formula label="IPv6 auto">
+        NDP remplace ARP · DAD : adresse déjà prise ? · SLAAC : RS (hôte) → RA (routeur, préfixe)
+    </Formula>
+    <Formula label="DNS">
+        arborescence depuis « . » · A (IPv4) · AAAA (IPv6) · PTR (inverse) · systemd-resolved
+    </Formula>
+</Formulas>
