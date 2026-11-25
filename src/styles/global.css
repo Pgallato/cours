@@ -1447,3 +1447,57 @@ mark {
         text-decoration: none;
     }
 }
+
+/* --- Proposer une modification (src/scripts/suggestion.ts) --- */
+.suggestion-section {
+    display: inline-grid;
+    place-items: center;
+    vertical-align: middle;
+    margin-left: 0.4rem;
+    padding: 0.3rem;
+    border-radius: 0.4rem;
+    color: var(--ink-3);
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+}
+
+.prose-cours h2:hover .suggestion-section,
+.suggestion-section:focus-visible {
+    opacity: 1;
+}
+
+.suggestion-section:hover {
+    color: var(--accent-ink);
+    background: var(--paper-2);
+}
+
+@media (hover: none) {
+    .suggestion-section {
+        opacity: 0.6;
+    }
+}
+
+.suggestion-bulle {
+    position: absolute;
+    z-index: 30;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+    cursor: pointer;
+}
+
+.suggestion-bulle[hidden] {
+    display: none;
+}
+
+.suggestion-bulle:hover {
+    background: var(--accent-ink);
+}

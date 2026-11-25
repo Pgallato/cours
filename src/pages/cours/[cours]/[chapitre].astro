@@ -155,6 +155,11 @@ const ref = {
                         <Icone nom="imprimer" taille={16}/>
                         <span>Imprimer</span>
                     </button>
+                    <button type="button" class="bouton" data-bouton-suggestion
+                            title="Ouvre une issue GitHub pré-remplie. Astuce : sélectionnez un passage pour le citer.">
+                        <Icone nom="crayon" taille={16}/>
+                        <span>Proposer une modification</span>
+                    </button>
                 </div>
             </header>
 
@@ -232,7 +237,12 @@ const ref = {
     </div>
 
     <script is:inline type="application/json" id="ref-chapitre"
-            set:html={JSON.stringify({...ref, cles: cours.chapitres.map((c) => c.cle)})}/>
+            set:html={JSON.stringify({
+                ...ref,
+                cles: cours.chapitres.map((c) => c.cle),
+                numero: index + 1,
+                fichier: chapitre.entry.filePath,
+            })}/>
 </Base>
 
 <style>
@@ -279,8 +289,12 @@ const ref = {
         estVu,
         type RefChapitre
     } from '~/scripts/suivi.ts';
+    import {initSuggestions, type RefSuggestion} from '~/scripts/suggestion.ts';
 
-    const ref = JSON.parse(document.getElementById('ref-chapitre')!.textContent!) as RefChapitre & { cles: string[] };
+    const ref = JSON.parse(document.getElementById('ref-chapitre')!.textContent!) as RefChapitre & RefSuggestion & { cles: string[] };
+
+    /* --- Propositions de modification (issues GitHub) --- */
+    initSuggestions(ref, document.querySelector<HTMLElement>('.prose-cours')!);
 
     /* --- Vu / favori --- */
     const boutonsVu = document.querySelectorAll<HTMLButtonElement>('[data-bouton-vu]');

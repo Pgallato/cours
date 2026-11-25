@@ -31,6 +31,7 @@ src/
   scripts/animations/       animations SVG en TS ; index.ts = registre (imports dynamiques)
   styles/global.css         jetons de couleur (clair/sombre), prose, blocs, impression
   scripts/pwa.ts            enregistrement du service worker + bouton « Installer »
+  scripts/suggestion.ts     « Proposer une modification » : issue GitHub pré-remplie (bouton d'en-tête, crayon par ## , bulle sur sélection) — sans backend
 public/manifest.webmanifest, icon-*.png, apple-touch-icon.png   PWA (icônes : lettre « c » Fraunces sur réglure)
 scripts/generer-sw.mjs      génère dist/sw.js après le build (précache de tout le site, version = hash du contenu)
 scripts/verifier-liens.mjs  contrôle des liens/ancres internes
@@ -50,6 +51,8 @@ Ne jamais modifier pages/lib/composants pour ajouter du contenu. Procédure :
 ## Conventions de contenu (transcription des documents de `sources/<cours>/`)
 
 Procédure complète d'ajout : skill **`/nouveau-cours <dossier>`** (`.claude/skills/nouveau-cours/SKILL.md`). Sources possibles : photos de notes, PDF, diapos (PPTX/ODP), Word… mélangés et pas forcément numérotés ; outils : `pdftotext`/`pdftoppm` (poppler) et `soffice --headless --convert-to pdf`. Les photos du cours de probabilités sont à la racine de `sources/` (historique) ; les suivants vont dans un sous-dossier par cours.
+
+Demandes envoyées depuis le site : issues GitHub `[Suggestion] …` (`gh issue list --search "[Suggestion] in:title"`) ; le corps indique la page, la section, le fichier MDX et le passage cité (formules en `$…$`).
 
 Enrichir un cours déjà publié (exemples, explications, schémas, exercices, sans repasser par `sources/`) : skill **`/ameliorer-cours <dossier> [chapitre]`** (`.claude/skills/ameliorer-cours/SKILL.md`). Le texte transcrit reste intact ; chaque ajout est précédé de `{/* AJOUT : <nature> */}` (`grep -rn AJOUT src/content/cours/<cours>`).
 
